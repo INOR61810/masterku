@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Online - Matematika Pecahan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- KaTeX for rendering mathematical fractions cleanly -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <!-- html2pdf.js for generating PDF downloads on Mobile (HP) and PC -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-30 px-4 py-3 shadow-md">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold text-lg flex items-center justify-center w-10 h-10 shadow-lg">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold text-white tracking-wide">Ujian Matematika: Pecahan</h1>
+                    <p class="text-xs text-slate-400" id="studentDisplay">Belum Terdaftar</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Violation Counter Badge -->
+                <div id="violationBadge" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-medium">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Pelanggaran: <strong id="violationCount" class="text-amber-200">0</strong>/3</span>
+                </div>
+
+                <!-- Timer Badge -->
+                <div id="timerBadge" class="hidden items-center gap-2 bg-slate-900/80 text-emerald-400 border border-emerald-500/30 px-3.5 py-1.5 rounded-lg text-sm sm:text-base font-mono font-bold shadow-inner">
+                    <i class="fa-regular fa-clock animate-pulse"></i>
+                    <span id="timeRemaining">60:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- 1. START / REGISTRATION SCREEN -->
+        <section id="startScreen" class="max-w-2xl mx-auto w-full bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-indigo-500/10 text-indigo-400 rounded-2xl mb-2">
+                    <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Selamat Datang di Ujian Online</h2>
+                <p class="text-slate-400 text-sm">Silakan isi identitas diri sebelum memulai latihan / ujian matematika pecahan.</p>
+            </div>
+
+            <!-- Student Form -->
+            <form id="regForm" onsubmit="startExam(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Nama Lengkap Siswa</label>
+                    <input type="text" id="studentName" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Kelas</label>
+                        <input type="text" id="studentClass" required placeholder="Contoh: 5A / 6B" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Nomor Absen</label>
+                        <input type="number" id="studentAbsen" required placeholder="Contoh: 12" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                    </div>
+                </div>
+
+                <!-- Rules Box -->
+                <div class="bg-slate-900/80 border border-amber-500/30 rounded-xl p-4 space-y-2 text-xs text-amber-200/90">
+                    <div class="flex items-center gap-2 font-bold text-amber-400">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Aturan Pengawasan Sistem Ujian:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-slate-300">
+                        <li>Layar akan otomatis masuk ke mode <strong class="text-amber-300">Layar Penuh (Fullscreen)</strong>.</li>
+                        <li>Dilarang <strong class="text-amber-300">membuka tab lain, memperkecil browser, atau mengklik aplikasi lain</strong>.</li>
+                        <li>Sistem mencatat maksimal <strong class="text-amber-300">3 kali pelanggaran</strong> sebelum ujian otomatis di-submit.</li>
+                        <li>Klik kanan, copy, paste, dan shortcut keyboard seperti F12 dimatikan.</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2 text-base">
+                    <span>Mulai Kerjakan Ujian</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- 2. EXAM INTERFACE SCREEN -->
+        <section id="examScreen" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Left Side: Main Question Display -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Question Card -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl relative min-h-[380px] flex flex-col justify-between">
+                    <div>
+                        <!-- Category Header & Question Number -->
+                        <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
+                            <span id="questionSectionTitle" class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-lg text-xs font-semibold tracking-wider uppercase">
+                                A. Penjumlahan Pecahan
+                            </span>
+                            <span class="text-slate-400 text-sm font-medium">
+                                Soal <strong id="currentQNumDisplay" class="text-white text-base">1</strong> dari 23
+                            </span>
+                        </div>
+
+                        <!-- Question Content Render -->
+                        <div class="space-y-6">
+                            <div class="text-slate-200 text-base sm:text-lg leading-relaxed font-medium" id="questionText">
+                                <!-- Rendered dynamically -->
+                            </div>
+
+                            <!-- Fraction Math Render Box -->
+                            <div id="mathBoxContainer" class="bg-slate-900 border border-slate-700/60 rounded-xl p-6 text-center flex items-center justify-center min-h-[100px] shadow-inner">
+                                <span id="katexTarget" class="text-2xl sm:text-3xl text-indigo-200"></span>
+                            </div>
+
+                            <!-- Input Answer Area -->
+                            <div class="pt-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2" id="inputAnswerLabel">
+                                    Tuliskan Jawaban Anda:
+                                </label>
+                                
+                                <!-- For Short Answers (1-20) -->
+                                <div id="shortAnswerBox" class="space-y-2">
+                                    <input type="text" id="userAnswerInput" autocomplete="off" placeholder="Contoh: 3/5 atau 1 1/2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3.5 text-lg font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                                    <p class="text-xs text-slate-400 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-info text-indigo-400"></i>
+                                        <span>Gunakan tanda miring <code class="bg-slate-900 border border-slate-700 px-1 rounded text-amber-300 font-mono">/</code> untuk pecahan (contoh: <code class="text-slate-300">3/5</code>) atau angka pecahan campuran (contoh: <code class="text-slate-300">1 1/2</code>).</span>
+                                    </p>
+                                </div>
+
+                                <!-- For Essay Answers (21-23) -->
+                                <div id="essayAnswerBox" class="hidden space-y-2">
+                                    <textarea id="userEssayInput" rows="5" placeholder="Tuliskan jawaban lengkap beserta langkah pengerjaannya di sini..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-base text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Footer Buttons -->
+                    <div class="flex items-center justify-between border-t border-slate-700/80 pt-6 mt-8">
+                        <button id="btnPrev" onclick="navigateQuestion(-1)" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            <span>Sebelumnya</span>
+                        </button>
+
+                        <button id="btnNext" onclick="navigateQuestion(1)" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                            <span>Berikutnya</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Question Grid & Submit Button -->
+            <div class="space-y-6">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-indigo-400"></i>
+                            <span>Navigasi Soal</span>
+                        </h3>
+                        <span id="answeredCountBadge" class="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md font-mono">0 / 23 Terjawab</span>
+                    </div>
+
+                    <!-- Grid Buttons -->
+                    <div id="questionGrid" class="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-5 gap-2 max-h-[300px] overflow-y-auto p-1">
+                        <!-- Dynamic Grid buttons -->
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="pt-2 border-t border-slate-700/70 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-3 h-3 rounded bg-indigo-600"></div>
+                            <span>Terjawab</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-3 h-3 rounded bg-slate-900 border border-slate-700"></div>
+                            <span>Belum</span>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Selesai & Kirim Ujian -->
+                    <button type="button" onclick="confirmSubmitExam()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm mt-4">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Selesai &amp; Kirim Ujian</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RESULT SCREEN -->
+        <section id="resultScreen" class="hidden max-w-2xl mx-auto w-full bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 text-center">
+            <div class="inline-flex p-4 bg-emerald-500/10 text-emerald-400 rounded-full mb-2">
+                <i class="fa-solid fa-circle-check text-4xl"></i>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Ujian Selesai!</h2>
+            <p class="text-slate-400 text-sm">Jawaban Anda telah berhasil diproses dan dikirim ke server penyimpanan.</p>
+
+            <!-- Score Summary Card -->
+            <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 space-y-4">
+                <div class="text-xs uppercase tracking-widest text-slate-400">Skor Otomatis (Soal 1 - 20)</div>
+                <div class="text-5xl font-extrabold text-indigo-400 font-mono" id="finalScoreDisplay">0 / 100</div>
+                <p class="text-xs text-slate-400">*(Soal Esai 21-23 akan dikoreksi secara manual oleh Guru)</p>
+            </div>
+
+            <!-- Student Summary Info -->
+            <div class="text-left bg-slate-900/50 border border-slate-700/60 rounded-xl p-4 text-xs text-slate-300 space-y-2">
+                <div class="flex justify-between"><span>Nama Siswa:</span> <strong id="resName" class="text-white"></strong></div>
+                <div class="flex justify-between"><span>Kelas / Absen:</span> <strong id="resClass" class="text-white"></strong></div>
+                <div class="flex justify-between"><span>Total Pelanggaran Tab:</span> <strong id="resViolations" class="text-amber-400"></strong></div>
+                <div class="flex justify-between"><span>Status Pengiriman Spreadsheet:</span> <strong id="resDriveStatus" class="text-emerald-400">Mengirim...</strong></div>
+            </div>
+
+            <!-- Action Buttons (Download PDF & Back) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <button type="button" onclick="downloadPDF()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Download Hasil PDF (HP / PC)</span>
+                </button>
+                <button type="button" onclick="location.reload()" class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition text-sm">
+                    Kembali ke Halaman Depan
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- HIDDEN CONTAINER FOR PDF GENERATION -->
+    <div id="pdfReportTemplate" class="hidden bg-white text-slate-900 p-8 rounded-lg max-w-3xl font-sans">
+        <div style="border-bottom: 2px solid #4f46e5; padding-bottom: 12px; margin-bottom: 16px; text-align: center;">
+            <h1 style="font-size: 20px; font-weight: bold; color: #1e1b4b; margin: 0;">LEMBAR HASIL UJIAN MATEMATIKA PECAHAN</h1>
+            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Bukti Pengerjaan Latihan Soal Matematika Online</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; border: 1px solid #e2e8f0;">
+            <div>
+                <div><strong>Nama Siswa:</strong> <span id="pdfName">-</span></div>
+                <div style="margin-top: 4px;"><strong>Kelas / Absen:</strong> <span id="pdfClass">-</span></div>
+                <div style="margin-top: 4px;"><strong>Waktu Selesai:</strong> <span id="pdfDate">-</span></div>
+            </div>
+            <div style="text-align: right;">
+                <div><strong>Skor Otomatis (1-20):</strong> <span id="pdfScore" style="color: #4f46e5; font-weight: bold;">0 / 100</span></div>
+                <div style="margin-top: 4px;"><strong>Pelanggaran Tab:</strong> <span id="pdfViolations" style="color: #d97706; font-weight: bold;">0 Kali</span></div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 14px; font-weight: bold; color: #1e293b; margin-bottom: 8px;">Rincian Jawaban Siswa:</h3>
+        <div id="pdfAnswersList" style="font-size: 11px;">
+            <!-- Rendered dynamically -->
+        </div>
+    </div>
+
+    <!-- MODAL 1: PERINGATAN / ANTI-CHEAT MODAL -->
+    <div id="warningModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-amber-500/50 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
+            <div class="inline-flex p-3 bg-amber-500/20 text-amber-400 rounded-full">
+                <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Peringatan Ujian</h3>
+            <p id="warningModalMessage" class="text-slate-300 text-sm leading-relaxed">
+                Peringatan pelanggaran tata tertib ujian.
+            </p>
+            <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-amber-300 font-medium">
+                Total Pelanggaran: <span id="modalViolationCount" class="font-bold">0</span> / 3
+            </div>
+            <button type="button" onclick="dismissWarningModal()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition text-sm">
+                Mengerti &amp; Lanjutkan Ujian
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SUBMIT CONFIRMATION MODAL -->
+    <div id="submitModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
+            <div class="inline-flex p-3 bg-emerald-500/20 text-emerald-400 rounded-full">
+                <i class="fa-solid fa-paper-plane text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Konfirmasi Selesai</h3>
+            <p class="text-slate-300 text-sm">
+                Apakah Anda yakin ingin menyelesaikan dan mengirimkan seluruh jawaban latihan soal ini?
+            </p>
+            <div id="unansweredWarning" class="text-xs text-amber-400 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 hidden">
+                <i class="fa-solid fa-triangle-exclamation"></i> Masih ada <span id="unansweredNum">0</span> soal yang belum dijawab!
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="toggleSubmitModal(false)" class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-xl transition text-sm">
+                    Batal
+                </button>
+                <button type="button" onclick="submitExam(false)" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition text-sm">
+                    Ya, Kirim
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-slate-800/50 border-t border-slate-800 text-center py-3 text-xs text-slate-500">
+        &copy; Aplikasi Latihan Matematika Pecahan - Siap Localhost & Google Drive
+    </footer>
+
+    <script>
+        /* Question Database (1-20 Short Answer, 21-23 Essay) */
+        const QUESTIONS = [
+            // A. Penjumlahan Pecahan
+            { id: 1, section: "A. Penjumlahan Pecahan", text: "Hitunglah hasil penjumlahan pecahan berikut:", katex: "\\frac{2}{5} + \\frac{1}{5} = \\dots", type: "short", answer: "3/5" },
+            { id: 2, section: "A. Penjumlahan Pecahan", text: "Hitunglah hasil penjumlahan pecahan berikut:", katex: "\\frac{3}{4} + \\frac{2}{8} = \\dots", type: "short", answer: "1" },
+            { id: 3, section: "A. Penjumlahan Pecahan", text: "Hitunglah hasil penjumlahan pecahan berikut:", katex: "\\frac{2}{3} + \\frac{1}{6} = \\dots", type: "short", answer: "5/6" },
+            { id: 4, section: "A. Penjumlahan Pecahan", text: "Hitunglah hasil penjumlahan pecahan berikut:", katex: "\\frac{5}{6} + \\frac{3}{4} = \\dots", type: "short", answer: "1 7/12" },
+            { id: 5, section: "A. Penjumlahan Pecahan", text: "Hitunglah hasil penjumlahan pecahan berikut:", katex: "1\\frac{1}{3} + 2\\frac{1}{6} = \\dots", type: "short", answer: "3 1/2" },
+
+            // B. Pengurangan Pecahan
+            { id: 6, section: "B. Pengurangan Pecahan", text: "Hitunglah hasil pengurangan pecahan berikut:", katex: "\\frac{7}{8} - \\frac{3}{8} = \\dots", type: "short", answer: "1/2" },
+            { id: 7, section: "B. Pengurangan Pecahan", text: "Hitunglah hasil pengurangan pecahan berikut:", katex: "\\frac{5}{6} - \\frac{1}{3} = \\dots", type: "short", answer: "1/2" },
+            { id: 8, section: "B. Pengurangan Pecahan", text: "Hitunglah hasil pengurangan pecahan berikut:", katex: "\\frac{7}{10} - \\frac{1}{4} = \\dots", type: "short", answer: "9/20" },
+            { id: 9, section: "B. Pengurangan Pecahan", text: "Hitunglah hasil pengurangan pecahan berikut:", katex: "\\frac{9}{8} - \\frac{2}{3} = \\dots", type: "short", answer: "11/24" },
+            { id: 10, section: "B. Pengurangan Pecahan", text: "Hitunglah hasil pengurangan pecahan berikut:", katex: "3\\frac{1}{4} - 1\\frac{2}{3} = \\dots", type: "short", answer: "1 7/12" },
+
+            // C. Perkalian Pecahan
+            { id: 11, section: "C. Perkalian Pecahan", text: "Hitunglah hasil perkalian pecahan berikut:", katex: "\\frac{2}{3} \\times \\frac{3}{5} = \\dots", type: "short", answer: "2/5" },
+            { id: 12, section: "C. Perkalian Pecahan", text: "Hitunglah hasil perkalian pecahan berikut:", katex: "\\frac{4}{7} \\times \\frac{7}{8} = \\dots", type: "short", answer: "1/2" },
+            { id: 13, section: "C. Perkalian Pecahan", text: "Hitunglah hasil perkalian pecahan berikut:", katex: "\\frac{5}{6} \\times \\frac{3}{10} = \\dots", type: "short", answer: "1/4" },
+            { id: 14, section: "C. Perkalian Pecahan", text: "Hitunglah hasil perkalian pecahan berikut:", katex: "1\\frac{1}{2} \\times \\frac{2}{3} = \\dots", type: "short", answer: "1" },
+            { id: 15, section: "C. Perkalian Pecahan", text: "Hitunglah hasil perkalian pecahan berikut:", katex: "2\\frac{1}{4} \\times 1\\frac{1}{3} = \\dots", type: "short", answer: "3" },
+
+            // D. Pembagian Pecahan
+            { id: 16, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "\\frac{3}{4} \\div \\frac{1}{2} = \\dots", type: "short", answer: "1 1/2" },
+            { id: 17, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "\\frac{5}{6} \\div \\frac{5}{12} = \\dots", type: "short", answer: "2" },
+            { id: 18, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "\\frac{2}{3} \\div \\frac{4}{9} = \\dots", type: "short", answer: "1 1/2" },
+            { id: 19, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "1\\frac{1}{2} \\div \\frac{3}{4} = \\dots", type: "short", answer: "2" },
+            { id: 20, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "2\\frac{2}{5} \\div 1\\frac{1}{5} = \\dots", type: "short", answer: "2" },
+
+            // E. Esai (Tanpa KaTeX agar siswa menganalisis matematika sendiri)
+            { id: 21, section: "E. Esai", text: "Ibu mempunyai 2 1/2 kg tepung. Kemudian digunakan 3/4 kg untuk membuat kue. Berapa kilogram tepung yang masih tersisa? Tuliskan langkah pengerjaanmu.", katex: "", type: "essay" },
+            { id: 22, section: "E. Esai", text: "Sebuah pita panjangnya 3 1/2 meter. Pita tersebut dipotong menjadi beberapa bagian, masing-masing sepanjang 1/2 meter. Berapa banyak potongan pita yang diperoleh? Jelaskan caramu.", katex: "", type: "essay" },
+            { id: 23, section: "E. Esai", text: "Ayah membeli 2 1/4 kg buah. Sebanyak 2/3 bagian dari buah tersebut diberikan kepada tetangga. Berapa kilogram buah yang diberikan kepada tetangga? Tuliskan langkah pengerjaannya.", katex: "", type: "essay" }
+        ];
+
+        /* Application State */
+        let state = {
+            studentName: '',
+            studentClass: '',
+            studentAbsen: '',
+            currentQIndex: 0,
+            answers: {},
+            violations: 0,
+            maxViolations: 3,
+            timerInterval: null,
+            timeRemainingSeconds: 60 * 60,
+            examStarted: false,
+            examSubmitted: false,
+            googleScriptUrl: 'https://script.google.com/macros/s/AKfycbxkdrSTINeapno1JWLOq0MryhpAHH_JiLk6i1WEMhY8JJU4pqkJ3tQ9mD5acHWfTacO/exec'
+        };
+
+        window.onload = function() {
+            setupAntiCheatListeners();
+        };
+
+        function setupAntiCheatListeners() {
+            // Tab switch detection (Reliable across browsers)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && state.examStarted && !state.examSubmitted) {
+                    recordViolation("Terdeteksi berpindah tab atau meminimalkan browser!");
+                }
+            });
+
+            // Fullscreen exit detection
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement && state.examStarted && !state.examSubmitted) {
+                    recordViolation("Terdeteksi keluar dari mode layar penuh (Fullscreen)!");
+                }
+            });
+
+            // Context menu, Copy, Paste prevent
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('copy', e => e.preventDefault());
+            document.addEventListener('paste', e => e.preventDefault());
+
+            // DevTools / Shortcut Prevention
+            document.addEventListener('keydown', e => {
+                if (!state.examStarted) return;
+                if (
+                    e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                    (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S'))
+                ) {
+                    e.preventDefault();
+                    recordViolation("Penggunaan tombol pintas pengembang dilarang!");
+                }
+            });
+        }
+
+        function recordViolation(message) {
+            state.violations++;
+            document.getElementById('violationCount').innerText = state.violations;
+            document.getElementById('modalViolationCount').innerText = state.violations;
+            document.getElementById('warningModalMessage').innerText = message;
+            
+            const warningModal = document.getElementById('warningModal');
+            warningModal.classList.remove('hidden');
+
+            if (state.violations >= state.maxViolations) {
+                setTimeout(() => {
+                    alertModal("Batas maksimum pelanggaran (3x) dicapai! Ujian Anda akan otomatis dikirim.", () => {
+                        submitExam(true);
+                    });
+                }, 400);
+            }
+        }
+
+        function dismissWarningModal() {
+            document.getElementById('warningModal').classList.add('hidden');
+            requestFullScreen();
+        }
+
+        function requestFullScreen() {
+            const docEl = document.documentElement;
+            try {
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen().catch(() => {});
+                } else if (docEl.mozRequestFullScreen) {
+                    docEl.mozRequestFullScreen().catch(() => {});
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen().catch(() => {});
+                }
+            } catch(e) {
+                console.log("Fullscreen restriction:", e);
+            }
+        }
+
+        function startExam(event) {
+            event.preventDefault();
+
+            state.studentName = document.getElementById('studentName').value.trim();
+            state.studentClass = document.getElementById('studentClass').value.trim();
+            state.studentAbsen = document.getElementById('studentAbsen').value.trim();
+
+            if (!state.studentName || !state.studentClass || !state.studentAbsen) return;
+
+            document.getElementById('studentDisplay').innerText = `${state.studentName} | Kelas ${state.studentClass} (${state.studentAbsen})`;
+
+            // Switch Screen
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+            
+            const vBadge = document.getElementById('violationBadge');
+            vBadge.classList.remove('hidden');
+            vBadge.classList.add('flex');
+
+            const tBadge = document.getElementById('timerBadge');
+            tBadge.classList.remove('hidden');
+            tBadge.classList.add('flex');
+
+            state.examStarted = true;
+            requestFullScreen();
+            startTimer();
+            buildQuestionGrid();
+            renderQuestion(0);
+        }
+
+        function startTimer() {
+            state.timerInterval = setInterval(() => {
+                state.timeRemainingSeconds--;
+                
+                const minutes = Math.floor(state.timeRemainingSeconds / 60);
+                const seconds = state.timeRemainingSeconds % 60;
+                
+                document.getElementById('timeRemaining').innerText = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (state.timeRemainingSeconds <= 0) {
+                    clearInterval(state.timerInterval);
+                    submitExam(true);
+                }
+            }, 1000);
+        }
+
+        function buildQuestionGrid() {
+            const gridContainer = document.getElementById('questionGrid');
+            gridContainer.innerHTML = '';
+
+            QUESTIONS.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = `grid-btn-${idx}`;
+                btn.className = `w-10 h-10 rounded-xl font-semibold text-xs transition flex items-center justify-center border ${
+                    idx === state.currentQIndex 
+                        ? 'bg-indigo-600 text-white border-indigo-400 ring-2 ring-indigo-400/50' 
+                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500'
+                }`;
+                btn.innerText = q.id;
+                btn.onclick = () => renderQuestion(idx);
+                gridContainer.appendChild(btn);
+            });
+            updateGridStatus();
+        }
+
+        function updateGridStatus() {
+            let answered = 0;
+            QUESTIONS.forEach((q, idx) => {
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                const isAnswered = state.answers[q.id] && state.answers[q.id].trim() !== '';
+
+                if (isAnswered) answered++;
+
+                if (btn) {
+                    if (idx === state.currentQIndex) {
+                        btn.className = 'w-10 h-10 rounded-xl font-bold text-xs transition flex items-center justify-center bg-indigo-600 text-white border-indigo-400 ring-2 ring-indigo-400/50 shadow-md';
+                    } else if (isAnswered) {
+                        btn.className = 'w-10 h-10 rounded-xl font-semibold text-xs transition flex items-center justify-center bg-emerald-600/30 text-emerald-300 border-emerald-500/50';
+                    } else {
+                        btn.className = 'w-10 h-10 rounded-xl font-semibold text-xs transition flex items-center justify-center bg-slate-900 text-slate-400 border-slate-700 hover:border-slate-500';
+                    }
+                }
+            });
+
+            document.getElementById('answeredCountBadge').innerText = `${answered} / ${QUESTIONS.length} Terjawab`;
+        }
+
+        function saveCurrentAnswer() {
+            const currentQ = QUESTIONS[state.currentQIndex];
+            if (!currentQ) return;
+            
+            if (currentQ.type === 'short') {
+                const val = document.getElementById('userAnswerInput').value;
+                state.answers[currentQ.id] = val;
+            } else {
+                const val = document.getElementById('userEssayInput').value;
+                state.answers[currentQ.id] = val;
+            }
+            updateGridStatus();
+        }
+
+        function renderQuestion(index) {
+            saveCurrentAnswer();
+
+            state.currentQIndex = index;
+            const q = QUESTIONS[index];
+
+            document.getElementById('questionSectionTitle').innerText = q.section;
+            document.getElementById('currentQNumDisplay').innerText = q.id;
+            document.getElementById('questionText').innerText = q.text;
+
+            // Render math formula with KaTeX
+            const mathBox = document.getElementById('mathBoxContainer');
+            const target = document.getElementById('katexTarget');
+            
+            if (q.katex && q.katex.trim() !== '') {
+                mathBox.classList.remove('hidden');
+                try {
+                    katex.render(q.katex, target, { throwOnError: false });
+                } catch(e) {
+                    target.innerText = q.katex;
+                }
+            } else {
+                mathBox.classList.add('hidden');
+            }
+
+            // Input type toggle
+            const shortBox = document.getElementById('shortAnswerBox');
+            const essayBox = document.getElementById('essayAnswerBox');
+
+            if (q.type === 'short') {
+                shortBox.classList.remove('hidden');
+                essayBox.classList.add('hidden');
+                document.getElementById('userAnswerInput').value = state.answers[q.id] || '';
+                document.getElementById('inputAnswerLabel').innerText = "Tuliskan Jawaban Singkat Anda:";
+            } else {
+                shortBox.classList.add('hidden');
+                essayBox.classList.remove('hidden');
+                document.getElementById('userEssayInput').value = state.answers[q.id] || '';
+                document.getElementById('inputAnswerLabel').innerText = "Tuliskan Jawaban Lengkap dan Langkah Pengerjaan:";
+            }
+
+            // Buttons state
+            document.getElementById('btnPrev').disabled = (index === 0);
+            
+            const btnNext = document.getElementById('btnNext');
+            if (index === QUESTIONS.length - 1) {
+                btnNext.innerHTML = '<span>Selesai</span> <i class="fa-solid fa-check"></i>';
+                btnNext.onclick = confirmSubmitExam;
+            } else {
+                btnNext.innerHTML = '<span>Berikutnya</span> <i class="fa-solid fa-chevron-right"></i>';
+                btnNext.onclick = () => navigateQuestion(1);
+            }
+
+            updateGridStatus();
+        }
+
+        function navigateQuestion(step) {
+            const newIndex = state.currentQIndex + step;
+            if (newIndex >= 0 && newIndex < QUESTIONS.length) {
+                renderQuestion(newIndex);
+            }
+        }
+
+        function parseFractionValue(str) {
+            if (!str) return null;
+            str = str.trim().replace(/\s+/g, ' ');
+
+            // Mixed fraction e.g. "1 1/2"
+            const mixedMatch = str.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+            if (mixedMatch) {
+                const whole = parseInt(mixedMatch[1]);
+                const num = parseInt(mixedMatch[2]);
+                const den = parseInt(mixedMatch[3]);
+                if (den === 0) return null;
+                return whole + (num / den);
+            }
+
+            // Simple fraction e.g. "3/5"
+            const fracMatch = str.match(/^(\d+)\/(\d+)$/);
+            if (fracMatch) {
+                const num = parseInt(fracMatch[1]);
+                const den = parseInt(fracMatch[2]);
+                if (den === 0) return null;
+                return num / den;
+            }
+
+            // Whole number e.g. "2"
+            const intMatch = str.match(/^(\d+)$/);
+            if (intMatch) {
+                return parseInt(intMatch[1]);
+            }
+
+            return null;
+        }
+
+        function calculateScore() {
+            let correctCount = 0;
+
+            QUESTIONS.filter(q => q.type === 'short').forEach(q => {
+                const userAns = state.answers[q.id];
+                const keyAns = q.answer;
+
+                const valUser = parseFractionValue(userAns);
+                const valKey = parseFractionValue(keyAns);
+
+                if (valUser !== null && valKey !== null && Math.abs(valUser - valKey) < 0.0001) {
+                    correctCount++;
+                }
+            });
+
+            return correctCount * 5; // 20 questions * 5 = 100
+        }
+
+        function confirmSubmitExam() {
+            saveCurrentAnswer();
+
+            let unanswered = 0;
+            QUESTIONS.forEach(q => {
+                if (!state.answers[q.id] || state.answers[q.id].trim() === '') {
+                    unanswered++;
+                }
+            });
+
+            const warningEl = document.getElementById('unansweredWarning');
+            if (unanswered > 0) {
+                document.getElementById('unansweredNum').innerText = unanswered;
+                warningEl.classList.remove('hidden');
+            } else {
+                warningEl.classList.add('hidden');
+            }
+
+            toggleSubmitModal(true);
+        }
+
+        function toggleSubmitModal(show) {
+            const modal = document.getElementById('submitModal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function submitExam(isAuto = false) {
+            saveCurrentAnswer();
+            state.examSubmitted = true;
+            clearInterval(state.timerInterval);
+
+            toggleSubmitModal(false);
+
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+
+            const score = calculateScore();
+
+            // Render Results
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('violationBadge').classList.add('hidden');
+            document.getElementById('timerBadge').classList.add('hidden');
+
+            document.getElementById('finalScoreDisplay').innerText = `${score} / 100`;
+            document.getElementById('resName').innerText = state.studentName;
+            document.getElementById('resClass').innerText = `${state.studentClass} (Absen: ${state.studentAbsen})`;
+            document.getElementById('resViolations').innerText = `${state.violations} Kali`;
+
+            sendDataToGoogleDrive(score);
+        }
+
+        function downloadPDF() {
+            const score = calculateScore();
+            const dateStr = new Date().toLocaleString('id-ID');
+
+            document.getElementById('pdfName').innerText = state.studentName;
+            document.getElementById('pdfClass').innerText = `${state.studentClass} (Absen: ${state.studentAbsen})`;
+            document.getElementById('pdfDate').innerText = dateStr;
+            document.getElementById('pdfScore').innerText = `${score} / 100`;
+            document.getElementById('pdfViolations').innerText = `${state.violations} Kali`;
+
+            const listContainer = document.getElementById('pdfAnswersList');
+            listContainer.innerHTML = '';
+
+            QUESTIONS.forEach(q => {
+                const ans = state.answers[q.id] || '-';
+                const item = document.createElement('div');
+                item.style.padding = '10px 12px';
+                item.style.backgroundColor = q.type === 'essay' ? '#f8fafc' : '#ffffff';
+                item.style.border = '1px solid #cbd5e1';
+                item.style.borderRadius = '8px';
+                item.style.marginBottom = '10px';
+                item.style.pageBreakInside = 'avoid';
+
+                // Render KaTeX math formula HTML for PDF
+                let mathHtml = '';
+                if (q.katex && q.katex.trim() !== '') {
+                    try {
+                        mathHtml = katex.renderToString(q.katex, { throwOnError: false });
+                    } catch(e) {
+                        mathHtml = `<span style="font-family: monospace;">${q.katex}</span>`;
+                    }
+                }
+
+                // Answer key and correctness status for learning review
+                let keyAndStatusHtml = '';
+                if (q.type === 'short') {
+                    const valUser = parseFractionValue(ans);
+                    const valKey = parseFractionValue(q.answer);
+                    const isCorrect = (valUser !== null && valKey !== null && Math.abs(valUser - valKey) < 0.0001);
+                    
+                    const badge = isCorrect 
+                        ? '<span style="color: #15803d; font-weight: bold; background-color: #dcfce7; padding: 2px 6px; border-radius: 4px; border: 1px solid #86efac;">[ BENAR ]</span>' 
+                        : '<span style="color: #b91c1c; font-weight: bold; background-color: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #fca5a5;">[ SALAH ]</span>';
+
+                    keyAndStatusHtml = `
+                        <div style="margin-top: 6px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
+                            <div><strong>Kunci Jawaban:</strong> <span style="color: #16a34a; font-family: monospace; font-weight: bold;">${q.answer}</span></div>
+                            <div>${badge}</div>
+                        </div>
+                    `;
+                }
+
+                item.innerHTML = `
+                    <div style="font-weight: bold; color: #1e293b; font-size: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+                        Soal No. ${q.id} - ${q.section}
+                    </div>
+                    <div style="color: #334155; font-size: 12px; margin-bottom: 6px; line-height: 1.4;">
+                        ${q.text}
+                    </div>
+                    ${mathHtml ? `<div style="margin: 8px 0; font-size: 16px; text-align: center; color: #1e1b4b; background-color: #f1f5f9; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">${mathHtml}</div>` : ''}
+                    <div style="margin-top: 6px; font-size: 11px; color: #0284c7;">
+                        <strong>Jawaban Siswa:</strong> <span style="color: #0f172a; font-family: monospace; font-weight: bold; background: #f8fafc; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;">${ans}</span>
+                    </div>
+                    ${keyAndStatusHtml}
+                `;
+                listContainer.appendChild(item);
+            });
+
+            const element = document.getElementById('pdfReportTemplate');
+            element.classList.remove('hidden');
+
+            const opt = {
+                margin:       10,
+                filename:     `Hasil_Ujian_${state.studentName.replace(/\s+/g, '_')}_Kelas_${state.studentClass}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('hidden');
+            }).catch(err => {
+                console.error("Gagal mendownload PDF:", err);
+                element.classList.add('hidden');
+            });
+        }
+
+        function sendDataToGoogleDrive(score) {
+            const statusEl = document.getElementById('resDriveStatus');
+
+            if (!state.googleScriptUrl) {
+                statusEl.innerText = "URL Google Script Belum Dikonfigurasi";
+                statusEl.className = "text-amber-400";
+                return;
+            }
+
+            statusEl.innerText = "Mengirim data ke Google Drive...";
+            statusEl.className = "text-indigo-400 animate-pulse";
+
+            const payload = {
+                studentName: state.studentName,
+                studentClass: state.studentClass,
+                studentAbsen: state.studentAbsen,
+                score: score,
+                violations: state.violations,
+                answers: state.answers,
+                timestamp: new Date().toISOString()
+            };
+
+            fetch(state.googleScriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusEl.innerText = "Berhasil Tersimpan di Google Sheets!";
+                statusEl.className = "text-emerald-400 font-bold";
+            })
+            .catch(err => {
+                console.error("Gagal mengirim ke Apps Script:", err);
+                statusEl.innerText = "Gagal Mengirim ke Google Drive (Cek URL)";
+                statusEl.className = "text-red-400";
+            });
+        }
+
+        function toggleConfigModal(show) {
+            const modal = document.getElementById('configModal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('scriptUrlInput').value.trim();
+            state.googleScriptUrl = url;
+            localStorage.setItem('googleScriptUrl', url);
+            toggleConfigModal(false);
+            alertModal("Pengaturan URL Google Apps Script berhasil disimpan!");
+        }
+
+        function alertModal(msg, callback) {
+            document.getElementById('warningModalMessage').innerText = msg;
+            document.getElementById('modalViolationCount').innerText = state.violations;
+            document.getElementById('warningModal').classList.remove('hidden');
+            
+            const btn = document.querySelector('#warningModal button');
+            const originalOnClick = btn.onclick;
+            btn.onclick = () => {
+                document.getElementById('warningModal').classList.add('hidden');
+                btn.onclick = originalOnClick;
+                if (callback) callback();
+            };
+        }
+    </script>
+</body>
+</html>

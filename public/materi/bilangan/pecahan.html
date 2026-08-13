@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunia Pecahan / Fraction World - Interactive Math Module</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fraction-math {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+        }
+        .fraction-num {
+            border-bottom: 2px solid currentColor;
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .fraction-den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col" x-data="fractionApp()">
+
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent" x-text="lang === 'id' ? 'DuniaPecahan' : 'FractionWorld'"></span>
+                    <span class="hidden sm:inline-block text-xs text-slate-500 font-medium ml-2 px-2 py-0.5 bg-slate-100 rounded-full" x-text="lang === 'id' ? 'Modul Interaktif' : 'Interactive Module'"></span>
+                </div>
+            </div>
+
+            ----Back----
+
+            <a href="../../pages/bilangan.html">🏠 Menu Bilangan</a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center space-x-1 font-semibold text-slate-600 text-sm">
+                <a href="#pengenalan" class="px-3 py-2 rounded-lg hover:text-sky-600 hover:bg-sky-50 transition" x-text="lang === 'id' ? 'Konsep Dasar' : 'Basic Concepts'"></a>
+                <a href="#jenis" class="px-3 py-2 rounded-lg hover:text-sky-600 hover:bg-sky-50 transition" x-text="lang === 'id' ? 'Jenis Pecahan' : 'Fraction Types'"></a>
+                <a href="#perbandingan" class="px-3 py-2 rounded-lg hover:text-sky-600 hover:bg-sky-50 transition" x-text="lang === 'id' ? 'Perbandingan' : 'Comparison'"></a>
+                <a href="#operasi" class="px-3 py-2 rounded-lg hover:text-sky-600 hover:bg-sky-50 transition" x-text="lang === 'id' ? 'Operasi Hitung' : 'Operations'"></a>
+                <a href="#kuis" class="px-3 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition shadow-sm ml-2" x-text="lang === 'id' ? 'Kuis Akhir' : 'Final Quiz'"></a>
+                
+                <!-- Language Switcher Button -->
+                <button @click="toggleLang()" class="ml-4 px-3 py-1.5 rounded-full border border-slate-300 bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-globe text-sky-600"></i>
+                    <span x-text="lang === 'id' ? '🇮🇩 ID' : '🇬🇧 EN'"></span>
+                </button>
+            </nav>
+
+            <!-- Mobile Menu & Lang Toggle -->
+            <div class="flex items-center space-x-2 md:hidden">
+                <button @click="toggleLang()" class="px-2.5 py-1 rounded-full border border-slate-300 bg-slate-100 text-xs font-bold text-slate-700 flex items-center space-x-1">
+                    <i class="fa-solid fa-globe text-sky-600"></i>
+                    <span x-text="lang === 'id' ? 'ID' : 'EN'"></span>
+                </button>
+                <button @click="mobileMenu = !mobileMenu" class="text-slate-600 hover:text-slate-900 p-2">
+                    <i class="fa-solid" :class="mobileMenu ? 'fa-xmark text-xl' : 'fa-bars text-xl'"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div x-show="mobileMenu" x-transition class="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-2 text-sm font-semibold">
+            <a href="#pengenalan" @click="mobileMenu = false" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-sky-50" x-text="lang === 'id' ? 'Konsep Dasar' : 'Basic Concepts'"></a>
+            <a href="#jenis" @click="mobileMenu = false" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-sky-50" x-text="lang === 'id' ? 'Jenis Pecahan' : 'Fraction Types'"></a>
+            <a href="#perbandingan" @click="mobileMenu = false" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-sky-50" x-text="lang === 'id' ? 'Perbandingan' : 'Comparison'"></a>
+            <a href="#operasi" @click="mobileMenu = false" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-sky-50" x-text="lang === 'id' ? 'Operasi Hitung' : 'Operations'"></a>
+            <a href="#kuis" @click="mobileMenu = false" class="block px-3 py-2 bg-sky-600 text-white rounded-lg text-center" x-text="lang === 'id' ? 'Kuis Akhir' : 'Final Quiz'"></a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="relative bg-gradient-to-b from-sky-50 via-white to-slate-50 py-12 md:py-16 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="inline-flex items-center space-x-2 bg-sky-100 text-sky-700 font-semibold px-3 py-1 rounded-full text-xs mb-4">
+                            <i class="fa-solid fa-sparkles"></i>
+                            <span x-text="lang === 'id' ? 'Belajar Matematika Interaktif & Visual!' : 'Interactive & Visual Math Learning!'"></span>
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
+                            <span x-text="lang === 'id' ? 'Pahami' : 'Master'"></span> <span class="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent" x-text="lang === 'id' ? 'Konsep Pecahan' : 'Fractions Concepts'"></span> <span x-text="lang === 'id' ? 'Secara Lengkap & Latihan Mandiri' : 'With Interactive Practice'"></span>
+                        </h1>
+                        <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed" x-text="lang === 'id' ? 'Pelajari bentuk pecahan, konversi desimal/persen, cara membandingkan, operasi (+, -, ×, ÷) lengkap dengan LATIHAN SOAL di setiap sub-materi!' : 'Explore fraction forms, decimal/percentage conversions, comparison techniques, operations (+, -, ×, ÷), and topic-by-topic PRACTICE EXERCISES!'">
+                        </p>
+                        <div class="mt-8 flex flex-wrap gap-4">
+                            <a href="#pengenalan" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 transition duration-200 flex items-center space-x-2">
+                                <span x-text="lang === 'id' ? 'Mulai Belajar' : 'Start Learning'"></span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <a href="#kuis" class="px-6 py-3 bg-white hover:bg-slate-100 text-slate-700 font-bold rounded-xl border border-slate-300 transition duration-200 flex items-center space-x-2">
+                                <i class="fa-solid fa-gamepad text-sky-600"></i>
+                                <span x-text="lang === 'id' ? 'Kuis Evaluasi' : 'Comprehensive Quiz'"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Visualizer Sandbox -->
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-sky-500"></i>
+                                <span x-text="lang === 'id' ? 'Visualisator Pecahan' : 'Fraction Visualizer'"></span>
+                            </h3>
+                            <span class="text-xs bg-sky-100 text-sky-700 px-2.5 py-1 rounded-full font-medium" x-text="lang === 'id' ? 'Ubah Slider' : 'Slide Controls'"></span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-around gap-6 py-4">
+                            <div class="relative w-40 h-40 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-slate-100" stroke-width="3.8" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="text-sky-500 transition-all duration-300" 
+                                          :stroke-dasharray="`${(heroNum / heroDen) * 100}, 100`" 
+                                          stroke-width="3.8" 
+                                          stroke-linecap="round" 
+                                          stroke="currentColor" 
+                                          fill="none" 
+                                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center font-bold text-slate-800">
+                                    <span class="text-2xl text-sky-600" x-text="heroNum"></span>
+                                    <div class="w-8 h-0.5 bg-slate-800 my-0.5"></div>
+                                    <span class="text-2xl" x-text="heroDen"></span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 w-full sm:w-1/2">
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                        <span x-text="lang === 'id' ? 'Pembilang (Numerator)' : 'Numerator (Top)'"></span>
+                                        <span class="text-sky-600 font-bold" x-text="heroNum"></span>
+                                    </div>
+                                    <input type="range" min="1" :max="heroDen" x-model.number="heroNum" class="w-full accent-sky-600 cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                        <span x-text="lang === 'id' ? 'Penyebut (Denominator)' : 'Denominator (Bottom)'"></span>
+                                        <span class="text-sky-600 font-bold" x-text="heroDen"></span>
+                                    </div>
+                                    <input type="range" min="2" max="12" x-model.number="heroDen" @input="if(heroNum > heroDen) heroNum = heroDen" class="w-full accent-sky-600 cursor-pointer">
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-xl text-xs space-y-1">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500" x-text="lang === 'id' ? 'Desimal:' : 'Decimal:'"></span>
+                                        <span class="font-bold text-slate-800" x-text="(heroNum / heroDen).toFixed(2)"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500" x-text="lang === 'id' ? 'Persen:' : 'Percentage:'"></span>
+                                        <span class="font-bold text-emerald-600" x-text="Math.round((heroNum / heroDen) * 100) + '%'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pengenalan" class="py-16 bg-white border-t border-slate-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="text-sky-600 font-bold uppercase tracking-wider text-xs" x-text="lang === 'id' ? 'Materi 1' : 'Topic 1'"></span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" x-text="lang === 'id' ? 'Apa Itu Pecahan?' : 'What is a Fraction?'"></h2>
+                    <p class="text-slate-600 mt-2" x-text="lang === 'id' ? 'Pecahan adalah bagian dari keseluruhan benda yang utuh atau sekelompok benda.' : 'A fraction represents a numerical part of a whole or a set of objects.'"></p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <!-- Anatomy Card -->
+                    <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-8 rounded-3xl shadow-xl">
+                        <h3 class="text-xl font-bold mb-4 text-sky-300 flex items-center gap-2">
+                            <i class="fa-solid fa-shapes"></i>
+                            <span x-text="lang === 'id' ? 'Struktur Pecahan' : 'Fraction Structure'"></span>
+                        </h3>
+                        <p class="text-slate-300 text-sm mb-6" x-text="lang === 'id' ? 'Pecahan terdiri dari dua angka yang dipisahkan garis horizontal:' : 'A fraction consists of two numbers separated by a horizontal bar:'"></p>
+
+                        <div class="flex items-center justify-center my-6">
+                            <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 flex items-center gap-8">
+                                <div class="text-center">
+                                    <div class="text-4xl font-extrabold text-sky-400">a</div>
+                                    <div class="w-16 h-1 bg-white my-2 rounded-full"></div>
+                                    <div class="text-4xl font-extrabold text-emerald-400">b</div>
+                                </div>
+                                <div class="space-y-4 text-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-sky-400"></div>
+                                        <div>
+                                            <p class="font-bold text-sky-400" x-text="lang === 'id' ? 'a = Pembilang' : 'a = Numerator'"></p>
+                                            <p class="text-xs text-slate-300" x-text="lang === 'id' ? 'Berapa bagian yang diambil.' : 'How many parts are taken.'"></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-emerald-400"></div>
+                                        <div>
+                                            <p class="font-bold text-emerald-400" x-text="lang === 'id' ? 'b = Penyebut' : 'b = Denominator'"></p>
+                                            <p class="text-xs text-slate-300" x-text="lang === 'id' ? 'Total bagian utuh yang sama (b ≠ 0).' : 'Total equal parts of the whole (b ≠ 0).'"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/10 text-xs text-slate-300">
+                            <i class="fa-solid fa-lightbulb text-amber-400 mr-1"></i>
+                            <strong x-text="lang === 'id' ? 'Catatan:' : 'Note:'"></strong> 
+                            <span x-text="lang === 'id' ? 'Penyebut tidak boleh 0 karena pembagian dengan 0 tidak terdefinisi!' : 'Denominator cannot be 0 because division by 0 is undefined!'"></span>
+                        </div>
+                    </div>
+
+                    <!-- Real World Analogy -->
+                    <div class="space-y-6">
+                        <div class="bg-sky-50 border border-sky-100 p-6 rounded-2xl">
+                            <h4 class="font-bold text-slate-800 text-base mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-pizza-slice text-amber-500"></i>
+                                <span x-text="lang === 'id' ? 'Ilustrasi Pizza' : 'Pizza Illustration'"></span>
+                            </h4>
+                            <p class="text-slate-600 text-sm leading-relaxed" x-text="lang === 'id' ? 'Bayangkan 1 pizza utuh dipotong menjadi 8 bagian sama besar.' : 'Imagine 1 whole pizza divided into 8 equal slices.'"></p>
+                            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                                <li class="flex items-center gap-2">
+                                    <i class="fa-solid fa-check text-sky-600 text-xs"></i>
+                                    <span x-html="lang === 'id' ? 'Makan 3 potong = <span class=\'fraction-math\'><span class=\'fraction-num\'>3</span><span class=\'fraction-den\'>8</span></span> bagian pizza.' : 'Eating 3 slices = <span class=\'fraction-math\'><span class=\'fraction-num\'>3</span><span class=\'fraction-den\'>8</span></span> of the pizza.'"></span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fa-solid fa-check text-sky-600 text-xs"></i>
+                                    <span x-html="lang === 'id' ? 'Sisa pizza = <span class=\'fraction-math\'><span class=\'fraction-num\'>5</span><span class=\'fraction-den\'>8</span></span> bagian.' : 'Remaining pizza = <span class=\'fraction-math\'><span class=\'fraction-num\'>5</span><span class=\'fraction-den\'>8</span></span> of the pizza.'"></span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Mini Chocolate Interactive Bar -->
+                        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+                            <h4 class="font-bold text-slate-800 text-sm mb-3" x-text="lang === 'id' ? 'Cobalah Potong Cokelat Ini!' : 'Try Slicing This Chocolate Bar!'"></h4>
+                            <div class="flex items-center gap-2 mb-3">
+                                <template x-for="i in 6" :key="i">
+                                    <button @click="chocolateSlices = i" 
+                                            :class="i <= chocolateSlices ? 'bg-amber-800 text-amber-100 border-amber-900' : 'bg-slate-100 text-slate-400 border-slate-200'"
+                                            class="flex-1 h-12 rounded-lg border-2 font-bold text-xs flex items-center justify-center transition">
+                                        <span x-text="i"></span>
+                                    </button>
+                                </template>
+                            </div>
+                            <p class="text-xs text-slate-500 text-center">
+                                <span x-text="lang === 'id' ? 'Kamu memilih ' : 'You selected '"></span>
+                                <strong class="text-amber-800" x-text="chocolateSlices"></strong>
+                                <span x-text="lang === 'id' ? ' dari 6 potong = ' : ' out of 6 slices = '"></span>
+                                <span class="font-bold text-slate-800" x-text="chocolateSlices + '/6'"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOPIC 1 PRACTICE EXERCISE WIDGET -->
+                <div class="mt-10 bg-sky-50 border-2 border-sky-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 bg-sky-600 text-white font-bold text-xs rounded-full uppercase tracking-wider" x-text="lang === 'id' ? 'Latihan Sub-Materi 1' : 'Sub-Topic 1 Practice'"></span>
+                        <span class="text-xs text-sky-800 font-semibold" x-text="`Score: ${sub1Score}/3`"></span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2" x-text="lang === 'id' ? 'Kuis Cepat: Mengenal Pembilang & Penyebut' : 'Quick Quiz: Numerator & Denominator'"></h3>
+                    
+                    <div class="bg-white p-5 rounded-2xl border border-sky-100 mt-4">
+                        <p class="text-sm font-semibold text-slate-800 mb-4" x-text="sub1Questions[sub1Index][lang].question"></p>
+                        
+                        <div class="grid sm:grid-cols-2 gap-3 mb-4">
+                            <template x-for="(opt, idx) in sub1Questions[sub1Index][lang].options" :key="idx">
+                                <button @click="answerSub1(idx)"
+                                        :disabled="sub1Answered"
+                                        :class="{
+                                            'bg-slate-50 border-slate-200 text-slate-700 hover:bg-sky-100': !sub1Answered,
+                                            'bg-emerald-100 border-emerald-500 text-emerald-800 font-bold': sub1Answered && idx === sub1Questions[sub1Index].answer,
+                                            'bg-rose-100 border-rose-500 text-rose-800': sub1Answered && sub1Selected === idx && idx !== sub1Questions[sub1Index].answer,
+                                            'bg-slate-50 border-slate-200 opacity-50': sub1Answered && idx !== sub1Questions[sub1Index].answer && sub1Selected !== idx
+                                        }"
+                                        class="p-3 rounded-xl border text-left text-xs sm:text-sm transition font-medium">
+                                    <span x-text="opt"></span>
+                                </button>
+                            </template>
+                        </div>
+
+                        <div x-show="sub1Answered" class="p-3 rounded-xl bg-slate-100 text-xs text-slate-700 mb-3" x-text="sub1Questions[sub1Index][lang].explanation"></div>
+
+                        <button x-show="sub1Answered" @click="nextSub1()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg transition">
+                            <span x-text="sub1Index < sub1Questions.length - 1 ? (lang === 'id' ? 'Soal Berikutnya' : 'Next Question') : (lang === 'id' ? 'Ulangi Latihan' : 'Restart Practice')"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="jenis" class="py-16 bg-slate-50 border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="text-sky-600 font-bold uppercase tracking-wider text-xs" x-text="lang === 'id' ? 'Materi 2' : 'Topic 2'"></span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" x-text="lang === 'id' ? 'Jenis-Jenis Pecahan' : 'Types of Fractions'"></h2>
+                    <p class="text-slate-600 mt-2" x-text="lang === 'id' ? 'Pecahan hadir dalam beberapa bentuk sesuai dengan cara penulisan dan nilainya.' : 'Fractions exist in various forms depending on how they are written and valued.'"></p>
+                </div>
+
+                <!-- Grid 4 Types -->
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Type 1: Pecahan Biasa -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-xl mb-4">1</div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2" x-text="lang === 'id' ? 'Pecahan Biasa' : 'Proper / Improper'"></h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4" x-text="lang === 'id' ? 'Terdiri dari pembilang & penyebut. Murni (a < b) atau Tidak Murni (a ≥ b).' : 'Consists of numerator & denominator. Proper (a < b) or Improper (a ≥ b).'"></p>
+                        <div class="p-3 bg-sky-50 rounded-xl text-xs space-y-2">
+                            <div>
+                                <strong class="text-sky-800" x-text="lang === 'id' ? 'Murni:' : 'Proper:'"></strong> 
+                                <span class="fraction-math text-sky-700"><span class="fraction-num">1</span><span class="fraction-den">2</span></span>, 
+                                <span class="fraction-math text-sky-700"><span class="fraction-num">3</span><span class="fraction-den">4</span></span>
+                            </div>
+                            <div>
+                                <strong class="text-sky-800" x-text="lang === 'id' ? 'Tidak Murni:' : 'Improper:'"></strong> 
+                                <span class="fraction-math text-sky-700"><span class="fraction-num">5</span><span class="fraction-den">3</span></span>, 
+                                <span class="fraction-math text-sky-700"><span class="fraction-num">7</span><span class="fraction-den">4</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Type 2: Pecahan Campuran -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl mb-4">2</div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2" x-text="lang === 'id' ? 'Pecahan Campuran' : 'Mixed Fractions'"></h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4" x-text="lang === 'id' ? 'Kombinasi bilangan bulat dan pecahan biasa.' : 'A combination of a whole number and a proper fraction.'"></p>
+                        <div class="p-3 bg-indigo-50 rounded-xl text-xs text-indigo-900 space-y-1">
+                            <p><strong x-text="lang === 'id' ? 'Contoh:' : 'Example:'"></strong> <span class="font-bold text-base">1</span> <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">2</span></span></p>
+                            <p class="text-slate-500 text-[11px]" x-html="lang === 'id' ? 'Sama dengan 1 + <span class=\'fraction-math\'><span class=\'fraction-num\'>1</span><span class=\'fraction-den\'>2</span></span> = <span class=\'fraction-math\'><span class=\'fraction-num\'>3</span><span class=\'fraction-den\'>2</span></span>' : 'Equal to 1 + <span class=\'fraction-math\'><span class=\'fraction-num\'>1</span><span class=\'fraction-den\'>2</span></span> = <span class=\'fraction-math\'><span class=\'fraction-num\'>3</span><span class=\'fraction-den\'>2</span></span>'"></p>
+                        </div>
+                    </div>
+
+                    <!-- Type 3: Pecahan Desimal -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl mb-4">3</div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2" x-text="lang === 'id' ? 'Pecahan Desimal' : 'Decimals'"></h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4" x-text="lang === 'id' ? 'Pecahan berbasis persepuluhan, perseratusan dengan tanda koma / titik.' : 'Fractions based on tenths, hundredths using decimal points.'"></p>
+                        <div class="p-3 bg-emerald-50 rounded-xl text-xs text-emerald-900 space-y-1">
+                            <p><strong>0,5</strong> = <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">2</span></span></p>
+                            <p><strong>0,75</strong> = <span class="fraction-math"><span class="fraction-num">3</span><span class="fraction-den">4</span></span></p>
+                        </div>
+                    </div>
+
+                    <!-- Type 4: Persen -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xl mb-4">4</div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2" x-text="lang === 'id' ? 'Persen (%)' : 'Percentage (%)'"></h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4" x-text="lang === 'id' ? 'Pecahan khusus dengan penyebut 100.' : 'Special fractions with a denominator of 100.'"></p>
+                        <div class="p-3 bg-amber-50 rounded-xl text-xs text-amber-900 space-y-1">
+                            <p><strong>25%</strong> = <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">4</span></span></p>
+                            <p><strong>50%</strong> = <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">2</span></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Converter Tool -->
+                <div class="mt-12 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-lg">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate text-sky-600"></i>
+                        <span x-text="lang === 'id' ? 'Alat Konversi Pecahan Otomatis' : 'Automatic Fraction Converter'"></span>
+                    </h3>
+                    <p class="text-slate-600 text-xs sm:text-sm mb-6" x-text="lang === 'id' ? 'Masukkan pembilang & penyebut untuk melihat konversi langsung!' : 'Enter numerator & denominator to see real-time conversion!'"></p>
+
+                    <div class="grid sm:grid-cols-3 gap-6 items-center">
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex items-center justify-center space-x-3">
+                            <span class="text-sm font-semibold text-slate-600" x-text="lang === 'id' ? 'Input:' : 'Input:'"></span>
+                            <div class="flex flex-col items-center">
+                                <input type="number" min="1" max="99" x-model.number="convNum" class="w-16 text-center font-bold text-lg border border-slate-300 rounded-lg p-1 text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <div class="w-16 h-0.5 bg-slate-800 my-1"></div>
+                                <input type="number" min="1" max="99" x-model.number="convDen" class="w-16 text-center font-bold text-lg border border-slate-300 rounded-lg p-1 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                        </div>
+
+                        <div class="hidden sm:flex justify-center text-slate-400 text-2xl">
+                            <i class="fa-solid fa-right-long"></i>
+                        </div>
+
+                        <div class="bg-sky-50 p-5 rounded-2xl border border-sky-100 space-y-3">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-600 font-medium" x-text="lang === 'id' ? 'Campuran:' : 'Mixed:'"></span>
+                                <span class="font-bold text-slate-800 text-sm" x-text="getMixedFraction(convNum, convDen)"></span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-600 font-medium" x-text="lang === 'id' ? 'Desimal:' : 'Decimal:'"></span>
+                                <span class="font-bold text-sky-700 text-sm" x-text="(convNum / convDen).toFixed(3)"></span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-600 font-medium" x-text="lang === 'id' ? 'Persen:' : 'Percentage:'"></span>
+                                <span class="font-bold text-emerald-600 text-sm" x-text="((convNum / convDen) * 100).toFixed(1) + '%'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOPIC 2 PRACTICE EXERCISE WIDGET -->
+                <div class="mt-10 bg-indigo-50 border-2 border-indigo-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 bg-indigo-600 text-white font-bold text-xs rounded-full uppercase tracking-wider" x-text="lang === 'id' ? 'Latihan Sub-Materi 2' : 'Sub-Topic 2 Practice'"></span>
+                        <span class="text-xs text-indigo-800 font-semibold" x-text="`Score: ${sub2Score}/3`"></span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2" x-text="lang === 'id' ? 'Kuis Cepat: Identifikasi & Konversi Jenis Pecahan' : 'Quick Quiz: Identifying & Converting Types'"></h3>
+                    
+                    <div class="bg-white p-5 rounded-2xl border border-indigo-100 mt-4">
+                        <p class="text-sm font-semibold text-slate-800 mb-4" x-text="sub2Questions[sub2Index][lang].question"></p>
+                        
+                        <div class="grid sm:grid-cols-2 gap-3 mb-4">
+                            <template x-for="(opt, idx) in sub2Questions[sub2Index][lang].options" :key="idx">
+                                <button @click="answerSub2(idx)"
+                                        :disabled="sub2Answered"
+                                        :class="{
+                                            'bg-slate-50 border-slate-200 text-slate-700 hover:bg-indigo-100': !sub2Answered,
+                                            'bg-emerald-100 border-emerald-500 text-emerald-800 font-bold': sub2Answered && idx === sub2Questions[sub2Index].answer,
+                                            'bg-rose-100 border-rose-500 text-rose-800': sub2Answered && sub2Selected === idx && idx !== sub2Questions[sub2Index].answer,
+                                            'bg-slate-50 border-slate-200 opacity-50': sub2Answered && idx !== sub2Questions[sub2Index].answer && sub2Selected !== idx
+                                        }"
+                                        class="p-3 rounded-xl border text-left text-xs sm:text-sm transition font-medium">
+                                    <span x-text="opt"></span>
+                                </button>
+                            </template>
+                        </div>
+
+                        <div x-show="sub2Answered" class="p-3 rounded-xl bg-slate-100 text-xs text-slate-700 mb-3" x-text="sub2Questions[sub2Index][lang].explanation"></div>
+
+                        <button x-show="sub2Answered" @click="nextSub2()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition">
+                            <span x-text="sub2Index < sub2Questions.length - 1 ? (lang === 'id' ? 'Soal Berikutnya' : 'Next Question') : (lang === 'id' ? 'Ulangi Latihan' : 'Restart Practice')"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="perbandingan" class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="text-sky-600 font-bold uppercase tracking-wider text-xs" x-text="lang === 'id' ? 'Materi 3' : 'Topic 3'"></span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" x-text="lang === 'id' ? 'Membandingkan Pecahan' : 'Comparing Fractions'"></h2>
+                    <p class="text-slate-600 mt-2" x-text="lang === 'id' ? 'Menentukan pecahan mana yang lebih besar (>), lebih kecil (<), atau sama (=).' : 'Determine which fraction is larger (>), smaller (<), or equal (=).'"></p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Rule 1 -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-10 h-10 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-equals"></i></div>
+                        <h3 class="font-bold text-slate-800 text-base mb-2" x-text="lang === 'id' ? '1. Penyebut Sama' : '1. Same Denominator'"></h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4" x-text="lang === 'id' ? 'Cukup bandingkan pembilang. Pembilang lebih besar = Nilai lebih besar.' : 'Simply compare numerators. Larger numerator = Larger value.'"></p>
+                        <div class="p-3 bg-white rounded-xl border border-slate-200 text-center text-sm font-bold text-slate-800">
+                            <span class="fraction-math"><span class="fraction-num">3</span><span class="fraction-den">5</span></span>
+                            <span class="text-sky-600 text-lg mx-2">&gt;</span>
+                            <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">5</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Rule 2 -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-[#]"></i></div>
+                        <h3 class="font-bold text-slate-800 text-base mb-2" x-text="lang === 'id' ? '2. Pembilang Sama' : '2. Same Numerator'"></h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4" x-text="lang === 'id' ? 'Semakin kecil angka penyebut, semakin besar ukuran tiap potongannya!' : 'Smaller denominator means larger individual slice size!'"></p>
+                        <div class="p-3 bg-white rounded-xl border border-slate-200 text-center text-sm font-bold text-slate-800">
+                            <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">2</span></span>
+                            <span class="text-sky-600 text-lg mx-2">&gt;</span>
+                            <span class="fraction-math"><span class="fraction-num">1</span><span class="fraction-den">4</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Rule 3 -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-xmark"></i></div>
+                        <h3 class="font-bold text-slate-800 text-base mb-2" x-text="lang === 'id' ? '3. Perkalian Silang' : '3. Cross Multiplication'"></h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4" x-text="lang === 'id' ? 'Kalikan pembilang A × penyebut B dan pembilang B × penyebut A.' : 'Multiply numerator A × denominator B and numerator B × denominator A.'"></p>
+                        <div class="p-3 bg-white rounded-xl border border-slate-200 text-center text-xs text-slate-800">
+                            <p class="font-bold mb-1">2/3 vs 3/4</p>
+                            <p class="text-slate-600">2 × 4 = 8 | 3 × 3 = 9</p>
+                            <p class="text-sky-600 font-bold mt-1">8 &lt; 9 ➔ 2/3 &lt; 3/4</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOPIC 3 PRACTICE EXERCISE WIDGET -->
+                <div class="mt-10 bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 bg-emerald-600 text-white font-bold text-xs rounded-full uppercase tracking-wider" x-text="lang === 'id' ? 'Latihan Sub-Materi 3' : 'Sub-Topic 3 Practice'"></span>
+                        <span class="text-xs text-emerald-800 font-semibold" x-text="`Score: ${sub3Score}/3`"></span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2" x-text="lang === 'id' ? 'Kuis Cepat: Membandingkan Nilai Pecahan' : 'Quick Quiz: Comparing Fraction Values'"></h3>
+                    
+                    <div class="bg-white p-5 rounded-2xl border border-emerald-100 mt-4">
+                        <p class="text-sm font-semibold text-slate-800 mb-4" x-text="sub3Questions[sub3Index][lang].question"></p>
+                        
+                        <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                            <template x-for="(opt, idx) in sub3Questions[sub3Index][lang].options" :key="idx">
+                                <button @click="answerSub3(idx)"
+                                        :disabled="sub3Answered"
+                                        :class="{
+                                            'bg-slate-50 border-slate-200 text-slate-700 hover:bg-emerald-100': !sub3Answered,
+                                            'bg-emerald-100 border-emerald-500 text-emerald-800 font-bold': sub3Answered && idx === sub3Questions[sub3Index].answer,
+                                            'bg-rose-100 border-rose-500 text-rose-800': sub3Answered && sub3Selected === idx && idx !== sub3Questions[sub3Index].answer,
+                                            'bg-slate-50 border-slate-200 opacity-50': sub3Answered && idx !== sub3Questions[sub3Index].answer && sub3Selected !== idx
+                                        }"
+                                        class="p-3 rounded-xl border text-center text-sm transition font-bold">
+                                    <span x-text="opt"></span>
+                                </button>
+                            </template>
+                        </div>
+
+                        <div x-show="sub3Answered" class="p-3 rounded-xl bg-slate-100 text-xs text-slate-700 mb-3" x-text="sub3Questions[sub3Index][lang].explanation"></div>
+
+                        <button x-show="sub3Answered" @click="nextSub3()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition">
+                            <span x-text="sub3Index < sub3Questions.length - 1 ? (lang === 'id' ? 'Soal Berikutnya' : 'Next Question') : (lang === 'id' ? 'Ulangi Latihan' : 'Restart Practice')"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="operasi" class="py-16 bg-slate-50 border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="text-sky-600 font-bold uppercase tracking-wider text-xs" x-text="lang === 'id' ? 'Materi 4' : 'Topic 4'"></span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" x-text="lang === 'id' ? 'Operasi Hitung Pecahan' : 'Fraction Operations'"></h2>
+                    <p class="text-slate-600 mt-2" x-text="lang === 'id' ? 'Langkah mudah penjumlahan, pengurangan, perkalian, dan pembagian pecahan.' : 'Simple steps for addition, subtraction, multiplication, and division of fractions.'"></p>
+                </div>
+
+                <!-- Operations Card & Interactive Solver -->
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="flex border-b border-slate-200 overflow-x-auto bg-slate-100">
+                        <button @click="opTab = 'add'" :class="opTab === 'add' ? 'bg-white text-sky-600 border-b-2 border-sky-600 font-bold' : 'text-slate-600 font-medium'" class="flex-1 py-4 px-6 text-sm text-center min-w-[120px]">
+                            <i class="fa-solid fa-plus mr-1"></i> <span x-text="lang === 'id' ? 'Penjumlahan' : 'Addition'"></span>
+                        </button>
+                        <button @click="opTab = 'sub'" :class="opTab === 'sub' ? 'bg-white text-sky-600 border-b-2 border-sky-600 font-bold' : 'text-slate-600 font-medium'" class="flex-1 py-4 px-6 text-sm text-center min-w-[120px]">
+                            <i class="fa-solid fa-minus mr-1"></i> <span x-text="lang === 'id' ? 'Pengurangan' : 'Subtraction'"></span>
+                        </button>
+                        <button @click="opTab = 'mul'" :class="opTab === 'mul' ? 'bg-white text-sky-600 border-b-2 border-sky-600 font-bold' : 'text-slate-600 font-medium'" class="flex-1 py-4 px-6 text-sm text-center min-w-[120px]">
+                            <i class="fa-solid fa-xmark mr-1"></i> <span x-text="lang === 'id' ? 'Perkalian' : 'Multiplication'"></span>
+                        </button>
+                        <button @click="opTab = 'div'" :class="opTab === 'div' ? 'bg-white text-sky-600 border-b-2 border-sky-600 font-bold' : 'text-slate-600 font-medium'" class="flex-1 py-4 px-6 text-sm text-center min-w-[120px]">
+                            <i class="fa-solid fa-divide mr-1"></i> <span x-text="lang === 'id' ? 'Pembagian' : 'Division'"></span>
+                        </button>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <!-- ADDITION TAB -->
+                        <div x-show="opTab === 'add'" class="space-y-4">
+                            <h4 class="font-bold text-slate-800 text-lg" x-text="lang === 'id' ? 'Penjumlahan Pecahan (+)' : 'Fraction Addition (+)'"></h4>
+                            <p class="text-xs sm:text-sm text-slate-600" x-text="lang === 'id' ? 'Samakan penyebut terlebih dahulu menggunakan KPK, lalu jumlahkan pembilangnya.' : 'Find the common denominator first using LCM, then add the numerators.'"></p>
+
+                            <!-- Examples Grid -->
+                            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                                <!-- Example 1: Pecahan Biasa -->
+                                <div class="bg-sky-50/80 border border-sky-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-sky-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 1: Pecahan Biasa' : 'Example 1: Proper/Improper'"></span>
+                                        <span class="font-bold text-sky-800 text-base">2/5 + 1/3 = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-sky-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-sky-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Cari KPK dari penyebut (5 dan 3) ➔ KPK = 15' : 'Find LCM of denominators (5 and 3) ➔ LCM = 15'"></li>
+                                            <li x-text="lang === 'id' ? 'Ubah pecahan: 2/5 = 6/15 dan 1/3 = 5/15' : 'Convert fractions: 2/5 = 6/15 and 1/3 = 5/15'"></li>
+                                            <li x-text="lang === 'id' ? 'Jumlahkan pembilangnya: 6/15 + 5/15 = 11/15' : 'Add the numerators: 6/15 + 5/15 = 11/15'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-sky-200 font-bold text-sky-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 11/15' : 'Final Result = 11/15'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Example 2: Pecahan Campuran -->
+                                <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-indigo-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 2: Pecahan Campuran' : 'Example 2: Mixed Fraction'"></span>
+                                        <span class="font-bold text-indigo-900 text-base">1 ½ + 2 ¼ = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-indigo-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-indigo-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Ubah ke pecahan biasa: 1 ½ = 3/2 dan 2 ¼ = 9/4' : 'Convert to improper: 1 ½ = 3/2 and 2 ¼ = 9/4'"></li>
+                                            <li x-text="lang === 'id' ? 'Samakan penyebut (KPK 2 & 4 = 4): 3/2 = 6/4' : 'Equalize denominators (LCM 2 & 4 = 4): 3/2 = 6/4'"></li>
+                                            <li x-text="lang === 'id' ? 'Jumlahkan: 6/4 + 9/4 = 15/4 ➔ Ubah ke campuran = 3 ¾' : 'Add: 6/4 + 9/4 = 15/4 ➔ Convert to mixed = 3 ¾'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-indigo-200 font-bold text-indigo-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 3 ¾ (atau 15/4)' : 'Final Result = 3 ¾ (or 15/4)'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SUBTRACTION TAB -->
+                        <div x-show="opTab === 'sub'" class="space-y-4">
+                            <h4 class="font-bold text-slate-800 text-lg" x-text="lang === 'id' ? 'Pengurangan Pecahan (-)' : 'Fraction Subtraction (-)'"></h4>
+                            <p class="text-xs sm:text-sm text-slate-600" x-text="lang === 'id' ? 'Samakan penyebut terlebih dahulu, lalu kurangi pembilangnya.' : 'Find the common denominator first, then subtract the numerators.'"></p>
+
+                            <!-- Examples Grid -->
+                            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                                <!-- Example 1: Pecahan Biasa -->
+                                <div class="bg-sky-50/80 border border-sky-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-sky-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 1: Pecahan Biasa' : 'Example 1: Proper/Improper'"></span>
+                                        <span class="font-bold text-sky-800 text-base">3/4 - 1/6 = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-sky-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-sky-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Cari KPK dari penyebut (4 dan 6) ➔ KPK = 12' : 'Find LCM of denominators (4 and 6) ➔ LCM = 12'"></li>
+                                            <li x-text="lang === 'id' ? 'Ubah pecahan: 3/4 = 9/12 dan 1/6 = 2/12' : 'Convert fractions: 3/4 = 9/12 and 1/6 = 2/12'"></li>
+                                            <li x-text="lang === 'id' ? 'Kurangi pembilangnya: 9/12 - 2/12 = 7/12' : 'Subtract numerators: 9/12 - 2/12 = 7/12'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-sky-200 font-bold text-sky-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 7/12' : 'Final Result = 7/12'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Example 2: Pecahan Campuran -->
+                                <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-indigo-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 2: Pecahan Campuran' : 'Example 2: Mixed Fraction'"></span>
+                                        <span class="font-bold text-indigo-900 text-base">3 ½ - 1 ¾ = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-indigo-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-indigo-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Ubah ke pecahan biasa: 3 ½ = 7/2 dan 1 ¾ = 7/4' : 'Convert to improper: 3 ½ = 7/2 and 1 ¾ = 7/4'"></li>
+                                            <li x-text="lang === 'id' ? 'Samakan penyebut (KPK 2 & 4 = 4): 7/2 = 14/4' : 'Equalize denominators (LCM 2 & 4 = 4): 7/2 = 14/4'"></li>
+                                            <li x-text="lang === 'id' ? 'Kurangi: 14/4 - 7/4 = 7/4 ➔ Ubah ke campuran = 1 ¾' : 'Subtract: 14/4 - 7/4 = 7/4 ➔ Convert to mixed = 1 ¾'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-indigo-200 font-bold text-indigo-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 1 ¾ (atau 7/4)' : 'Final Result = 1 ¾ (or 7/4)'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MULTIPLICATION TAB -->
+                        <div x-show="opTab === 'mul'" class="space-y-4">
+                            <h4 class="font-bold text-slate-800 text-lg" x-text="lang === 'id' ? 'Perkalian Pecahan (×)' : 'Fraction Multiplication (×)'"></h4>
+                            <p class="text-xs sm:text-sm text-slate-600" x-text="lang === 'id' ? 'Langsung kalikan pembilang × pembilang dan penyebut × penyebut!' : 'Directly multiply numerator × numerator and denominator × denominator!'"></p>
+
+                            <!-- Examples Grid -->
+                            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                                <!-- Example 1: Pecahan Biasa -->
+                                <div class="bg-sky-50/80 border border-sky-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-sky-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 1: Pecahan Biasa' : 'Example 1: Proper/Improper'"></span>
+                                        <span class="font-bold text-sky-800 text-base">2/3 × 5/7 = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-sky-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-sky-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Kalikan pembilang dengan pembilang: 2 × 5 = 10' : 'Multiply numerators: 2 × 5 = 10'"></li>
+                                            <li x-text="lang === 'id' ? 'Kalikan penyebut dengan penyebut: 3 × 7 = 21' : 'Multiply denominators: 3 × 7 = 21'"></li>
+                                            <li x-text="lang === 'id' ? 'Gabungkan hasilnya: 10/21 (sudah paling sederhana)' : 'Combine results: 10/21 (already in simplest form)'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-sky-200 font-bold text-sky-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 10/21' : 'Final Result = 10/21'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Example 2: Pecahan Campuran -->
+                                <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-indigo-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 2: Pecahan Campuran' : 'Example 2: Mixed Fraction'"></span>
+                                        <span class="font-bold text-indigo-900 text-base">1 ⅓ × 2 ½ = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-indigo-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-indigo-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Ubah ke pecahan biasa: 1 ⅓ = 4/3 dan 2 ½ = 5/2' : 'Convert to improper: 1 ⅓ = 4/3 and 2 ½ = 5/2'"></li>
+                                            <li x-text="lang === 'id' ? 'Kalikan: (4 × 5) / (3 × 2) = 20/6' : 'Multiply: (4 × 5) / (3 × 2) = 20/6'"></li>
+                                            <li x-text="lang === 'id' ? 'Sederhanakan (bagi 2): 10/3 ➔ Campuran = 3 ⅓' : 'Simplify (divide by 2): 10/3 ➔ Mixed = 3 ⅓'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-indigo-200 font-bold text-indigo-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 3 ⅓ (atau 10/3)' : 'Final Result = 3 ⅓ (or 10/3)'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DIVISION TAB -->
+                        <div x-show="opTab === 'div'" class="space-y-4">
+                            <h4 class="font-bold text-slate-800 text-lg" x-text="lang === 'id' ? 'Pembagian Pecahan (÷)' : 'Fraction Division (÷)'"></h4>
+                            <p class="text-xs sm:text-sm text-slate-600" x-text="lang === 'id' ? 'Ubah (÷) menjadi (×) dan balik pembilang & penyebut pada pecahan kedua.' : 'Change (÷) to (×) and flip the second fraction (reciprocal). '"></p>
+
+                            <!-- Examples Grid -->
+                            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                                <!-- Example 1: Pecahan Biasa -->
+                                <div class="bg-sky-50/80 border border-sky-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-sky-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 1: Pecahan Biasa' : 'Example 1: Proper/Improper'"></span>
+                                        <span class="font-bold text-sky-800 text-base">3/5 ÷ 2/3 = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-sky-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-sky-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Ubah tanda ÷ menjadi × dan balik 2/3 menjadi 3/2' : 'Change ÷ to × and invert 2/3 to 3/2'"></li>
+                                            <li x-text="lang === 'id' ? 'Kerjakan perkalian: (3/5) × (3/2)' : 'Multiply: (3/5) × (3/2)'"></li>
+                                            <li x-text="lang === 'id' ? 'Kalikan: (3 × 3) / (5 × 2) = 9/10' : 'Multiply: (3 × 3) / (5 × 2) = 9/10'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-sky-200 font-bold text-sky-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 9/10' : 'Final Result = 9/10'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Example 2: Pecahan Campuran -->
+                                <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 text-xs sm:text-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="px-2.5 py-1 bg-indigo-600 text-white font-bold rounded-lg text-xs" x-text="lang === 'id' ? 'Contoh 2: Pecahan Campuran' : 'Example 2: Mixed Fraction'"></span>
+                                        <span class="font-bold text-indigo-900 text-base">2 ¼ ÷ 1 ½ = ?</span>
+                                    </div>
+                                    <div class="pt-2 border-t border-indigo-200 text-slate-700 space-y-1">
+                                        <p class="font-semibold text-indigo-900" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Step-by-step Solution:'"></p>
+                                        <ol class="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                                            <li x-text="lang === 'id' ? 'Ubah ke pecahan biasa: 2 ¼ = 9/4 dan 1 ½ = 3/2' : 'Convert to improper: 2 ¼ = 9/4 and 1 ½ = 3/2'"></li>
+                                            <li x-text="lang === 'id' ? 'Balik pecahan kedua dan kalikan: (9/4) × (2/3)' : 'Invert second fraction and multiply: (9/4) × (2/3)'"></li>
+                                            <li x-text="lang === 'id' ? 'Kalikan: 18/12 ➔ Sederhanakan (bagi 6) = 3/2 = 1 ½' : 'Multiply: 18/12 ➔ Simplify (divide by 6) = 3/2 = 1 ½'"></li>
+                                        </ol>
+                                        <div class="mt-2 p-2 bg-white rounded-lg border border-indigo-200 font-bold text-indigo-700 text-center">
+                                            <span x-text="lang === 'id' ? 'Hasil Akhir = 1 ½ (atau 3/2)' : 'Final Result = 1 ½ (or 3/2)'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculator & Solver -->
+                    <div class="bg-slate-900 p-6 sm:p-8 text-white border-t border-slate-800">
+                        <h4 class="font-bold text-lg mb-4 text-sky-400 flex items-center gap-2">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span x-text="lang === 'id' ? 'Kalkulator Solver Langkah-demi-Langkah' : 'Step-by-Step Calculator Solver'"></span>
+                        </h4>
+
+                        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 my-6">
+                            <div class="flex flex-col items-center">
+                                <input type="number" min="1" max="50" x-model.number="calcNum1" class="w-16 text-center font-bold text-lg bg-slate-800 border border-slate-700 rounded p-1 text-sky-400">
+                                <div class="w-16 h-0.5 bg-white my-1"></div>
+                                <input type="number" min="1" max="50" x-model.number="calcDen1" class="w-16 text-center font-bold text-lg bg-slate-800 border border-slate-700 rounded p-1 text-white">
+                            </div>
+
+                            <select x-model="calcOp" class="bg-slate-800 border border-slate-700 text-sky-400 font-bold text-xl rounded-xl p-3 focus:outline-none">
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="*">×</option>
+                                <option value="/">÷</option>
+                            </select>
+
+                            <div class="flex flex-col items-center">
+                                <input type="number" min="1" max="50" x-model.number="calcNum2" class="w-16 text-center font-bold text-lg bg-slate-800 border border-slate-700 rounded p-1 text-sky-400">
+                                <div class="w-16 h-0.5 bg-white my-1"></div>
+                                <input type="number" min="1" max="50" x-model.number="calcDen2" class="w-16 text-center font-bold text-lg bg-slate-800 border border-slate-700 rounded p-1 text-white">
+                            </div>
+
+                            <span class="text-2xl font-bold text-slate-400">=</span>
+
+                            <div class="bg-sky-600/20 border border-sky-500/30 p-3 rounded-2xl flex items-center px-6">
+                                <div class="text-center">
+                                    <span class="text-2xl font-extrabold text-sky-300" x-text="calculateFractionResult().num"></span>
+                                    <div class="w-12 h-0.5 bg-sky-300 my-1"></div>
+                                    <span class="text-2xl font-extrabold text-white" x-text="calculateFractionResult().den"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10 text-xs sm:text-sm text-slate-300 space-y-1">
+                            <p class="font-bold text-sky-300 mb-1" x-text="lang === 'id' ? 'Langkah Penyelesaian:' : 'Solution Steps:'"></p>
+                            <p x-html="calculateFractionResult().steps"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOPIC 4 PRACTICE EXERCISE WIDGET -->
+                <div class="mt-10 bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 bg-amber-600 text-white font-bold text-xs rounded-full uppercase tracking-wider" x-text="lang === 'id' ? 'Latihan Sub-Materi 4' : 'Sub-Topic 4 Practice'"></span>
+                        <span class="text-xs text-amber-800 font-semibold" x-text="`Score: ${sub4Score}/3`"></span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2" x-text="lang === 'id' ? 'Kuis Cepat: Latihan Operasi Hitung' : 'Quick Quiz: Fraction Operations Practice'"></h3>
+                    
+                    <div class="bg-white p-5 rounded-2xl border border-amber-100 mt-4">
+                        <p class="text-sm font-semibold text-slate-800 mb-4" x-text="sub4Questions[sub4Index][lang].question"></p>
+                        
+                        <div class="grid sm:grid-cols-2 gap-3 mb-4">
+                            <template x-for="(opt, idx) in sub4Questions[sub4Index][lang].options" :key="idx">
+                                <button @click="answerSub4(idx)"
+                                        :disabled="sub4Answered"
+                                        :class="{
+                                            'bg-slate-50 border-slate-200 text-slate-700 hover:bg-amber-100': !sub4Answered,
+                                            'bg-emerald-100 border-emerald-500 text-emerald-800 font-bold': sub4Answered && idx === sub4Questions[sub4Index].answer,
+                                            'bg-rose-100 border-rose-500 text-rose-800': sub4Answered && sub4Selected === idx && idx !== sub4Questions[sub4Index].answer,
+                                            'bg-slate-50 border-slate-200 opacity-50': sub4Answered && idx !== sub4Questions[sub4Index].answer && sub4Selected !== idx
+                                        }"
+                                        class="p-3 rounded-xl border text-left text-xs sm:text-sm transition font-medium">
+                                    <span x-text="opt"></span>
+                                </button>
+                            </template>
+                        </div>
+
+                        <div x-show="sub4Answered" class="p-3 rounded-xl bg-slate-100 text-xs text-slate-700 mb-3" x-text="sub4Questions[sub4Index][lang].explanation"></div>
+
+                        <button x-show="sub4Answered" @click="nextSub4()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg transition">
+                            <span x-text="sub4Index < sub4Questions.length - 1 ? (lang === 'id' ? 'Soal Berikutnya' : 'Next Question') : (lang === 'id' ? 'Ulangi Latihan' : 'Restart Practice')"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kuis" class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <span class="text-sky-600 font-bold uppercase tracking-wider text-xs" x-text="lang === 'id' ? 'Evaluasi Akhir' : 'Final Evaluation'"></span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" x-text="lang === 'id' ? 'Kuis Evaluasi Pecahan Comprehensive' : 'Comprehensive Fraction Quiz'"></h2>
+                    <p class="text-slate-600 mt-2" x-text="lang === 'id' ? 'Uji seluruh pemahamanmu dari semua sub-materi!' : 'Test your complete understanding across all topics!'"></p>
+                </div>
+
+                <!-- Quiz Card -->
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-lg">
+                    <template x-if="!quizFinished">
+                        <div>
+                            <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-2">
+                                <span x-text="`${lang === 'id' ? 'Soal' : 'Question'} ${currentQuestion + 1} / ${questions.length}`"></span>
+                                <span x-text="`Score: ${score * 20}`"></span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-200 rounded-full mb-6 overflow-hidden">
+                                <div class="h-full bg-sky-600 transition-all duration-300" :style="`width: ${((currentQuestion + 1) / questions.length) * 100}%`"></div>
+                            </div>
+
+                            <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-6" x-text="questions[currentQuestion][lang].question"></h3>
+
+                            <div class="space-y-3 mb-6">
+                                <template x-for="(option, idx) in questions[currentQuestion][lang].options" :key="idx">
+                                    <button @click="selectAnswer(idx)" 
+                                            :disabled="selectedOption !== null"
+                                            :class="{
+                                                'bg-white border-slate-200 text-slate-700 hover:bg-sky-50 hover:border-sky-300': selectedOption === null,
+                                                'bg-emerald-100 border-emerald-500 text-emerald-800 font-bold': selectedOption !== null && idx === questions[currentQuestion].answer,
+                                                'bg-rose-100 border-rose-500 text-rose-800': selectedOption === idx && idx !== questions[currentQuestion].answer,
+                                                'bg-white border-slate-200 text-slate-400 opacity-50': selectedOption !== null && idx !== questions[currentQuestion].answer && idx !== selectedOption
+                                            }"
+                                            class="w-full text-left p-4 rounded-xl border-2 transition flex items-center justify-between text-sm sm:text-base">
+                                        <span x-text="option"></span>
+                                        <span x-show="selectedOption !== null && idx === questions[currentQuestion].answer" class="text-emerald-600"><i class="fa-solid fa-circle-check"></i></span>
+                                        <span x-show="selectedOption === idx && idx !== questions[currentQuestion].answer" class="text-rose-600"><i class="fa-solid fa-circle-xmark"></i></span>
+                                    </button>
+                                </template>
+                            </div>
+
+                            <div x-show="selectedOption !== null" class="p-4 rounded-xl bg-sky-50 border border-sky-200 text-xs sm:text-sm text-sky-900 mb-6">
+                                <strong class="block mb-1" x-text="lang === 'id' ? 'Penjelasan:' : 'Explanation:'"></strong>
+                                <span x-text="questions[currentQuestion][lang].explanation"></span>
+                            </div>
+
+                            <button x-show="selectedOption !== null" 
+                                    @click="nextQuestion()" 
+                                    class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition shadow-md">
+                                <span x-text="currentQuestion < questions.length - 1 ? (lang === 'id' ? 'Soal Berikutnya' : 'Next Question') : (lang === 'id' ? 'Lihat Hasil' : 'View Results')"></span>
+                            </button>
+                        </div>
+                    </template>
+
+                    <template x-if="quizFinished">
+                        <div class="text-center py-8">
+                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <h3 class="text-2xl font-extrabold text-slate-900" x-text="lang === 'id' ? 'Kuis Selesai!' : 'Quiz Finished!'"></h3>
+                            <p class="text-slate-600 text-sm mt-1" x-text="lang === 'id' ? 'Kamu mendapatkan skor:' : 'Your total score:'"></p>
+                            <div class="text-5xl font-black text-sky-600 my-4" x-text="score * 20"></div>
+                            <p class="text-xs text-slate-500 mb-6" x-text="`${lang === 'id' ? 'Kamu menjawab benar' : 'You answered'} ${score} ${lang === 'id' ? 'dari' : 'out of'} ${questions.length} ${lang === 'id' ? 'soal.' : 'questions.'}`"></p>
+
+                            <button @click="resetQuiz()" class="px-6 py-3 bg-sky-600 text-white font-bold rounded-xl hover:bg-sky-700 transition">
+                                <i class="fa-solid fa-rotate-right mr-2"></i>
+                                <span x-text="lang === 'id' ? 'Ulangi Kuis' : 'Retry Quiz'"></span>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 text-xs text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-medium text-slate-300" x-text="lang === 'id' ? 'Modul Pembelajaran Interaktif Matematika: Pecahan' : 'Interactive Math Learning Module: Fractions'"></p>
+            <p class="mt-1 text-slate-500" x-text="lang === 'id' ? 'Mendukung pembelajaran bilingual Indonesia & Inggris dengan latihan interaktif.' : 'Supports bilingual learning (Indonesian & English) with interactive practice exercises.'"></p>
+        </div>
+    </footer>
+
+    <script>
+        function fractionApp() {
+            return {
+                lang: 'id', // 'id' or 'en'
+                mobileMenu: false,
+
+                toggleLang() {
+                    this.lang = this.lang === 'id' ? 'en' : 'id';
+                },
+
+                // Hero state
+                heroNum: 3,
+                heroDen: 4,
+                chocolateSlices: 3,
+
+                // Converter
+                convNum: 7,
+                convDen: 4,
+
+                // Operations Calculator
+                opTab: 'add',
+                calcNum1: 1,
+                calcDen1: 3,
+                calcOp: '+',
+                calcNum2: 1,
+                calcDen2: 2,
+
+                // SUB-TOPIC 1 PRACTICE STATE
+                sub1Index: 0,
+                sub1Selected: null,
+                sub1Answered: false,
+                sub1Score: 0,
+                sub1Questions: [
+                    {
+                        answer: 0,
+                        id: {
+                            question: "Pada pecahan 3/8, manakah yang merupakan pembilang?",
+                            options: ["3", "8", "11", "24"],
+                            explanation: "Pembilang adalah angka di bagian atas, yaitu 3."
+                        },
+                        en: {
+                            question: "In the fraction 3/8, which number is the numerator?",
+                            options: ["3", "8", "11", "24"],
+                            explanation: "The numerator is the number on top, which is 3."
+                        }
+                    },
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Jika sebuah pizza dipotong menjadi 6 bagian sama besar, angka 6 menyatakan...",
+                            options: ["Pembilang", "Penyebut", "Desimal", "Persen"],
+                            explanation: "Total bagian utuh yang sama besar adalah penyebut (angka di bawah)."
+                        },
+                        en: {
+                            question: "If a pizza is sliced into 6 equal parts, the number 6 represents the...",
+                            options: ["Numerator", "Denominator", "Decimal", "Percentage"],
+                            explanation: "The total equal parts of a whole represent the denominator (bottom number)."
+                        }
+                    },
+                    {
+                        answer: 2,
+                        id: {
+                            question: "Mengapa penyebut (b) pada pecahan a/b tidak boleh 0?",
+                            options: ["Karena nilainya terlalu besar", "Karena nilainya genap", "Karena pembagian dengan 0 tidak terdefinisi", "Boleh saja 0"],
+                            explanation: "Secara matematis, pembagian dengan angka 0 tidak terdefinisi."
+                        },
+                        en: {
+                            question: "Why can't the denominator (b) in a/b be equal to 0?",
+                            options: ["Because it is too big", "Because it is an even number", "Because division by 0 is undefined", "It can be 0"],
+                            explanation: "Mathematically, division by zero is undefined."
+                        }
+                    }
+                ],
+
+                answerSub1(idx) {
+                    this.sub1Selected = idx;
+                    this.sub1Answered = true;
+                    if (idx === this.sub1Questions[this.sub1Index].answer) this.sub1Score++;
+                },
+                nextSub1() {
+                    if (this.sub1Index < this.sub1Questions.length - 1) {
+                        this.sub1Index++;
+                    } else {
+                        this.sub1Index = 0;
+                        this.sub1Score = 0;
+                    }
+                    this.sub1Selected = null;
+                    this.sub1Answered = false;
+                },
+
+                // SUB-TOPIC 2 PRACTICE STATE
+                sub2Index: 0,
+                sub2Selected: null,
+                sub2Answered: false,
+                sub2Score: 0,
+                sub2Questions: [
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Pecahan 7/4 termasuk dalam jenis pecahan...",
+                            options: ["Pecahan Murni", "Pecahan Tidak Murni", "Desimal", "Persen"],
+                            explanation: "Pembilang (7) lebih besar dari penyebut (4), jadi ini adalah pecahan tidak murni."
+                        },
+                        en: {
+                            question: "The fraction 7/4 is classified as an...",
+                            options: ["Proper Fraction", "Improper Fraction", "Decimal", "Percentage"],
+                            explanation: "Since the numerator (7) is larger than the denominator (4), it is an improper fraction."
+                        }
+                    },
+                    {
+                        answer: 2,
+                        id: {
+                            question: "Bentuk desimal dari pecahan 3/4 adalah...",
+                            options: ["0,34", "0,50", "0,75", "0,80"],
+                            explanation: "3 dibagi 4 sama dengan 0,75."
+                        },
+                        en: {
+                            question: "The decimal form of the fraction 3/4 is...",
+                            options: ["0.34", "0.50", "0.75", "0.80"],
+                            explanation: "3 divided by 4 equals 0.75."
+                        }
+                    },
+                    {
+                        answer: 0,
+                        id: {
+                            question: "Bentuk persen dari pecahan 1/2 adalah...",
+                            options: ["50%", "25%", "100%", "20%"],
+                            explanation: "(1/2) × 100% = 50%."
+                        },
+                        en: {
+                            question: "The percentage equivalent of 1/2 is...",
+                            options: ["50%", "25%", "100%", "20%"],
+                            explanation: "(1/2) × 100% = 50%."
+                        }
+                    }
+                ],
+
+                answerSub2(idx) {
+                    this.sub2Selected = idx;
+                    this.sub2Answered = true;
+                    if (idx === this.sub2Questions[this.sub2Index].answer) this.sub2Score++;
+                },
+                nextSub2() {
+                    if (this.sub2Index < this.sub2Questions.length - 1) {
+                        this.sub2Index++;
+                    } else {
+                        this.sub2Index = 0;
+                        this.sub2Score = 0;
+                    }
+                    this.sub2Selected = null;
+                    this.sub2Answered = false;
+                },
+
+                // SUB-TOPIC 3 PRACTICE STATE
+                sub3Index: 0,
+                sub3Selected: null,
+                sub3Answered: false,
+                sub3Score: 0,
+                sub3Questions: [
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Bandingkan: 2/5 ... 4/5",
+                            options: ["> (Lebih besar)", "< (Lebih kecil)", "= (Sama dengan)"],
+                            explanation: "Penyebutnya sama (5). Karena 2 < 4, maka 2/5 < 4/5."
+                        },
+                        en: {
+                            question: "Compare: 2/5 ... 4/5",
+                            options: ["> (Greater than)", "< (Less than)", "= (Equal to)"],
+                            explanation: "Same denominators (5). Since 2 < 4, 2/5 < 4/5."
+                        }
+                    },
+                    {
+                        answer: 0,
+                        id: {
+                            question: "Bandingkan: 1/2 ... 1/4",
+                            options: ["> (Lebih besar)", "< (Lebih kecil)", "= (Sama dengan)"],
+                            explanation: "Pembilangnya sama (1). Potongan per 2 lebih besar daripada potongan per 4!"
+                        },
+                        en: {
+                            question: "Compare: 1/2 ... 1/4",
+                            options: ["> (Greater than)", "< (Less than)", "= (Equal to)"],
+                            explanation: "Same numerators (1). Halves are larger than quarters!"
+                        }
+                    },
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Gunakan perkalian silang untuk membandingkan: 2/3 ... 3/4",
+                            options: ["> (2/3 lebih besar)", "< (2/3 lebih kecil)", "= (Sama besar)"],
+                            explanation: "Perkalian silang: (2×4 = 8) vs (3×3 = 9). Karena 8 < 9, maka 2/3 < 3/4."
+                        },
+                        en: {
+                            question: "Use cross multiplication to compare: 2/3 ... 3/4",
+                            options: ["> (2/3 is greater)", "< (2/3 is smaller)", "= (Equal)"],
+                            explanation: "Cross multiply: (2×4 = 8) vs (3×3 = 9). Since 8 < 9, 2/3 < 3/4."
+                        }
+                    }
+                ],
+
+                answerSub3(idx) {
+                    this.sub3Selected = idx;
+                    this.sub3Answered = true;
+                    if (idx === this.sub3Questions[this.sub3Index].answer) this.sub3Score++;
+                },
+                nextSub3() {
+                    if (this.sub3Index < this.sub3Questions.length - 1) {
+                        this.sub3Index++;
+                    } else {
+                        this.sub3Index = 0;
+                        this.sub3Score = 0;
+                    }
+                    this.sub3Selected = null;
+                    this.sub3Answered = false;
+                },
+
+                // SUB-TOPIC 4 PRACTICE STATE
+                sub4Index: 0,
+                sub4Selected: null,
+                sub4Answered: false,
+                sub4Score: 0,
+                sub4Questions: [
+                    {
+                        answer: 0,
+                        id: {
+                            question: "Berapa hasil dari 1/4 + 2/4?",
+                            options: ["3/4", "3/8", "2/4", "1/2"],
+                            explanation: "Penyebut sama (4), langsung jumlahkan pembilang: 1 + 2 = 3. Hasilnya 3/4."
+                        },
+                        en: {
+                            question: "What is the result of 1/4 + 2/4?",
+                            options: ["3/4", "3/8", "2/4", "1/2"],
+                            explanation: "Same denominator (4), add numerators directly: 1 + 2 = 3. Result = 3/4."
+                        }
+                    },
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Hasil dari 2/3 × 3/5 adalah...",
+                            options: ["5/8", "6/15 (atau 2/5)", "1/2", "3/15"],
+                            explanation: "(2 × 3) / (3 × 5) = 6/15, jika dibagi 3 menjadi 2/5."
+                        },
+                        en: {
+                            question: "What is 2/3 × 3/5?",
+                            options: ["5/8", "6/15 (or 2/5)", "1/2", "3/15"],
+                            explanation: "(2 × 3) / (3 × 5) = 6/15, simplified by 3 = 2/5."
+                        }
+                    },
+                    {
+                        answer: 2,
+                        id: {
+                            question: "Hasil pembagian dari 1/2 ÷ 3/4 adalah...",
+                            options: ["3/8", "2/8", "4/6 (atau 2/3)", "1/4"],
+                            explanation: "Ubah ÷ jadi × dan balik pecahan kedua: (1/2) × (4/3) = 4/6 = 2/3."
+                        },
+                        en: {
+                            question: "What is 1/2 ÷ 3/4?",
+                            options: ["3/8", "2/8", "4/6 (or 2/3)", "1/4"],
+                            explanation: "Convert ÷ to × and flip second fraction: (1/2) × (4/3) = 4/6 = 2/3."
+                        }
+                    }
+                ],
+
+                answerSub4(idx) {
+                    this.sub4Selected = idx;
+                    this.sub4Answered = true;
+                    if (idx === this.sub4Questions[this.sub4Index].answer) this.sub4Score++;
+                },
+                nextSub4() {
+                    if (this.sub4Index < this.sub4Questions.length - 1) {
+                        this.sub4Index++;
+                    } else {
+                        this.sub4Index = 0;
+                        this.sub4Score = 0;
+                    }
+                    this.sub4Selected = null;
+                    this.sub4Answered = false;
+                },
+
+                // FINAL COMPREHENSIVE QUIZ STATE
+                currentQuestion: 0,
+                selectedOption: null,
+                score: 0,
+                quizFinished: false,
+                questions: [
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Manakah di bawah ini yang merupakan pecahan murni?",
+                            options: ["5/3", "3/4", "1 1/2", "7/2"],
+                            explanation: "Pecahan murni memiliki pembilang lebih kecil dari penyebutnya (3/4)."
+                        },
+                        en: {
+                            question: "Which of the following is a proper fraction?",
+                            options: ["5/3", "3/4", "1 1/2", "7/2"],
+                            explanation: "A proper fraction has a numerator smaller than its denominator (3/4)."
+                        }
+                    },
+                    {
+                        answer: 2,
+                        id: {
+                            question: "Bentuk desimal dari pecahan 1/2 adalah...",
+                            options: ["0,2", "0,25", "0,5", "0,75"],
+                            explanation: "1 dibagi 2 sama dengan 0,5."
+                        },
+                        en: {
+                            question: "The decimal form of the fraction 1/2 is...",
+                            options: ["0.2", "0.25", "0.5", "0.75"],
+                            explanation: "1 divided by 2 equals 0.5."
+                        }
+                    },
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Tanda yang tepat untuk membandingkan 2/5 ... 4/5 adalah...",
+                            options: ["> (lebih besar)", "< (lebih kecil)", "= (sama dengan)", ">= (lebih besar sama)"],
+                            explanation: "Penyebutnya sama (5), 2 lebih kecil dari 4, jadi 2/5 < 4/5."
+                        },
+                        en: {
+                            question: "Which symbol correctly compares 2/5 ... 4/5?",
+                            options: ["> (greater than)", "< (less than)", "= (equal to)", ">= (greater or equal)"],
+                            explanation: "Same denominators (5). Since 2 < 4, 2/5 < 4/5."
+                        }
+                    },
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Berapa hasil dari 1/4 + 2/4?",
+                            options: ["3/8", "3/4", "2/8", "1/2"],
+                            explanation: "1/4 + 2/4 = 3/4."
+                        },
+                        en: {
+                            question: "What is 1/4 + 2/4?",
+                            options: ["3/8", "3/4", "2/8", "1/2"],
+                            explanation: "1/4 + 2/4 = 3/4."
+                        }
+                    },
+                    {
+                        answer: 1,
+                        id: {
+                            question: "Hasil perkalian dari 1/2 × 3/4 adalah...",
+                            options: ["4/6", "3/8", "3/6", "1/8"],
+                            explanation: "(1 × 3) / (2 × 4) = 3/8."
+                        },
+                        en: {
+                            question: "What is the product of 1/2 × 3/4?",
+                            options: ["4/6", "3/8", "3/6", "1/8"],
+                            explanation: "(1 × 3) / (2 × 4) = 3/8."
+                        }
+                    }
+                ],
+
+                // Helpers
+                getMixedFraction(n, d) {
+                    if (d === 0) return this.lang === 'id' ? 'Tidak terdefinisi' : 'Undefined';
+                    if (n < d) return this.lang === 'id' ? 'Hanya Pecahan Murni' : 'Proper Fraction Only';
+                    const whole = Math.floor(n / d);
+                    const remainder = n % d;
+                    return remainder === 0 ? `${whole}` : `${whole} (${remainder}/${d})`;
+                },
+
+                gcd(a, b) {
+                    return b === 0 ? Math.abs(a) : this.gcd(b, a % b);
+                },
+
+                calculateFractionResult() {
+                    const n1 = this.calcNum1, d1 = this.calcDen1;
+                    const n2 = this.calcNum2, d2 = this.calcDen2;
+                    let resNum, resDen, steps = '';
+
+                    if (!d1 || !d2) return { num: 'Err', den: 'Err', steps: this.lang === 'id' ? 'Penyebut tidak boleh 0' : 'Denominator cannot be 0' };
+
+                    if (this.calcOp === '+') {
+                        resNum = (n1 * d2) + (n2 * d1);
+                        resDen = d1 * d2;
+                        steps = this.lang === 'id' 
+                            ? `Samakan penyebut: (${n1}×${d2})/${resDen} + (${n2}×${d1})/${resDen} = ${resNum}/${resDen}`
+                            : `Equalize denominators: (${n1}×${d2})/${resDen} + (${n2}×${d1})/${resDen} = ${resNum}/${resDen}`;
+                    } else if (this.calcOp === '-') {
+                        resNum = (n1 * d2) - (n2 * d1);
+                        resDen = d1 * d2;
+                        steps = this.lang === 'id'
+                            ? `Samakan penyebut: (${n1}×${d2})/${resDen} - (${n2}×${d1})/${resDen} = ${resNum}/${resDen}`
+                            : `Equalize denominators: (${n1}×${d2})/${resDen} - (${n2}×${d1})/${resDen} = ${resNum}/${resDen}`;
+                    } else if (this.calcOp === '*') {
+                        resNum = n1 * n2;
+                        resDen = d1 * d2;
+                        steps = this.lang === 'id'
+                            ? `Kalikan pembilang dengan pembilang (${n1}×${n2}) dan penyebut dengan penyebut (${d1}×${d2}) = ${resNum}/${resDen}`
+                            : `Multiply numerators (${n1}×${n2}) and denominators (${d1}×${d2}) = ${resNum}/${resDen}`;
+                    } else if (this.calcOp === '/') {
+                        resNum = n1 * d2;
+                        resDen = d1 * n2;
+                        steps = this.lang === 'id'
+                            ? `Ubah pembagian menjadi perkalian dengan membalik pecahan kedua: (${n1}/${d1}) × (${d2}/${n2}) = ${resNum}/${resDen}`
+                            : `Convert division to multiplication by taking the reciprocal: (${n1}/${d1}) × (${d2}/${n2}) = ${resNum}/${resDen}`;
+                    }
+
+                    const divisor = this.gcd(resNum, resDen);
+                    const simplifiedNum = resNum / divisor;
+                    const simplifiedDen = resDen / divisor;
+
+                    if (divisor > 1) {
+                        steps += this.lang === 'id' 
+                            ? `<br>Disederhanakan (dibagi ${divisor}): <strong>${simplifiedNum}/${simplifiedDen}</strong>`
+                            : `<br>Simplified (divided by ${divisor}): <strong>${simplifiedNum}/${simplifiedDen}</strong>`;
+                    }
+
+                    return { num: simplifiedNum, den: simplifiedDen, steps: steps };
+                },
+
+                selectAnswer(idx) {
+                    this.selectedOption = idx;
+                    if (idx === this.questions[this.currentQuestion].answer) {
+                        this.score++;
+                    }
+                },
+
+                nextQuestion() {
+                    if (this.currentQuestion < this.questions.length - 1) {
+                        this.currentQuestion++;
+                        this.selectedOption = null;
+                    } else {
+                        this.quizFinished = true;
+                    }
+                },
+
+                resetQuiz() {
+                    this.currentQuestion = 0;
+                    this.selectedOption = null;
+                    this.score = 0;
+                    this.quizFinished = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

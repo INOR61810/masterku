@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalkulaTrain - Latihan Persoal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons for Educational Visuals -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+        .animate-pulse-ring {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-indigo-50/50 to-pink-50/50 min-h-screen text-slate-800 transition-colors duration-300 pb-10">
+
+    <div class="max-w-7xl mx-auto px-4 py-4 md:py-8 animate-pop">
+        <header class="text-center mb-6">
+            <div class="inline-flex items-center justify-center bg-indigo-600 text-white p-3 rounded-2xl shadow-lg shadow-indigo-200 mb-2">
+                <i class="fa-solid fa-graduation-cap text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                KalkulaTrain
+            </h1>
+            <p class="text-slate-500 text-xs md:text-sm mt-1 font-medium">Latihan Matematika Interaktif - Satu per Satu Soal</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Settings Panel -->
+            <section class="lg:col-span-4 space-y-6">
+                <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl shadow-xl border border-white/50 space-y-5">
+                    <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+                        <i class="fa-solid fa-sliders text-indigo-600 text-lg"></i>
+                        <h2 class="text-md font-bold text-slate-700">Pengaturan Latihan</h2>
+                    </div>
+
+                    <!-- Mode Operation -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Pilih Operasi</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setOperation('mul')" id="btn-op-mul" class="flex flex-col items-center justify-center p-2 rounded-2xl border-2 transition-all duration-200 bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm shadow-indigo-100">
+                                <span class="text-xl font-bold">×</span>
+                                <span class="text-xs font-semibold mt-0.5">Perkalian</span>
+                            </button>
+                            <button onclick="setOperation('div')" id="btn-op-div" class="flex flex-col items-center justify-center p-2 rounded-2xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-all duration-200">
+                                <span class="text-xl font-bold">÷</span>
+                                <span class="text-xs font-semibold mt-0.5">Pembagian</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Digits Selector 1 -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2" id="lbl-digit-1">Angka Pertama</label>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="setDigitLength(1, 'satuan')" id="btn-d1-satuan" class="py-2 px-1 text-[11px] font-semibold rounded-xl border-2 transition-all duration-200 bg-indigo-50 border-indigo-500 text-indigo-700">
+                                Satuan (1-9)
+                            </button>
+                            <button onclick="setDigitLength(1, 'puluhan')" id="btn-d1-puluhan" class="py-2 px-1 text-[11px] font-semibold rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-all duration-200">
+                                Puluhan (10-99)
+                            </button>
+                            <button onclick="setDigitLength(1, 'ratusan')" id="btn-d1-ratusan" class="py-2 px-1 text-[11px] font-semibold rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-all duration-200">
+                                Ratusan (100-999)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Digits Selector 2 -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2" id="lbl-digit-2">Angka Kedua</label>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="setDigitLength(2, 'satuan')" id="btn-d2-satuan" class="py-2 px-1 text-[11px] font-semibold rounded-xl border-2 transition-all duration-200 bg-indigo-50 border-indigo-500 text-indigo-700">
+                                Satuan (1-9)
+                            </button>
+                            <button onclick="setDigitLength(2, 'puluhan')" id="btn-d2-puluhan" class="py-2 px-1 text-[11px] font-semibold rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-all duration-200">
+                                Puluhan (10-99)
+                            </button>
+                            <button onclick="setDigitLength(2, 'ratusan')" id="btn-d2-ratusan" class="py-2 px-1 text-[11px] font-semibold rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-all duration-200">
+                                Ratusan (100-999)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rule Reminder Info -->
+                    <div class="bg-amber-50/70 border border-amber-200/50 rounded-2xl p-3 text-xs text-amber-800 space-y-1">
+                        <div class="flex items-center gap-1.5 font-bold">
+                            <i class="fa-solid fa-circle-info text-amber-600"></i>
+                            <span>Pilihan Tingkat Kesulitan:</span>
+                        </div>
+                        <p class="leading-relaxed font-medium">Bisa dikombinasikan bebas antara Satuan (1-9), Puluhan (10-99), hingga Ratusan (100-999).</p>
+                    </div>
+                </div>
+
+                <!-- Touch Numeric Keypad -->
+                <div class="bg-slate-800 p-4 rounded-3xl shadow-xl space-y-2">
+                    <div class="text-slate-400 text-[10px] font-bold px-1 uppercase tracking-wider text-center mb-1 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-keyboard"></i> Papan Angka Sentuh
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" onclick="pressKey('1')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">1</button>
+                        <button type="button" onclick="pressKey('2')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">2</button>
+                        <button type="button" onclick="pressKey('3')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">3</button>
+
+                        <button type="button" onclick="pressKey('4')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">4</button>
+                        <button type="button" onclick="pressKey('5')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">5</button>
+                        <button type="button" onclick="pressKey('6')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">6</button>
+
+                        <button type="button" onclick="pressKey('7')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">7</button>
+                        <button type="button" onclick="pressKey('8')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">8</button>
+                        <button type="button" onclick="pressKey('9')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">9</button>
+
+                        <button type="button" onclick="pressKey('C')" class="h-11 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors duration-150 shadow-md">HAPUS</button>
+                        <button type="button" onclick="pressKey('0')" class="h-11 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">0</button>
+                        <button type="button" onclick="pressKey('⌫')" class="h-11 bg-slate-600 hover:bg-slate-500 active:bg-slate-700 text-white font-bold text-lg rounded-xl transition-colors duration-150 shadow-md">
+                            <i class="fa-solid fa-delete-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Worksheet Column (Center) -->
+            <main class="lg:col-span-5 space-y-4">
+                <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 relative overflow-hidden min-h-[460px] flex flex-col justify-between">
+                    <!-- Particle Canvas Layer -->
+                    <canvas id="particles-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+                    <!-- Active Session View -->
+                    <div id="active-session-view" class="relative z-10 flex flex-col flex-grow justify-between">
+                        
+                        <!-- Header & Progress Map -->
+                        <div>
+                            <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
+                                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                    Soal Ke: <span id="lbl-current-num">1</span> dari 10
+                                </span>
+                                <div class="flex gap-2">
+                                    <span id="streak-badge" class="hidden items-center gap-1 text-[10px] font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full animate-bounce">
+                                        <i class="fa-solid fa-fire text-amber-500"></i> <span id="lbl-streak-count">0</span> Beruntun!
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Progress Dots Map -->
+                            <div class="flex justify-between items-center gap-1 mb-6 px-1">
+                                <!-- Generated Dynamically -->
+                                <div id="progress-dots" class="flex w-full justify-between items-center gap-1.5">
+                                    <!-- 10 Dots of different states -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Question Area -->
+                        <div id="question-card" class="text-center py-6 flex flex-col items-center justify-center flex-grow">
+                            <!-- Question Equation -->
+                            <div id="lbl-equation" class="text-3xl sm:text-4xl md:text-5xl font-black tracking-wider text-slate-800 mb-6 select-none transition-all duration-300">
+                                0 × 0
+                            </div>
+
+                            <!-- Giant Input Wrapper -->
+                            <div class="relative inline-block w-56 md:w-64 mb-4">
+                                <input 
+                                    type="number" 
+                                    id="txt-answer" 
+                                    placeholder="?" 
+                                    class="w-full text-center text-2xl md:text-3xl font-extrabold py-3 px-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200"
+                                    autocomplete="off"
+                                >
+                                <!-- Single Feedback Float Indicator -->
+                                <div id="indicator-badge" class="absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center opacity-0 transition-all duration-300 text-2xl">
+                                    <!-- Injected Dynamic checkmark/cross -->
+                                </div>
+                            </div>
+
+                            <!-- Tiny visual assistance help -->
+                            <div id="lbl-hint" class="text-xs text-slate-400 font-medium h-4">
+                                Tekan Enter untuk verifikasi jawaban Anda
+                            </div>
+                        </div>
+
+                        <!-- Actions Area -->
+                        <div class="mt-4 pt-4 border-t border-slate-100">
+                            <!-- Feedback Alert Strip -->
+                            <div id="feedback-banner" class="hidden p-3 mb-3 rounded-2xl text-center font-bold text-xs transition-all duration-200">
+                                Feedback info
+                            </div>
+
+                            <div class="grid grid-cols-12 gap-2">
+                                <button onclick="handlePrimaryAction()" id="btn-primary" class="col-span-9 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-indigo-100 transition-all duration-200 flex items-center justify-center gap-2 text-sm">
+                                    <span id="btn-primary-text">Periksa Jawaban</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                                <button onclick="resetCurrentRound()" class="col-span-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 px-2 rounded-2xl transition-all duration-200 flex items-center justify-center gap-1 text-xs" title="Mulai ulang latihan">
+                                    <i class="fa-solid fa-rotate-left"></i> <span>Ulang</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Summary/Results View (Hidden by default) -->
+                    <div id="results-summary-view" class="hidden relative z-10 flex flex-col flex-grow justify-between animate-pop">
+                        <div class="text-center py-4">
+                            <!-- Medal Badge -->
+                            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-3 shadow-lg" id="result-badge-bg">
+                                <i id="result-badge-icon" class="fa-solid text-4xl"></i>
+                            </div>
+
+                            <h3 id="result-title" class="text-xl font-extrabold text-slate-800">Selesai!</h3>
+                            <p id="result-sub" class="text-xs text-slate-400 mt-1">Laporan latihan 10 soal Anda</p>
+
+                            <!-- Big Score Badge -->
+                            <div class="my-5 bg-slate-50 border border-slate-100 p-4 rounded-2xl inline-block px-10">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Skor Akhir</div>
+                                <div id="lbl-summary-score" class="text-4xl font-black text-indigo-600">0/100</div>
+                                <div id="lbl-summary-ratio" class="text-[10px] text-slate-500 font-semibold mt-0.5">0 Soal Benar dari 10</div>
+                            </div>
+
+                            <!-- Performance Table Recap -->
+                            <div class="text-left bg-slate-50/50 rounded-2xl border border-slate-100 p-3 max-h-48 overflow-y-auto scrollbar-thin">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pb-1 border-b border-slate-100">Evaluasi Hasil Jawaban:</div>
+                                <div id="summary-table" class="space-y-1.5 text-xs font-semibold">
+                                    <!-- Injected breakdown rows -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions inside results card -->
+                        <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2">
+                            <button onclick="startNextSession()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition-all duration-150 flex items-center justify-center gap-1.5 text-xs">
+                                <i class="fa-solid fa-play"></i> Latihan Baru
+                            </button>
+                            <button onclick="resetCurrentRound()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-2xl transition-all duration-150 flex items-center justify-center gap-1.5 text-xs">
+                                <i class="fa-solid fa-rotate-left"></i> Ulangi Sesi Ini
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- Stats Column (Right) -->
+            <section class="lg:col-span-3 space-y-6">
+                <!-- Statistics Panel -->
+                <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl shadow-xl border border-white/50 space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-chart-simple text-indigo-600 text-lg"></i>
+                            <h2 class="text-md font-bold text-slate-700">Akumulasi Sesi</h2>
+                        </div>
+                        <button onclick="resetStats()" class="text-xs text-slate-400 hover:text-indigo-600 font-bold transition-colors">
+                            Reset
+                        </button>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="bg-slate-50 p-3 rounded-2xl text-center">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Benar</div>
+                            <div id="stats-correct" class="text-xl font-black text-emerald-600">0</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl text-center">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Total Soal</div>
+                            <div id="stats-total" class="text-xl font-black text-slate-700">0</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl text-center col-span-2">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Akurasi Penyelesaian</div>
+                            <div class="flex items-center justify-center gap-2">
+                                <div id="stats-accuracy" class="text-md font-bold text-indigo-600">0%</div>
+                                <div class="w-full bg-slate-200 rounded-full h-2 max-w-[90px]">
+                                    <div id="accuracy-bar" class="bg-indigo-600 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Log Panel -->
+                <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl shadow-xl border border-white/50 space-y-3">
+                    <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+                        <i class="fa-solid fa-clock-rotate-left text-indigo-600 text-lg"></i>
+                        <h2 class="text-md font-bold text-slate-700">Riwayat Sesi</h2>
+                    </div>
+
+                    <!-- Log List Container -->
+                    <div id="history-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 text-sm scrollbar-thin">
+                        <div class="text-center text-slate-400 py-6 text-xs italic font-medium">
+                            Belum ada riwayat soal yang diperiksa.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const state = {
+            operation: 'mul', // 'mul' = perkalian, 'div' = pembagian
+            digits1: 'satuan', // 'satuan' (1-9), 'puluhan' (10-99), 'ratusan' (100-999)
+            digits2: 'satuan', // 'satuan' (1-9), 'puluhan' (10-99), 'ratusan' (100-999)
+            currentQuestionIndex: 0, // 0 to 9 index tracker
+            questions: [], // Stores currently active 10 question objects
+            isAnswerChecked: false, // Is current question checked?
+            stats: {
+                correct: 0,
+                total: 0,
+                streak: 0
+            },
+            history: [] // Holds final round score log objects
+        };
+
+        // Procedural Audio Engine
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'perfect') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.06); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.12); // G5
+                    osc.frequency.setValueAtTime(1046.50, now + 0.18); // C6
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(130, now);
+                    osc.frequency.linearRampToValueAtTime(80, now + 0.25);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                }
+            } catch (e) {
+                console.log("Audio simulation failed or blocked.", e);
+            }
+        }
+
+        // Particle Canvas Particle Selebration
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 3;
+                this.speedX = Math.random() * 6 - 3;
+                this.speedY = Math.random() * -6 - 3;
+                this.gravity = 0.18;
+                const colors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function triggerConfetti() {
+            resizeCanvas();
+            const startX = canvas.width / 2;
+            const startY = canvas.height - 20;
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle(startX, startY));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        function setOperation(op) {
+            state.operation = op;
+            
+            const btnMul = document.getElementById('btn-op-mul');
+            const btnDiv = document.getElementById('btn-op-div');
+            
+            const activeClasses = ['bg-indigo-50', 'border-indigo-500', 'text-indigo-700', 'shadow-sm', 'shadow-indigo-100'];
+            const inactiveClasses = ['border-slate-100', 'text-slate-600', 'hover:bg-slate-50'];
+
+            if (op === 'mul') {
+                btnMul.classList.add(...activeClasses);
+                btnMul.classList.remove(...inactiveClasses);
+                btnDiv.classList.add(...inactiveClasses);
+                btnDiv.classList.remove(...activeClasses);
+                document.getElementById('lbl-digit-1').innerText = "Angka Pertama";
+                document.getElementById('lbl-digit-2').innerText = "Angka Kedua";
+            } else {
+                btnDiv.classList.add(...activeClasses);
+                btnDiv.classList.remove(...inactiveClasses);
+                btnMul.classList.add(...inactiveClasses);
+                btnMul.classList.remove(...activeClasses);
+                document.getElementById('lbl-digit-1').innerText = "Angka Pembagi (Divisor)";
+                document.getElementById('lbl-digit-2').innerText = "Hasil Bagi (Quotient)";
+            }
+            
+            resetCurrentRound();
+        }
+
+        function setDigitLength(index, type) {
+            if (index === 1) {
+                state.digits1 = type;
+                toggleBtnStyle(1, type);
+            } else {
+                state.digits2 = type;
+                toggleBtnStyle(2, type);
+            }
+            resetCurrentRound();
+        }
+
+        function toggleBtnStyle(index, activeType) {
+            const types = ['satuan', 'puluhan', 'ratusan'];
+            const activeClasses = ['bg-indigo-50', 'border-indigo-500', 'text-indigo-700'];
+            const inactiveClasses = ['border-slate-100', 'text-slate-600', 'hover:bg-slate-50'];
+
+            types.forEach(type => {
+                const btn = document.getElementById(`btn-d${index}-${type}`);
+                if (btn) {
+                    if (type === activeType) {
+                        btn.classList.add(...activeClasses);
+                        btn.classList.remove(...inactiveClasses);
+                    } else {
+                        btn.classList.add(...inactiveClasses);
+                        btn.classList.remove(...activeClasses);
+                    }
+                }
+            });
+        }
+
+        function generateSingleCalculation(op, digits1, digits2) {
+            let num1, num2, answer, questionText;
+
+            const getRange = (type) => {
+                if (type === 'satuan') return [1, 9];
+                if (type === 'puluhan') return [10, 99];
+                if (type === 'ratusan') return [100, 999];
+                return [1, 9];
+            };
+
+            const r1 = getRange(digits1);
+            const r2 = getRange(digits2);
+
+            if (op === 'mul') {
+                num1 = Math.floor(Math.random() * (r1[1] - r1[0] + 1)) + r1[0];
+                num2 = Math.floor(Math.random() * (r2[1] - r2[0] + 1)) + r2[0];
+                answer = num1 * num2;
+                questionText = `${num1} × ${num2}`;
+
+            } else {
+                const divisor = Math.floor(Math.random() * (r1[1] - r1[0] + 1)) + r1[0];
+                const quotient = Math.floor(Math.random() * (r2[1] - r2[0] + 1)) + r2[0];
+                num1 = divisor * quotient; // Dividend
+                num2 = divisor;
+                answer = quotient;
+                questionText = `${num1} ÷ ${num2}`;
+            }
+
+            return { questionText, answer };
+        }
+
+        function resetCurrentRound() {
+            state.questions = [];
+            state.currentQuestionIndex = 0;
+            state.isAnswerChecked = false;
+            hideFeedback();
+
+            // Assemble 10 clean equations
+            for (let i = 0; i < 10; i++) {
+                const item = generateSingleCalculation(state.operation, state.digits1, state.digits2);
+                state.questions.push({
+                    text: item.questionText,
+                    correctAnswer: item.answer,
+                    userAnswer: '',
+                    isCorrect: null
+                });
+            }
+
+            // Restore primary displays
+            document.getElementById('active-session-view').classList.remove('hidden');
+            document.getElementById('results-summary-view').classList.add('hidden');
+
+            renderProgressDots();
+            loadActiveQuestion();
+        }
+
+        function renderProgressDots() {
+            const container = document.getElementById('progress-dots');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 10; i++) {
+                const dot = document.createElement('div');
+                dot.id = `dot-${i}`;
+                
+                // Styling depends on relation to index and correctness
+                let bgClass = "bg-slate-200";
+                let sizeClass = "h-2.5 flex-grow rounded-full transition-all duration-300";
+
+                const q = state.questions[i];
+                if (q.isCorrect === true) {
+                    bgClass = "bg-emerald-500 shadow-sm shadow-emerald-200";
+                } else if (q.isCorrect === false) {
+                    bgClass = "bg-rose-500 shadow-sm shadow-rose-200";
+                } else if (i === state.currentQuestionIndex) {
+                    bgClass = "bg-indigo-600 animate-pulse-ring";
+                }
+
+                dot.className = `${sizeClass} ${bgClass}`;
+                container.appendChild(dot);
+            }
+        }
+
+        function loadActiveQuestion() {
+            state.isAnswerChecked = false;
+            hideFeedback();
+
+            const currentQ = state.questions[state.currentQuestionIndex];
+            
+            // Render labels
+            document.getElementById('lbl-current-num').innerText = state.currentQuestionIndex + 1;
+            document.getElementById('lbl-equation').innerText = currentQ.text;
+            
+            const inputField = document.getElementById('txt-answer');
+            inputField.value = '';
+            inputField.disabled = false;
+            inputField.className = "w-full text-center text-2xl md:text-3xl font-extrabold py-3 px-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200";
+            
+            // Reset right-aligned mini icon
+            const badge = document.getElementById('indicator-badge');
+            badge.className = "absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center opacity-0 transition-all duration-300 text-2xl";
+            badge.innerHTML = '';
+
+            // Update Primary Button UI
+            document.getElementById('btn-primary-text').innerText = "Periksa Jawaban";
+            document.getElementById('btn-primary').className = "col-span-9 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-indigo-100 transition-all duration-200 flex items-center justify-center gap-2 text-sm";
+            document.getElementById('lbl-hint').innerText = "Tekan Enter untuk verifikasi jawaban Anda";
+
+            // Focus field
+            setTimeout(() => {
+                inputField.focus();
+            }, 50);
+
+            renderProgressDots();
+        }
+
+        function handlePrimaryAction() {
+            if (!state.isAnswerChecked) {
+                checkSubmittedAnswer();
+            } else {
+                goToNextQuestion();
+            }
+        }
+
+        function checkSubmittedAnswer() {
+            const inputField = document.getElementById('txt-answer');
+            const inputValStr = inputField.value.trim();
+
+            if (inputValStr === "") {
+                showFeedback("Masukkan jawaban angka terlebih dahulu!", "warning");
+                return;
+            }
+
+            hideFeedback();
+            const userAnsNum = parseInt(inputValStr, 10);
+            const currentQ = state.questions[state.currentQuestionIndex];
+            currentQ.userAnswer = inputValStr;
+            
+            const isCorrect = userAnsNum === currentQ.correctAnswer;
+            currentQ.isCorrect = isCorrect;
+            state.isAnswerChecked = true;
+
+            inputField.disabled = true;
+
+            const badge = document.getElementById('indicator-badge');
+            const qCard = document.getElementById('question-card');
+
+            // Apply feedback visuals and sounds
+            if (isCorrect) {
+                state.stats.correct++;
+                state.stats.streak++;
+                playSound('correct');
+                triggerConfetti();
+
+                inputField.className = "w-full text-center text-2xl md:text-3xl font-extrabold py-3 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-400 text-emerald-800 transition-all duration-200";
+                badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+                badge.className = "absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center opacity-100 transition-all duration-300 text-2xl";
+                
+                showFeedback("Jawaban Anda BENAR! Hebat sekali! 🎉", "success");
+            } else {
+                state.stats.streak = 0;
+                playSound('wrong');
+
+                inputField.className = "w-full text-center text-2xl md:text-3xl font-extrabold py-3 px-4 rounded-2xl bg-rose-50 border-2 border-rose-400 text-rose-800 transition-all duration-200";
+                badge.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                badge.className = "absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center opacity-100 transition-all duration-300 text-2xl";
+                
+                // Shake effect on card
+                qCard.classList.remove('animate-shake');
+                void qCard.offsetWidth; // force redraw
+                qCard.classList.add('animate-shake');
+
+                showFeedback(`Kurang tepat. Jawaban yang benar adalah: ${currentQ.correctAnswer}`, "error");
+            }
+
+            state.stats.total++;
+            updateScoreboard();
+
+            // Swap Button to allow transition
+            const btnText = (state.currentQuestionIndex < 9) ? "Lanjut ke Soal Berikutnya" : "Lihat Hasil Latihan";
+            document.getElementById('btn-primary-text').innerText = btnText;
+            document.getElementById('btn-primary').className = "col-span-9 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-emerald-100 transition-all duration-200 flex items-center justify-center gap-2 text-sm";
+            document.getElementById('lbl-hint').innerText = "Tekan Enter untuk melanjutkan";
+
+            renderProgressDots();
+        }
+
+        function goToNextQuestion() {
+            if (state.currentQuestionIndex < 9) {
+                state.currentQuestionIndex++;
+                loadActiveQuestion();
+            } else {
+                displayResultsSummary();
+            }
+        }
+
+        function pressKey(key) {
+            const inputEl = document.getElementById('txt-answer');
+            if (!inputEl || inputEl.disabled) return;
+
+            let currentVal = inputEl.value;
+
+            if (key === 'C') {
+                currentVal = '';
+            } else if (key === '⌫') {
+                currentVal = currentVal.slice(0, -1);
+            } else {
+                if (currentVal.length < 7) {
+                    currentVal += key;
+                }
+            }
+
+            inputEl.value = currentVal;
+            inputEl.focus();
+        }
+
+        function displayResultsSummary() {
+            document.getElementById('active-session-view').classList.add('hidden');
+            const summaryView = document.getElementById('results-summary-view');
+            summaryView.classList.remove('hidden');
+
+            let sessionCorrect = 0;
+            state.questions.forEach(q => {
+                if (q.isCorrect === true) sessionCorrect++;
+            });
+
+            const scorePercent = sessionCorrect * 10;
+            
+            // Adjust Badge Icons and Titles based on score
+            const badgeBg = document.getElementById('result-badge-bg');
+            const badgeIcon = document.getElementById('result-badge-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultSub = document.getElementById('result-sub');
+
+            badgeBg.className = "inline-flex items-center justify-center w-20 h-20 rounded-full mb-3 shadow-lg ";
+            if (sessionCorrect === 10) {
+                playSound('perfect');
+                triggerConfetti();
+                badgeBg.classList.add('bg-amber-100', 'text-amber-500');
+                badgeIcon.className = "fa-solid fa-crown text-4xl";
+                resultTitle.innerText = "Luar Biasa! Sempurna!";
+                resultSub.innerText = "Anda menjawab seluruh 10 soal dengan benar!";
+            } else if (sessionCorrect >= 7) {
+                playSound('correct');
+                badgeBg.classList.add('bg-emerald-100', 'text-emerald-500');
+                badgeIcon.className = "fa-solid fa-star text-4xl";
+                resultTitle.innerText = "Hebat! Hasil Bagus!";
+                resultSub.innerText = "Pertahankan kemampuan matematika Anda!";
+            } else {
+                badgeBg.classList.add('bg-indigo-100', 'text-indigo-500');
+                badgeIcon.className = "fa-solid fa-graduation-cap text-4xl";
+                resultTitle.innerText = "Terus Berlatih!";
+                resultSub.innerText = "Jangan menyerah, coba lagi untuk hasil sempurna!";
+            }
+
+            document.getElementById('lbl-summary-score').innerText = `${scorePercent}/100`;
+            document.getElementById('lbl-summary-ratio').innerText = `${sessionCorrect} Soal Benar dari 10`;
+
+            // Build Evaluation Detail Table
+            const tableContainer = document.getElementById('summary-table');
+            tableContainer.innerHTML = '';
+
+            state.questions.forEach((q, idx) => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-2 rounded-xl bg-white border border-slate-100 text-xs font-semibold";
+                
+                const isCorrect = q.isCorrect === true;
+                const sign = isCorrect 
+                    ? `<span class="text-emerald-500"><i class="fa-solid fa-circle-check"></i> Benar</span>`
+                    : `<span class="text-rose-500"><i class="fa-solid fa-circle-xmark"></i> Salah</span>`;
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-5 flex items-center justify-center bg-slate-100 rounded-full text-[10px] text-slate-500">${idx + 1}</span>
+                        <span class="text-slate-700">${q.text} = ${q.correctAnswer}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-slate-400">Jawaban Anda: <strong class="${isCorrect ? 'text-emerald-600' : 'text-rose-600'}">${q.userAnswer || '-'}</strong></span>
+                        ${sign}
+                    </div>
+                `;
+                tableContainer.appendChild(item);
+            });
+
+            // Add result to sidebar history
+            addHistoryLog(sessionCorrect);
+        }
+
+        function startNextSession() {
+            resetCurrentRound();
+        }
+
+        function showFeedback(message, type) {
+            const banner = document.getElementById('feedback-banner');
+            banner.innerText = message;
+            banner.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800', 'bg-amber-100', 'text-amber-800');
+
+            if (type === 'success') {
+                banner.classList.add('bg-emerald-100', 'text-emerald-800');
+            } else if (type === 'error') {
+                banner.classList.add('bg-rose-100', 'text-rose-800');
+            } else {
+                banner.classList.add('bg-amber-100', 'text-amber-800');
+            }
+        }
+
+        function hideFeedback() {
+            document.getElementById('feedback-banner').classList.add('hidden');
+        }
+
+        function updateScoreboard() {
+            document.getElementById('stats-correct').innerText = state.stats.correct;
+            document.getElementById('stats-total').innerText = state.stats.total;
+            
+            const accuracy = state.stats.total > 0 ? Math.round((state.stats.correct / state.stats.total) * 100) : 0;
+            document.getElementById('stats-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('accuracy-bar').style.width = `${accuracy}%`;
+
+            const streakBadge = document.getElementById('streak-badge');
+            if (state.stats.streak > 0) {
+                streakBadge.classList.remove('hidden');
+                streakBadge.classList.add('flex');
+                document.getElementById('lbl-streak-count').innerText = state.stats.streak;
+            } else {
+                streakBadge.classList.remove('flex');
+                streakBadge.classList.add('hidden');
+            }
+        }
+
+        function addHistoryLog(correctCount) {
+            const historyList = document.getElementById('history-list');
+            
+            if (state.history.length === 0) {
+                historyList.innerHTML = '';
+            }
+
+            const batchNumber = state.history.length + 1;
+            const opSymbol = state.operation === 'mul' ? '×' : '÷';
+            state.history.unshift({ batchNumber, correctCount });
+
+            const item = document.createElement('div');
+            const isPerfect = correctCount === 10;
+            const isGood = correctCount >= 7;
+
+            item.className = `p-3 rounded-2xl flex items-center justify-between border ${
+                isPerfect ? 'bg-amber-50/50 border-amber-100' : isGood ? 'bg-emerald-50/50 border-emerald-100' : 'bg-rose-50/50 border-rose-100'
+            } animate-pop`;
+
+            const icon = isPerfect 
+                ? '<span class="bg-amber-500 text-white p-1 rounded-lg text-xs leading-none"><i class="fa-solid fa-crown"></i></span>'
+                : isGood 
+                ? '<span class="bg-emerald-500 text-white p-1 rounded-lg text-xs leading-none"><i class="fa-solid fa-star"></i></span>'
+                : '<span class="bg-rose-500 text-white p-1 rounded-lg text-xs leading-none"><i class="fa-solid fa-circle-exclamation"></i></span>';
+
+            item.innerHTML = `
+                <div class="flex items-center gap-2">
+                    ${icon}
+                    <div>
+                        <div class="font-bold text-slate-700 text-xs">Sesi Latihan #${batchNumber}</div>
+                        <div class="text-[9px] text-slate-400 font-medium">Tipe: ${opSymbol} (${state.digits1} & ${state.digits2})</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-bold block ${isPerfect ? 'text-amber-600' : isGood ? 'text-emerald-600' : 'text-rose-600'}">
+                        Skor: ${correctCount * 10}/100
+                    </span>
+                    <span class="text-[9px] text-slate-400 font-medium">${correctCount}/10 Benar</span>
+                </div>
+            `;
+
+            historyList.insertBefore(item, historyList.firstChild);
+
+            if (historyList.children.length > 8) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+
+        function resetStats() {
+            const historyList = document.getElementById('history-list');
+            state.stats.correct = 0;
+            state.stats.total = 0;
+            state.stats.streak = 0;
+            state.history = [];
+            
+            historyList.innerHTML = `
+                <div class="text-center text-slate-400 py-6 text-xs italic font-medium">
+                    Belum ada riwayat soal yang diperiksa.
+                </div>
+            `;
+            
+            updateScoreboard();
+            resetCurrentRound();
+        }
+
+        // Physical Keyboard listener for desktop convenience
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                handlePrimaryAction();
+            }
+        });
+
+        // Initialize session on window load
+        window.onload = function() {
+            resetCurrentRound();
+        };
+    </script>
+</body>
+</html>

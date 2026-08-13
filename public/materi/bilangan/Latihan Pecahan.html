@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latihan Matematika: Pecahan, Desimal, & Persen</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter & Math styling -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Style kustom untuk tampilan pecahan CSS */
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+            font-size: 0.95em;
+        }
+        .frac .top {
+            border-bottom: 2px solid currentColor;
+            padding-bottom: 1px;
+            font-weight: 600;
+        }
+        .frac .bottom {
+            padding-top: 1px;
+            font-weight: 600;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Header App -->
+    <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg">
+        <div class="max-w-5xl mx-auto px-4 py-6 text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+                ✏️ Latihan Matematika Isian
+            </h1>
+            <p class="text-blue-100 mt-2 text-sm md:text-base">
+                Pilih topik & jenis operasi hitung, lalu selesaikan 10 soal isian langsung!
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
+        
+        <!-- Panel Kontrol & Filter -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Select Topic -->
+                <div>
+                    <label for="topicSelect" class="block text-sm font-semibold text-gray-700 mb-2">
+                        1. Pilih Materi Utama:
+                    </label>
+                    <select id="topicSelect" onchange="onTopicChange()" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3 transition-all font-medium">
+                        <option value="pecahan">🧩 Pecahan (Fractions)</option>
+                        <option value="desimal">🔢 Desimal (Decimals)</option>
+                        <option value="persen">🎯 Persen (Percentages)</option>
+                    </select>
+                </div>
+
+                <!-- Select Operation -->
+                <div>
+                    <label for="opSelect" class="block text-sm font-semibold text-gray-700 mb-2">
+                        2. Pilih Jenis Operasi Hitung:
+                    </label>
+                    <select id="opSelect" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3 transition-all font-medium">
+                        <!-- Options filled dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-wrap gap-3 items-center justify-between border-t border-gray-100 pt-5">
+                <div class="text-xs text-gray-500 font-medium">
+                    📌 Tips: Untuk pecahan gunakan tanda slash (contoh: <code class="bg-gray-100 px-1 py-0.5 rounded text-blue-600 font-mono">3/4</code> atau <code class="bg-gray-100 px-1 py-0.5 rounded text-blue-600 font-mono">1 1/2</code>).
+                </div>
+                <button onclick="generateQuestions()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Buat 10 Soal Baru
+                </button>
+            </div>
+        </div>
+
+        <!-- Score Banner (Hidden initially) -->
+        <div id="scoreBanner" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-6 mb-8 shadow-lg transition-all">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">Hasil Evaluasi Kamu 🎉</h2>
+                    <p id="scoreSummary" class="text-emerald-100 text-sm mt-1">Kamu menjawab X dari 10 soal dengan benar.</p>
+                </div>
+                <div class="text-center md:text-right bg-white/10 px-6 py-3 rounded-xl backdrop-blur-sm border border-white/20">
+                    <span class="text-xs uppercase tracking-wider text-emerald-200 font-semibold block">Skor Akhir</span>
+                    <span id="scoreText" class="text-4xl font-extrabold">0/100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question List Container -->
+        <form id="quizForm" onsubmit="evaluateAnswers(event)">
+            <div id="questionsContainer" class="space-y-6">
+                <!-- 10 Questions injected by JS -->
+            </div>
+
+            <!-- Submit Button Footer -->
+            <div id="submitSection" class="mt-8 flex justify-center">
+                <button type="submit" class="w-full md:w-2/3 lg:w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Periksa Jawaban Sekarang
+                </button>
+            </div>
+        </form>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-sm border-t border-gray-700">
+        <p>© 2026 Latihan Matematika Interaktif • Pecahan, Desimal & Persen</p>
+    </footer>
+
+    <script>
+        // Store current generated questions state
+        let currentQuestions = [];
+
+        // Operation options dictionary
+        const topicOperations = {
+            pecahan: [
+                { id: 'add_sub', name: '➕ ➖ Penjumlahan & Pengurangan (Penyebut Berbeda)' },
+                { id: 'mul_div', name: '✖️ ➗ Perkalian & Pembagian' },
+                { id: 'simplify_convert', name: '🔄 Penyederhanaan & Pecahan Campuran' },
+                { id: 'all', name: '🎲 Campuran Semua Operasi Pecahan' }
+            ],
+            desimal: [
+                { id: 'add_sub', name: '➕ ➖ Penjumlahan & Pengurangan Desimal' },
+                { id: 'mul_div', name: '✖️ ➗ Perkalian & Pembagian Desimal' },
+                { id: 'convert', name: '🔄 Konversi Desimal ke Pecahan / Persen' },
+                { id: 'all', name: '🎲 Campuran Semua Operasi Desimal' }
+            ],
+            persen: [
+                { id: 'calc_value', name: '🎯 Menghitung Nilai Persentase (misal: 15% dari 200)' },
+                { id: 'discount', name: '🏷️ Soal Diskon & Potongan Harga' },
+                { id: 'convert', name: '🔄 Konversi Pecahan/Desimal ke Persen' },
+                { id: 'all', name: '🎲 Campuran Semua Operasi Persen' }
+            ]
+        };
+
+        // Utility: Greatest Common Divisor
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                let t = b;
+                b = a % b;
+                a = t;
+            }
+            return a;
+        }
+
+        // Utility: Least Common Multiple
+        function lcm(a, b) {
+            return (a * b) / gcd(a, b);
+        }
+
+        // On Topic Change: update operation dropdown
+        function onTopicChange() {
+            const topic = document.getElementById('topicSelect').value;
+            const opSelect = document.getElementById('opSelect');
+            opSelect.innerHTML = '';
+
+            topicOperations[topic].forEach(op => {
+                const opt = document.createElement('option');
+                opt.value = op.id;
+                opt.textContent = op.name;
+                opSelect.appendChild(opt);
+            });
+
+            generateQuestions();
+        }
+
+        // Normalize User String Input
+        function cleanString(str) {
+            if (!str) return '';
+            return str.toString().trim()
+                .replace(/\s+/g, ' ')
+                .replace(/,/g, '.')
+                .replace(/rp\.?/gi, '')
+                .replace(/%/g, '')
+                .trim();
+        }
+
+        // Compare answer tolerance for floating decimals
+        function isCloseFloat(num1, num2) {
+            return Math.abs(num1 - num2) < 0.0001;
+        }
+
+        // Parse fraction from user string (e.g. "3/4", "1 1/2", "5")
+        function parseFractionInput(inputStr) {
+            const clean = cleanString(inputStr);
+            if (!clean) return null;
+
+            // Check mixed fraction "1 1/2"
+            const mixedRegex = /^(\d+)\s+(\d+)\/(\d+)$/;
+            const mixedMatch = clean.match(mixedRegex);
+            if (mixedMatch) {
+                const whole = parseInt(mixedMatch[1]);
+                const num = parseInt(mixedMatch[2]);
+                const den = parseInt(mixedMatch[3]);
+                if (den === 0) return null;
+                return whole + (num / den);
+            }
+
+            // Check simple fraction "3/4"
+            const fracRegex = /^(\d+)\/(\d+)$/;
+            const fracMatch = clean.match(fracRegex);
+            if (fracMatch) {
+                const num = parseInt(fracMatch[1]);
+                const den = parseInt(fracMatch[2]);
+                if (den === 0) return null;
+                return num / den;
+            }
+
+            // Check plain number or decimal
+            const val = parseFloat(clean);
+            return isNaN(val) ? null : val;
+        }
+
+        /* -------------------------------------------------------------
+         * GENERATORS
+         * ------------------------------------------------------------- */
+
+        // 1. PECAHAN GENERATOR
+        function generatePecahanQuestion(op, index) {
+            let type = op;
+            if (op === 'all') {
+                const types = ['add_sub', 'mul_div', 'simplify_convert'];
+                type = types[Math.floor(Math.random() * types.length)];
+            }
+
+            if (type === 'add_sub') {
+                const isAdd = Math.random() > 0.4;
+                // 85% beda penyebut, 15% penyebut sama untuk variasi
+                const hasDiffDen = Math.random() < 0.85;
+
+                const denominatorsList = [2, 3, 4, 5, 6, 8, 9, 10, 12];
+                let den1 = denominatorsList[Math.floor(Math.random() * denominatorsList.length)];
+                let den2 = den1;
+
+                if (hasDiffDen) {
+                    const otherDenominators = denominatorsList.filter(d => d !== den1);
+                    den2 = otherDenominators[Math.floor(Math.random() * otherDenominators.length)];
+                }
+
+                let num1 = Math.floor(Math.random() * (den1 - 1)) + 1;
+                let num2 = Math.floor(Math.random() * (den2 - 1)) + 1;
+
+                // Untuk pengurangan, pastikan hasil positif
+                if (!isAdd) {
+                    if ((num1 * den2) <= (num2 * den1)) {
+                        [num1, num2] = [num2, num1];
+                        [den1, den2] = [den2, den1];
+                    }
+                    if ((num1 * den2) === (num2 * den1)) {
+                        num1 += 1;
+                    }
+                }
+
+                const commonDenom = lcm(den1, den2);
+                const scale1 = commonDenom / den1;
+                const scale2 = commonDenom / den2;
+
+                const eqNum1 = num1 * scale1;
+                const eqNum2 = num2 * scale2;
+
+                const resNum = isAdd ? (eqNum1 + eqNum2) : (eqNum1 - eqNum2);
+                const resDen = commonDenom;
+
+                const g = gcd(resNum, resDen);
+                const simpNum = resNum / g;
+                const simpDen = resDen / g;
+
+                const correctText = simpDen === 1 ? `${simpNum}` : `${simpNum}/${simpDen}`;
+
+                let acceptedAnswers = [correctText, `${resNum}/${resDen}`];
+                if (simpDen > 1 && simpNum > simpDen) {
+                    const whole = Math.floor(simpNum / simpDen);
+                    const rem = simpNum % simpDen;
+                    acceptedAnswers.push(`${whole} ${rem}/${simpDen}`);
+                }
+
+                let explanation = "";
+                if (den1 === den2) {
+                    explanation = `Karena penyebutnya sudah sama (<b>${den1}</b>), langsung operasikan pembilangnya:<br>` +
+                        `<span class="frac"><span class="top">${num1}</span><span class="bottom">${den1}</span></span> ${isAdd ? '+' : '-'} ` +
+                        `<span class="frac"><span class="top">${num2}</span><span class="bottom">${den2}</span></span> = ` +
+                        `<span class="frac"><span class="top">${num1} ${isAdd ? '+' : '-'} ${num2}</span><span class="bottom">${den1}</span></span> = ` +
+                        `<span class="frac"><span class="top">${resNum}</span><span class="bottom">${resDen}</span></span>` +
+                        (g > 1 ? ` (disederhanakan menjadi <b>${correctText}</b>).` : `.`);
+                } else {
+                    explanation = `Langkah penyelesaian:<br>` +
+                        `1. Cari KPK penyebut (KPK dari <b>${den1}</b> dan <b>${den2}</b> adalah <b>${commonDenom}</b>).<br>` +
+                        `2. Samakan pecahan:<br>` +
+                        `   • <span class="frac"><span class="top">${num1}</span><span class="bottom">${den1}</span></span> = <span class="frac"><span class="top">${eqNum1}</span><span class="bottom">${commonDenom}</span></span><br>` +
+                        `   • <span class="frac"><span class="top">${num2}</span><span class="bottom">${den2}</span></span> = <span class="frac"><span class="top">${eqNum2}</span><span class="bottom">${commonDenom}</span></span><br>` +
+                        `3. Operasikan pembilangnya: <span class="frac"><span class="top">${eqNum1} ${isAdd ? '+' : '-'} ${eqNum2}</span><span class="bottom">${commonDenom}</span></span> = ` +
+                        `<span class="frac"><span class="top">${resNum}</span><span class="bottom">${commonDenom}</span></span>` +
+                        (g > 1 ? ` (disederhanakan menjadi <b>${correctText}</b>).` : `.`);
+                }
+
+                return {
+                    id: index,
+                    question: `Hasil dari <span class="frac"><span class="top">${num1}</span><span class="bottom">${den1}</span></span> ${isAdd ? '+' : '-'} <span class="frac"><span class="top">${num2}</span><span class="bottom">${den2}</span></span> adalah ...`,
+                    placeholder: "Contoh: 7/12 atau 1 1/4",
+                    numericValue: resNum / resDen,
+                    acceptedAnswers: acceptedAnswers,
+                    explanation: explanation
+                };
+            }
+
+            if (type === 'mul_div') {
+                const isMul = Math.random() > 0.5;
+                const den1 = [2, 3, 4, 5, 6, 8][Math.floor(Math.random() * 6)];
+                const den2 = [2, 3, 4, 5, 6, 8][Math.floor(Math.random() * 6)];
+                const num1 = Math.floor(Math.random() * (den1 - 1)) + 1;
+                const num2 = Math.floor(Math.random() * (den2 - 1)) + 1;
+
+                let resNum, resDen, symbol, expStep;
+                if (isMul) {
+                    symbol = '×';
+                    resNum = num1 * num2;
+                    resDen = den1 * den2;
+                    expStep = `Kalikan pembilang dengan pembilang, dan penyebut dengan penyebut:<br>` +
+                        `• Pembilang: ${num1} × ${num2} = <b>${resNum}</b><br>` +
+                        `• Penyebut: ${den1} × ${den2} = <b>${resDen}</b>`;
+                } else {
+                    symbol = '÷';
+                    resNum = num1 * den2;
+                    resDen = den1 * num2;
+                    expStep = `Ubah pembagian menjadi perkalian dengan membalik pecahan kedua:<br>` +
+                        `<span class="frac"><span class="top">${num1}</span><span class="bottom">${den1}</span></span> × <span class="frac"><span class="top">${den2}</span><span class="bottom">${num2}</span></span> = ` +
+                        `<span class="frac"><span class="top">${resNum}</span><span class="bottom">${resDen}</span></span>`;
+                }
+
+                const g = gcd(resNum, resDen);
+                const simpNum = resNum / g;
+                const simpDen = resDen / g;
+                const correctText = simpDen === 1 ? `${simpNum}` : `${simpNum}/${simpDen}`;
+
+                let acceptedAnswers = [correctText, `${resNum}/${resDen}`];
+                if (simpDen > 1 && simpNum > simpDen) {
+                    const whole = Math.floor(simpNum / simpDen);
+                    const rem = simpNum % simpDen;
+                    acceptedAnswers.push(`${whole} ${rem}/${simpDen}`);
+                }
+
+                const explanation = `${expStep}<br>` +
+                    (g > 1 ? `Hasil akhir jika disederhanakan: <b>${correctText}</b>` : `Hasil akhir: <b>${correctText}</b>`);
+
+                return {
+                    id: index,
+                    question: `Hasil dari <span class="frac"><span class="top">${num1}</span><span class="bottom">${den1}</span></span> ${symbol} <span class="frac"><span class="top">${num2}</span><span class="bottom">${den2}</span></span> adalah ...`,
+                    placeholder: "Contoh: 3/10",
+                    numericValue: resNum / resDen,
+                    acceptedAnswers: acceptedAnswers,
+                    explanation: explanation
+                };
+            }
+
+            // simplify_convert
+            const isToMixed = Math.random() > 0.5;
+            if (isToMixed) {
+                const whole = Math.floor(Math.random() * 4) + 1;
+                const den = [2, 3, 4, 5, 6, 8][Math.floor(Math.random() * 6)];
+                const rem = Math.floor(Math.random() * (den - 1)) + 1;
+                const top = whole * den + rem;
+
+                const correctText = `${whole} ${rem}/${den}`;
+                const acceptedAnswers = [correctText, `${top}/${den}`];
+
+                return {
+                    id: index,
+                    question: `Ubahlah pecahan tidak murni <span class="frac"><span class="top">${top}</span><span class="bottom">${den}</span></span> menjadi pecahan campuran...`,
+                    placeholder: "Contoh: 2 1/3",
+                    numericValue: top / den,
+                    acceptedAnswers: acceptedAnswers,
+                    explanation: `Bagi pembilang dengan penyebut:<br>${top} ÷ ${den} = <b>${whole}</b> sisa <b>${rem}</b>.<br>Sehingga bentuk campurannya adalah <b>${whole} <span class="frac"><span class="top">${rem}</span><span class="bottom">${den}</span></span></b>.`
+                };
+            } else {
+                const mult = Math.floor(Math.random() * 4) + 2;
+                const denBase = [2, 3, 4, 5, 7][Math.floor(Math.random() * 5)];
+                const numBase = Math.floor(Math.random() * (denBase - 1)) + 1;
+
+                const unSimpNum = numBase * mult;
+                const unSimpDen = denBase * mult;
+
+                const correctText = `${numBase}/${denBase}`;
+                const acceptedAnswers = [correctText];
+
+                return {
+                    id: index,
+                    question: `Sederhanakan pecahan <span class="frac"><span class="top">${unSimpNum}</span><span class="bottom">${unSimpDen}</span></span> ke bentuk yang paling sederhana...`,
+                    placeholder: "Contoh: 3/4",
+                    numericValue: numBase / denBase,
+                    acceptedAnswers: acceptedAnswers,
+                    explanation: `Bagi pembilang dan penyebut dengan FPB-nya (yaitu <b>${mult}</b>):<br>` +
+                        `• ${unSimpNum} ÷ ${mult} = ${numBase}<br>` +
+                        `• ${unSimpDen} ÷ ${mult} = ${denBase}<br>` +
+                        `Bentuk paling sederhananya adalah <b>${numBase}/${denBase}</b>.`
+                };
+            }
+        }
+
+        // 2. DESIMAL GENERATOR
+        function generateDesimalQuestion(op, index) {
+            let type = op;
+            if (op === 'all') {
+                const types = ['add_sub', 'mul_div', 'convert'];
+                type = types[Math.floor(Math.random() * types.length)];
+            }
+
+            if (type === 'add_sub') {
+                const isAdd = Math.random() > 0.5;
+                let val1 = (Math.floor(Math.random() * 200) + 10) / 10; // 1.0 - 21.0
+                let val2 = (Math.floor(Math.random() * 150) + 5) / 100; // 0.05 - 1.55
+
+                if (!isAdd && val1 < val2) {
+                    [val1, val2] = [val2, val1];
+                }
+
+                const result = isAdd ? (val1 + val2) : (val1 - val2);
+                const resultFormatted = result.toFixed(2).replace(/\.?0+$/, "");
+
+                return {
+                    id: index,
+                    question: `Hasil dari ${val1.toString().replace('.', ',')} ${isAdd ? '+' : '-'} ${val2.toString().replace('.', ',')} adalah ...`,
+                    placeholder: "Contoh: 5,45",
+                    numericValue: result,
+                    acceptedAnswers: [resultFormatted, resultFormatted.replace('.', ',')],
+                    explanation: `Operasikan dengan meluruskan tanda koma desimal:<br>` +
+                        `<pre class="font-mono text-sm bg-gray-100 p-2 rounded mt-1 inline-block">` +
+                        `  ${val1.toFixed(2).replace('.', ',')}\n` +
+                        `${isAdd ? '+' : '-'} ${val2.toFixed(2).replace('.', ',')}\n` +
+                        `-------\n` +
+                        `  ${result.toFixed(2).replace('.', ',')}</pre><br>` +
+                        `Hasilnya adalah <b>${resultFormatted.replace('.', ',')}</b>.`
+                };
+            }
+
+            if (type === 'mul_div') {
+                const isMul = Math.random() > 0.5;
+                if (isMul) {
+                    const a = (Math.floor(Math.random() * 45) + 5) / 10; // 0.5 - 4.9
+                    const b = (Math.floor(Math.random() * 8) + 2) / 10;  // 0.2 - 0.9
+                    const res = parseFloat((a * b).toFixed(2));
+                    const resStr = res.toString().replace('.', ',');
+
+                    return {
+                        id: index,
+                        question: `Hasil perkalian ${a.toString().replace('.', ',')} × ${b.toString().replace('.', ',')} adalah ...`,
+                        placeholder: "Contoh: 1,25",
+                        numericValue: res,
+                        acceptedAnswers: [resStr, res.toString()],
+                        explanation: `Kalikan angka tanpa koma terlebih dahulu (${Math.round(a*10)} × ${Math.round(b*10)} = ${Math.round(a*10)*Math.round(b*10)}).<br>Karena ada 2 angka di belakang koma total, tempatkan koma 2 digit dari kanan = <b>${resStr}</b>.`
+                    };
+                } else {
+                    const divisor = (Math.floor(Math.random() * 4) + 2) / 10; // 0.2, 0.3, 0.4, 0.5
+                    const quotient = (Math.floor(Math.random() * 30) + 5) / 10; // 0.5 - 3.4
+                    const dividend = parseFloat((divisor * quotient).toFixed(2));
+
+                    const resStr = quotient.toString().replace('.', ',');
+
+                    return {
+                        id: index,
+                        question: `Hasil pembagian ${dividend.toString().replace('.', ',')} ÷ ${divisor.toString().replace('.', ',')} adalah ...`,
+                        placeholder: "Contoh: 2,5",
+                        numericValue: quotient,
+                        acceptedAnswers: [resStr, quotient.toString()],
+                        explanation: `Kalikan kedua bilangan dengan 10 agar pembagi menjadi bilangan bulat:<br>${dividend.toString().replace('.', ',')} × 10 = ${parseFloat((dividend*10).toFixed(1))}<br>${divisor.toString().replace('.', ',')} × 10 = ${Math.round(divisor*10)}<br>Lalu bagi: ${parseFloat((dividend*10).toFixed(1))} ÷ ${Math.round(divisor*10)} = <b>${resStr}</b>.`
+                    };
+                }
+            }
+
+            // convert
+            const decimals = [0.2, 0.25, 0.4, 0.5, 0.6, 0.75, 0.8, 0.125];
+            const chosen = decimals[Math.floor(Math.random() * decimals.length)];
+            const g = gcd(chosen * 1000, 1000);
+            const num = (chosen * 1000) / g;
+            const den = 1000 / g;
+
+            return {
+                id: index,
+                question: `Ubah desimal <b>${chosen.toString().replace('.', ',')}</b> menjadi pecahan biasa paling sederhana...`,
+                placeholder: "Contoh: 3/4",
+                numericValue: chosen,
+                acceptedAnswers: [`${num}/${den}`],
+                explanation: `Bentuk pecahan dari ${chosen.toString().replace('.', ',')} adalah <span class="frac"><span class="top">${chosen * 1000}</span><span class="bottom">1000</span></span>.<br>Jika disederhanakan dengan membagi pembilang dan penyebut dengan FPB (${g}), didapat <b>${num}/${den}</b>.`
+            };
+        }
+
+        // 3. PERSEN GENERATOR
+        function generatePersenQuestion(op, index) {
+            let type = op;
+            if (op === 'all') {
+                const types = ['calc_value', 'discount', 'convert'];
+                type = types[Math.floor(Math.random() * types.length)];
+            }
+
+            if (type === 'calc_value') {
+                const percentList = [5, 10, 15, 20, 25, 30, 40, 50, 75];
+                const pct = percentList[Math.floor(Math.random() * percentList.length)];
+                const base = (Math.floor(Math.random() * 20) + 1) * 10000; // 10.000 - 200.000
+
+                const result = (pct / 100) * base;
+
+                return {
+                    id: index,
+                    question: `Berapakah <b>${pct}%</b> dari ${base.toLocaleString('id-ID')}?`,
+                    placeholder: "Contoh: 15000",
+                    numericValue: result,
+                    acceptedAnswers: [result.toString(), result.toLocaleString('id-ID')],
+                    explanation: `Perhitungan: (${pct} / 100) × ${base.toLocaleString('id-ID')} = <b>${result.toLocaleString('id-ID')}</b>.`
+                };
+            }
+
+            if (type === 'discount') {
+                const percentList = [10, 15, 20, 25, 30, 50];
+                const pct = percentList[Math.floor(Math.random() * percentList.length)];
+                const price = (Math.floor(Math.random() * 15) + 2) * 10000; // 20.000 - 160.000
+
+                const discountAmount = (pct / 100) * price;
+                const finalPrice = price - discountAmount;
+
+                return {
+                    id: index,
+                    question: `Sebuah baju seharga Rp ${price.toLocaleString('id-ID')} mendapat diskon <b>${pct}%</b>. Berapa harga yang harus dibayar?`,
+                    placeholder: "Contoh: 80000",
+                    numericValue: finalPrice,
+                    acceptedAnswers: [finalPrice.toString(), finalPrice.toLocaleString('id-ID'), `Rp ${finalPrice.toLocaleString('id-ID')}`],
+                    explanation: `1. Besarnya Diskon = ${pct}% × Rp ${price.toLocaleString('id-ID')} = Rp ${discountAmount.toLocaleString('id-ID')}<br>` +
+                        `2. Harga Akhir = Rp ${price.toLocaleString('id-ID')} - Rp ${discountAmount.toLocaleString('id-ID')} = <b>Rp ${finalPrice.toLocaleString('id-ID')}</b>.`
+                };
+            }
+
+            // convert
+            const isToPercent = Math.random() > 0.5;
+            if (isToPercent) {
+                const simpleFracs = [
+                    { n: 1, d: 2, p: 50 },
+                    { n: 1, d: 4, p: 25 },
+                    { n: 3, d: 4, p: 75 },
+                    { n: 1, d: 5, p: 20 },
+                    { n: 2, d: 5, p: 40 },
+                    { n: 3, d: 5, p: 60 },
+                    { n: 4, d: 5, p: 80 },
+                    { n: 1, d: 10, p: 10 },
+                    { n: 3, d: 10, p: 30 }
+                ];
+                const item = simpleFracs[Math.floor(Math.random() * simpleFracs.length)];
+
+                return {
+                    id: index,
+                    question: `Ubahlah pecahan <span class="frac"><span class="top">${item.n}</span><span class="bottom">${item.d}</span></span> ke dalam bentuk persen...`,
+                    placeholder: "Contoh: 25%",
+                    numericValue: item.p,
+                    acceptedAnswers: [`${item.p}%`, `${item.p}`],
+                    explanation: `Kalikan pecahan dengan 100%:<br>(<span class="frac"><span class="top">${item.n}</span><span class="bottom">${item.d}</span></span>) × 100% = (${item.n} × 100 ÷ ${item.d})% = <b>${item.p}%</b>.`
+                };
+            } else {
+                const total = [20, 25, 40, 50, 100][Math.floor(Math.random() * 5)];
+                const part = (Math.floor(Math.random() * (total / 2)) + 1);
+                const pct = (part / total) * 100;
+
+                return {
+                    id: index,
+                    question: `Di sebuah kelas terdapat ${total} siswa, ${part} di antaranya adalah siswa laki-laki. Berapa persentase siswa laki-laki di kelas tersebut?`,
+                    placeholder: "Contoh: 40%",
+                    numericValue: pct,
+                    acceptedAnswers: [`${pct}%`, `${pct}`],
+                    explanation: `Persentase = (${part} / ${total}) × 100% = <b>${pct}%</b>.`
+                };
+            }
+        }
+
+        // Main function to generate 10 questions
+        function generateQuestions() {
+            const topic = document.getElementById('topicSelect').value;
+            const op = document.getElementById('opSelect').value;
+
+            currentQuestions = [];
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            // Hide score banner
+            document.getElementById('scoreBanner').classList.add('hidden');
+
+            for (let i = 0; i < 10; i++) {
+                let qData;
+                if (topic === 'pecahan') {
+                    qData = generatePecahanQuestion(op, i);
+                } else if (topic === 'desimal') {
+                    qData = generateDesimalQuestion(op, i);
+                } else {
+                    qData = generatePersenQuestion(op, i);
+                }
+                currentQuestions.push(qData);
+
+                // Render question card
+                const card = document.createElement('div');
+                card.id = `qCard_${i}`;
+                card.className = "bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-200 p-6 transition-all duration-200";
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm flex-shrink-0">
+                                ${i + 1}
+                            </span>
+                            <div class="text-gray-800 text-lg font-medium">
+                                ${qData.question}
+                            </div>
+                        </div>
+                        <span id="badge_${i}" class="hidden text-xs font-semibold px-2.5 py-1 rounded-full"></span>
+                    </div>
+
+                    <div class="mt-4">
+                        <input type="text" id="ans_${i}" 
+                            placeholder="${qData.placeholder}"
+                            autocomplete="off"
+                            class="w-full sm:w-80 bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-xl focus:ring-indigo-500 focus:border-indigo-500 p-3 transition-all font-semibold placeholder:font-normal placeholder:text-gray-400">
+                    </div>
+
+                    <!-- Explanation Container (Hidden initially) -->
+                    <div id="exp_${i}" class="hidden mt-4 pt-4 border-t border-gray-100 text-sm leading-relaxed text-gray-700 bg-gray-50 rounded-xl p-4">
+                        <div class="font-bold text-gray-900 mb-1 flex items-center gap-1.5">
+                            💡 Pembahasan & Kunci Jawaban:
+                        </div>
+                        <div>${qData.explanation}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            }
+
+            // Scroll to top of questions
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        // Evaluate Submitted Answers
+        function evaluateAnswers(event) {
+            event.preventDefault();
+
+            let correctCount = 0;
+
+            currentQuestions.forEach((q, i) => {
+                const inputElem = document.getElementById(`ans_${i}`);
+                const cardElem = document.getElementById(`qCard_${i}`);
+                const badgeElem = document.getElementById(`badge_${i}`);
+                const expElem = document.getElementById(`exp_${i}`);
+
+                const userRaw = inputElem.value;
+                const userClean = cleanString(userRaw);
+
+                let isCorrect = false;
+
+                if (userClean !== '') {
+                    // Check exact string matches in acceptedAnswers
+                    const matchesString = q.acceptedAnswers.some(ans => cleanString(ans) === userClean);
+
+                    if (matchesString) {
+                        isCorrect = true;
+                    } else if (q.numericValue !== undefined) {
+                        // Check numeric equality
+                        const userVal = parseFractionInput(userClean);
+                        if (userVal !== null && isCloseFloat(userVal, q.numericValue)) {
+                            isCorrect = true;
+                        }
+                    }
+                }
+
+                // UI feedback per question
+                badgeElem.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-700', 'bg-rose-100', 'text-rose-700');
+                cardElem.classList.remove('border-emerald-300', 'border-rose-300', 'bg-emerald-50/20', 'bg-rose-50/20');
+                expElem.classList.remove('hidden');
+
+                if (isCorrect) {
+                    correctCount++;
+                    badgeElem.textContent = "✓ Benar";
+                    badgeElem.classList.add('bg-emerald-100', 'text-emerald-700');
+                    cardElem.classList.add('border-emerald-300', 'bg-emerald-50/20');
+                } else {
+                    badgeElem.textContent = "✕ Salah";
+                    badgeElem.classList.add('bg-rose-100', 'text-rose-700');
+                    cardElem.classList.add('border-rose-300', 'bg-rose-50/20');
+                }
+            });
+
+            // Calculate score (0 - 100)
+            const finalScore = correctCount * 10;
+            const scoreBanner = document.getElementById('scoreBanner');
+            const scoreText = document.getElementById('scoreText');
+            const scoreSummary = document.getElementById('scoreSummary');
+
+            scoreText.textContent = `${finalScore}/100`;
+            scoreSummary.textContent = `Kamu berhasil menjawab ${correctCount} dari 10 soal dengan benar.`;
+
+            scoreBanner.classList.remove('hidden');
+            scoreBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Initialize App on Load
+        window.onload = function() {
+            onTopicChange();
+        };
+    </script>
+</body>
+</html>

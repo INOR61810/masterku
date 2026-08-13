@@ -1,0 +1,105 @@
+/* ==========================================================
+   TABLET (max-width: 1100px)
+========================================================== */
+
+@media (max-width:1100px){
+
+    .hero{
+        flex-direction:column;
+        text-align:center;
+        padding-top:140px;
+    }
+
+    .hero-text,
+    .hero-image{
+        width:100%;
+    }
+
+    .hero-list{
+        justify-content:center;
+    }
+
+    .cards{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .statistik{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .fitur{
+        grid-template-columns:1fr;
+    }
+}
+
+
+/* ==========================================================
+   MOBILE (max-width: 768px)
+========================================================== */
+
+@media (max-width:768px){
+
+    .navbar{
+        padding:18px 20px;
+    }
+
+    .navbar nav{
+        display:none;
+    }
+
+    .logo{
+        font-size:24px;
+    }
+
+    .hero{
+        padding:120px 20px 40px;
+    }
+
+    .hero h1{
+        font-size:42px;
+        line-height:50px;
+    }
+
+    .hero p{
+        font-size:17px;
+        line-height:30px;
+    }
+
+    .math-card{
+        width:100%;
+    }
+
+    .statistik{
+        grid-template-columns:1fr;
+        padding:40px 20px;
+    }
+
+    .materi{
+        padding:60px 20px;
+    }
+
+    .materi h2,
+    .keunggulan h2{
+        font-size:34px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .card{
+        padding:30px;
+    }
+
+    .keunggulan{
+        padding:60px 20px;
+    }
+
+    .fitur-box{
+        padding:35px 25px;
+    }
+
+    footer{
+        padding:50px 20px;
+    }
+}

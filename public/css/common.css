@@ -1,0 +1,142 @@
+/* ================================================= */
+/* MASTERKU MATEMATIKA */
+/* common.css */
+/* ================================================= */
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Reset */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* Warna */
+
+:root{
+
+    --primary:#1565C0;
+    --primary-dark:#0B3C91;
+    --secondary:#42A5F5;
+    --gold:#FFD54F;
+
+    --white:#ffffff;
+
+    --text:#2D3748;
+
+    --text-light:#64748B;
+
+    --shadow:0 15px 40px rgba(0,0,0,.12);
+
+    --radius:20px;
+
+}
+
+/* HTML */
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+/* BODY */
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    color:var(--text);
+
+    min-height:100vh;
+
+}
+
+/* Judul */
+
+h1,h2,h3,h4{
+
+    font-family:'Outfit',sans-serif;
+
+}
+
+/* Link */
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+/* List */
+
+ul{
+
+    list-style:none;
+
+}
+
+/* Gambar */
+
+img{
+
+    max-width:100%;
+
+}
+
+/* Container */
+
+.container{
+
+    width:min(1200px,90%);
+
+    margin:auto;
+
+}
+
+/* Tombol */
+
+button{
+
+    border:none;
+
+    cursor:pointer;
+
+    font-family:'Poppins',sans-serif;
+
+}
+
+/* Animasi */
+
+*{
+
+    transition:.3s;
+
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primary);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#EEF4FF;
+
+}

@@ -1,0 +1,38 @@
+{
+  "materi": [
+    {
+      "id": 1,
+      "judul": "Bilangan Bulat",
+      "deskripsi": "Bilangan positif, negatif, dan nol.",
+      "pengertian": "Bilangan bulat adalah himpunan bilangan yang terdiri atas bilangan negatif, nol, dan bilangan positif.",
+      "contoh": "-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5",
+      "sifat": [
+        "Tidak memiliki bagian pecahan.",
+        "Terdiri dari bilangan negatif, nol, dan positif.",
+        "Dapat diurutkan dari kecil ke besar."
+      ]
+    },
+    {
+      "id": 2,
+      "judul": "Bilangan Pecahan",
+      "deskripsi": "Bilangan yang ditulis dalam bentuk a/b.",
+      "pengertian": "Bilangan pecahan adalah bilangan yang dinyatakan dalam bentuk a/b, dengan b tidak sama dengan nol.",
+      "contoh": "1/2, 2/3, 3/4",
+      "sifat": [
+        "Memiliki pembilang dan penyebut.",
+        "Penyebut tidak boleh nol."
+      ]
+    },
+    {
+      "id": 3,
+      "judul": "Bilangan Desimal",
+      "deskripsi": "Bilangan dengan tanda koma.",
+      "pengertian": "Bilangan desimal merupakan bentuk lain dari pecahan dengan penyebut 10, 100, 1000, dan seterusnya.",
+      "contoh": "0,5 ; 2,75 ; 15,8",
+      "sifat": [
+        "Menggunakan tanda koma.",
+        "Dapat diubah menjadi pecahan."
+      ]
+    }
+  ]
+}

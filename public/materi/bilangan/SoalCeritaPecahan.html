@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PecahanPintar - Latihan Matematika Pecahan Interaktif</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#3B82F6',
+                            purple: '#8B5CF6',
+                            pink: '#EC4899',
+                            yellow: '#F59E0B',
+                            green: '#10B981',
+                            teal: '#14B8A6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        fredoka: ['Fredoka', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka', cursive;
+        }
+        .badge-bounce {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        /* Custom scrollbar for better mobile UX */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 pb-12 flex flex-col selection:bg-indigo-500 selection:text-white">
+    <!-- Top Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold font-fredoka text-indigo-900 tracking-wide flex items-center gap-2">
+                        PecahanPintar <span class="text-xs bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-0.5 rounded-full font-sans">Math Kids</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 hidden sm:block" id="appSubtitle">Latihan Soal Cerita Pecahan Interaktif</p>
+                </div>
+            </div>
+
+            <!-- Controls: Language Toggle & Sound -->
+            <div class="flex items-center space-x-2">
+                <!-- Sound Toggle -->
+                <button id="soundBtn" onclick="toggleSound()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-indigo-600 transition flex items-center justify-center w-10 h-10" title="Suara / Sound">
+                    <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <!-- Language Switcher -->
+                <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200">
+                    <button id="langIdBtn" onclick="setLanguage('id')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm flex items-center gap-1">
+                        <span>🇮🇩</span> <span class="hidden md:inline">ID</span>
+                    </button>
+                    <button id="langEnBtn" onclick="setLanguage('en')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1">
+                        <span>🇬🇧</span> <span class="hidden md:inline">EN</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-4 pt-6 flex-grow w-full">
+        <!-- Hero / Score Banner -->
+        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-5 md:p-6 text-white shadow-xl mb-6 relative overflow-hidden">
+            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 relative z-10">
+                <div>
+                    <span id="welcomeBadge" class="inline-block bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                        🌟 Let's Practise - Matematika Pecahan
+                    </span>
+                    <h2 id="heroTitle" class="text-2xl md:text-3xl font-bold font-fredoka">
+                        Latihan Soal Matematika Pecahan
+                    </h2>
+                    <p id="heroDesc" class="text-indigo-100 text-xs md:text-sm mt-1 max-w-lg">
+                        Selesaikan soal-soal pecahan di bawah ini. Kamu bisa mengganti angka atau mengacak urutan soal kapan saja!
+                    </p>
+                </div>
+
+                <!-- Stats summary -->
+                <div class="flex items-center gap-3 bg-white/15 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 self-stretch justify-around md:self-auto">
+                    <div class="text-center">
+                        <span id="labelScore" class="block text-[11px] text-indigo-100 uppercase tracking-wider">Skor</span>
+                        <span id="scoreVal" class="text-2xl font-bold font-fredoka text-yellow-300">0</span>
+                    </div>
+                    <div class="h-8 w-px bg-white/20"></div>
+                    <div class="text-center">
+                        <span id="labelCompleted" class="block text-[11px] text-indigo-100 uppercase tracking-wider">Selesai</span>
+                        <span id="progressVal" class="text-2xl font-bold font-fredoka text-white">0/10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar: Dynamic Generators & Mode Selector -->
+        <div class="bg-white rounded-2xl p-3 md:p-4 shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-3">
+            <!-- Questions Nav Dots -->
+            <div class="flex items-center gap-1.5 flex-wrap justify-center" id="questionDotsContainer">
+                <!-- Javascript will inject 10 dots here -->
+            </div>
+
+            <!-- Generators & Tools -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-center">
+                <!-- Randomize Numbers Button -->
+                <button onclick="generateNewNumbers()" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-dice text-emerald-600"></i> <span id="btnNewNumbers">Ganti Angka</span>
+                </button>
+
+                <!-- Shuffle Questions Button -->
+                <button onclick="shuffleQuestions()" class="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-shuffle text-amber-600"></i> <span id="btnShuffle">Acak Soal</span>
+                </button>
+
+                <!-- Mode Switcher -->
+                <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl">
+                    <button id="modePracticeBtn" onclick="setMode('practice')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm flex items-center gap-1">
+                        <i class="fa-solid fa-book-open"></i> <span id="labelModePractice">Latihan</span>
+                    </button>
+                    <button id="modeQuizBtn" onclick="setMode('quiz')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1">
+                        <i class="fa-solid fa-trophy"></i> <span id="labelModeQuiz">Kuis</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-slate-200 relative mb-6">
+            <!-- Top Card Header -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+                <div class="flex items-center space-x-3">
+                    <span id="questionNumBadge" class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 font-bold font-fredoka text-lg flex items-center justify-center shadow-inner">
+                        1
+                    </span>
+                    <div>
+                        <h3 id="questionHeading" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Soal Nomor 1</h3>
+                        <span id="topicBadge" class="text-xs text-indigo-600 font-bold">Penjumlahan Pecahan</span>
+                    </div>
+                </div>
+
+                <!-- Scratchpad toggle button -->
+                <button onclick="toggleScratchpad()" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-3 py-2 rounded-xl font-medium transition flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-pen-ruler"></i> <span id="labelScratchpadBtn">Papan Oret-Oretan</span>
+                </button>
+            </div>
+
+            <!-- Scratchpad Canvas Area -->
+            <div id="scratchpadArea" class="hidden mb-6 bg-slate-900 rounded-2xl p-4 text-white relative">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chalkboard"></i> <span id="labelScratchTitle">Oret-Oretan Hitung</span>
+                    </span>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="clearScratchpad()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg transition">
+                            <i class="fa-solid fa-trash-can"></i> <span id="labelClear">Hapus</span>
+                        </button>
+                        <button onclick="toggleScratchpad()" class="text-xs text-slate-400 hover:text-white px-2">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                    </div>
+                </div>
+                <canvas id="scratchCanvas" class="w-full h-48 bg-slate-950 rounded-xl cursor-crosshair border border-slate-800 touch-none"></canvas>
+            </div>
+
+            <!-- Question Text Block (Clean layout without translated subtext) -->
+            <div class="mb-6">
+                <p id="mainQuestionText" class="text-lg md:text-xl font-medium text-slate-800 leading-relaxed font-fredoka">
+                    <!-- Question text injected dynamically -->
+                </p>
+            </div>
+
+            <!-- Answer Input Section -->
+            <div class="bg-indigo-50/70 rounded-2xl p-4 md:p-5 border border-indigo-100 mb-6">
+                <label id="labelYourAnswer" class="block text-xs md:text-sm font-bold text-indigo-950 mb-3 uppercase tracking-wide">
+                    Masukkan Jawabanmu:
+                </label>
+
+                <!-- Dual Input Style Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <!-- Method 1: Separate Mixed Fraction Boxes -->
+                    <div class="bg-white p-3.5 rounded-xl border border-indigo-100 shadow-sm flex items-center justify-center gap-3">
+                        <!-- Whole number -->
+                        <div class="text-center">
+                            <input type="number" id="inputWhole" placeholder="0" class="w-16 h-12 text-center text-lg font-bold font-fredoka bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:bg-white outline-none transition">
+                            <span id="labelWhole" class="block text-[10px] text-slate-400 mt-1">Bulat</span>
+                        </div>
+
+                        <!-- Fraction numerator & denominator -->
+                        <div class="flex flex-col items-center">
+                            <input type="number" id="inputNum" placeholder="17" class="w-16 h-10 text-center text-base font-bold font-fredoka bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:bg-white outline-none transition">
+                            <div class="w-16 h-0.5 bg-slate-400 my-1"></div>
+                            <input type="number" id="inputDen" placeholder="35" class="w-16 h-10 text-center text-base font-bold font-fredoka bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:bg-white outline-none transition">
+                        </div>
+
+                        <!-- Unit label -->
+                        <span id="unitLabel" class="text-xs md:text-sm font-bold text-slate-600 ml-1"></span>
+                    </div>
+
+                    <!-- Method 2: Single Text Line Input -->
+                    <div class="bg-white p-3.5 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-center">
+                        <span id="labelSingleInputHelp" class="text-xs text-slate-500 mb-1">Atau ketik langsung di sini:</span>
+                        <div class="relative">
+                            <input type="text" id="inputSingle" placeholder="misal: 17/35 atau 12 8/9" class="w-full h-11 px-3 text-sm md:text-base font-bold text-slate-800 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:bg-white outline-none transition">
+                        </div>
+                        <span class="text-[10px] text-slate-400 mt-1" id="labelFormatHint">Format: `17/35`, `12 8/9`, atau `14`</span>
+                    </div>
+                </div>
+
+                <!-- Custom Inline Warning Alert (Replaces standard alert) -->
+                <div id="warningNotice" class="hidden mt-3 p-3 bg-amber-100 border border-amber-300 rounded-xl text-amber-900 text-xs font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm"></i>
+                    <span id="warningNoticeText">Silakan masukkan jawabanmu terlebih dahulu!</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <button id="hintBtn" onclick="toggleHint()" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs transition flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-lightbulb"></i> <span id="labelHintBtn">Petunjuk</span>
+                    </button>
+
+                    <button id="checkBtn" onclick="checkAnswer()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold font-fredoka text-sm shadow-md hover:shadow-lg transition transform active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i> <span id="labelCheckBtn">Periksa Jawaban</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hint Box -->
+            <div id="hintBox" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-900 text-sm">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-lightbulb text-amber-500 text-lg mt-0.5"></i>
+                    <div>
+                        <h4 id="labelHintTitle" class="font-bold mb-1">Petunjuk Cara Mengerjakan:</h4>
+                        <p id="hintContentText" class="text-amber-800 text-xs md:text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback / Result Banner -->
+            <div id="feedbackBanner" class="hidden rounded-2xl p-4 md:p-5 mb-6 transition-all">
+                <div class="flex items-start gap-3.5">
+                    <div id="feedbackIcon" class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-xl md:text-2xl flex-shrink-0">
+                        <!-- Icon injected by JS -->
+                    </div>
+                    <div class="flex-grow">
+                        <h4 id="feedbackTitle" class="text-base md:text-lg font-bold font-fredoka"></h4>
+                        <p id="feedbackText" class="text-xs md:text-sm mt-0.5 leading-relaxed"></p>
+                        
+                        <!-- Explanation Box -->
+                        <div id="explanationBox" class="mt-3 pt-3 border-t border-slate-200/60 text-xs md:text-sm">
+                            <!-- Explanation injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation Bar for Questions -->
+            <div class="flex items-center justify-between border-t border-slate-100 pt-4">
+                <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-left"></i> <span id="labelPrev">Sebelumnya</span>
+                </button>
+
+                <span id="questionIndicator" class="text-xs font-semibold text-slate-400">Soal 1 dari 10</span>
+
+                <button id="nextBtn" onclick="nextQuestion()" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 transition flex items-center gap-1.5">
+                    <span id="labelNext">Berikutnya</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Finish Modal / Summary Container -->
+        <div id="finishSummaryCard" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 text-center mb-8">
+            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center text-4xl text-yellow-500 mx-auto mb-4 badge-bounce shadow-inner">
+                🏆
+            </div>
+            <h2 id="summaryTitle" class="text-2xl md:text-3xl font-bold font-fredoka text-slate-800">Luar Biasa! Seluruh Soal Selesai!</h2>
+            <p id="summaryDesc" class="text-slate-600 text-xs md:text-sm mt-2 max-w-md mx-auto">
+                Kamu telah menyelesaikan seluruh latihan soal pecahan. Terus belajar dan tingkatkan kemampuan matematikamu!
+            </p>
+
+            <div class="bg-indigo-50 p-5 rounded-2xl max-w-md mx-auto my-6 border border-indigo-100 flex items-center justify-around">
+                <div>
+                    <span id="labelFinalScore" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Skor Akhir</span>
+                    <span id="finalScoreVal" class="block text-3xl md:text-4xl font-bold font-fredoka text-indigo-600">100</span>
+                </div>
+                <div class="h-10 w-px bg-indigo-200"></div>
+                <div>
+                    <span id="labelAccuracy" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Akurasi</span>
+                    <span id="accuracyVal" class="block text-3xl md:text-4xl font-bold font-fredoka text-emerald-600">100%</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <button onclick="generateNewNumbers(); restartPractice();" class="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold font-fredoka text-sm shadow-md transition transform active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-dice"></i> <span id="labelNewNumbersRestart">Ganti Angka Baru</span>
+                </button>
+                <button onclick="restartPractice()" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold font-fredoka text-sm shadow-md transition transform active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> <span id="labelRestartBtn">Coba Lagi</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-400 py-4 mt-auto">
+        <p>PecahanPintar &copy; 2026 • Latihan Matematika Pecahan SD / Interactive Math Practice</p>
+    </footer>
+
+    <script>
+        // Great Common Divisor and Fraction Utilities
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                let t = b;
+                b = a % b;
+                a = t;
+            }
+            return a;
+        }
+
+        function lcm(a, b) {
+            return (a * b) / gcd(a, b);
+        }
+
+        function simplifyFraction(num, den) {
+            if (den === 0) return { whole: 0, num: 0, den: 1, text: "0" };
+            const common = gcd(num, den);
+            num = num / common;
+            den = den / common;
+
+            const whole = Math.floor(num / den);
+            const remNum = num % den;
+
+            let text = "";
+            if (whole > 0 && remNum > 0) {
+                text = `${whole} ${remNum}/${den}`;
+            } else if (whole > 0 && remNum === 0) {
+                text = `${whole}`;
+            } else {
+                text = `${remNum}/${den}`;
+            }
+
+            return { whole, num: remNum, den, totalNum: num, text };
+        }
+
+        // Helper to generate random integer between min and max inclusive
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Core dynamic question templates base data
+        let questionTemplates = [
+            {
+                id: 1,
+                topic: { id: "Penjumlahan Pecahan", en: "Fraction Addition" },
+                unit: "",
+                generator: (useOriginal = false) => {
+                    let n1 = 1, d1 = 5, n2 = 2, d2 = 7;
+                    if (!useOriginal) {
+                        d1 = randInt(3, 8);
+                        d2 = randInt(3, 9);
+                        if (d1 === d2) d2 = d1 + 2;
+                        n1 = randInt(1, d1 - 1);
+                        n2 = randInt(1, d2 - 1);
+                        // ensure sum < 1 for simple fraction
+                        if ((n1 * d2 + n2 * d1) >= (d1 * d2)) {
+                            n1 = 1;
+                            n2 = 1;
+                        }
+                    }
+                    const totalNum = n1 * d2 + n2 * d1;
+                    const totalDen = d1 * d2;
+                    const ans = simplifyFraction(totalNum, totalDen);
+
+                    return {
+                        question: {
+                            id: `Azhar membaca ${n1}/${d1} bagian buku pada hari Senin dan ${n2}/${d2} bagian pada hari Selasa. Berapa pecahan dari buku tersebut yang telah ia selesaikan dalam dua hari?`,
+                            en: `Azhar read ${n1}/${d1} of a book on Monday and ${n2}/${d2} of it on Tuesday. Find what fraction of the book he completed reading in two days.`
+                        },
+                        hint: {
+                            id: `Jumlahkan pecahan hari Senin (${n1}/${d1}) dan hari Selasa (${n2}/${d2}). Cari penyebut KPK dari ${d1} dan ${d2}.`,
+                            en: `Add the fraction read on Monday (${n1}/${d1}) and Tuesday (${n2}/${d2}). Find the common denominator for ${d1} and ${d2}.`
+                        },
+                        explanation: {
+                            id: `${n1}/${d1} + ${n2}/${d2} = (${n1 * d2} + ${n2 * d1}) / ${totalDen} = ${totalNum}/${totalDen}` + (ans.text !== `${totalNum}/${totalDen}` ? ` = ${ans.text}` : ``) + ` bagian buku.`,
+                            en: `${n1}/${d1} + ${n2}/${d2} = (${n1 * d2} + ${n2 * d1}) / ${totalDen} = ${totalNum}/${totalDen}` + (ans.text !== `${totalNum}/${totalDen}` ? ` = ${ans.text}` : ``) + ` of the book.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 2,
+                topic: { id: "Pengurangan Pecahan", en: "Fraction Subtraction" },
+                unit: "",
+                generator: (useOriginal = false) => {
+                    let n1 = 1, d1 = 5, n2 = 3, d2 = 20;
+                    if (!useOriginal) {
+                        d1 = randInt(3, 6);
+                        d2 = d1 * randInt(2, 4);
+                        n1 = randInt(1, 2);
+                        n2 = randInt(1, 3);
+                    }
+                    // total used = 1 - n1/d1 - n2/d2
+                    const commonDen = d2;
+                    const num1 = n1 * (d2 / d1);
+                    const num2 = n2;
+                    const remNum = commonDen - num1 - num2;
+                    const ans = simplifyFraction(remNum, commonDen);
+
+                    return {
+                        question: {
+                            id: `Riki membeli seblek minyak dan memberikan ${n1}/${d1} bagian minyak kepada tetangganya. Pada akhir bulan, tersisa ${n2}/${d2} bagian minyak. Berapa bagian minyak yang dia gunakan dalam 1 bulan?`,
+                            en: `Riki bought an oil can and gave ${n1}/${d1} of the oil from the can to her neighbour. By the end of the month, she found that ${n2}/${d2} of the oil was still left in the can. Find what part of the oil in the can did she use in 1 month.`
+                        },
+                        hint: {
+                            id: `Minyak utuh = 1. Kurangi minyak yang diberikan (${n1}/${d1}) dan sisa minyak (${n2}/${d2}). Samakan penyebut menjadi ${commonDen}.`,
+                            en: `Total oil = 1. Subtract given portion (${n1}/${d1}) and left portion (${n2}/${d2}). Use common denominator ${commonDen}.`
+                        },
+                        explanation: {
+                            id: `1 - ${n1}/${d1} - ${n2}/${d2} = ${commonDen}/${commonDen} - ${num1}/${commonDen} - ${num2}/${commonDen} = ${remNum}/${commonDen}` + (ans.text !== `${remNum}/${commonDen}` ? ` = ${ans.text}` : ``) + ` bagian.`,
+                            en: `1 - ${n1}/${d1} - ${n2}/${d2} = ${commonDen}/${commonDen} - ${num1}/${commonDen} - ${num2}/${commonDen} = ${remNum}/${commonDen}` + (ans.text !== `${remNum}/${commonDen}` ? ` = ${ans.text}` : ``) + ` part.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 3,
+                topic: { id: "Penjumlahan Pecahan Campuran", en: "Mixed Fraction Addition" },
+                unit: "kg",
+                generator: (useOriginal = false) => {
+                    let w1 = 4, n1 = 1, d1 = 2;
+                    let w2 = 3, n2 = 2, d2 = 9;
+                    let w3 = 5, n3 = 1, d3 = 6;
+
+                    if (!useOriginal) {
+                        w1 = randInt(2, 6);
+                        w2 = randInt(2, 5);
+                        w3 = randInt(2, 6);
+                        d1 = 2; d2 = 9; d3 = 6; // keep common den 18 for nice clean school math
+                        n1 = 1; n2 = randInt(1, 4); n3 = randInt(1, 3);
+                    }
+
+                    const commonDen = 18;
+                    const sumWhole = w1 + w2 + w3;
+                    const sumNum = (n1 * 9) + (n2 * 2) + (n3 * 3);
+                    const totalNum = (sumWhole * commonDen) + sumNum;
+                    const ans = simplifyFraction(totalNum, commonDen);
+
+                    return {
+                        question: {
+                            id: `Ibu Riyah membeli ${w1} ${n1}/${d1} kg kentang, ${w2} ${n2}/${d2} kg bawang merah, dan ${w3} ${n3}/${d3} kg kembang kol. Hitung total berat sayuran yang dibeli.`,
+                            en: `Riyah's mother bought ${w1} ${n1}/${d1} kg of potatoes, ${w2} ${n2}/${d2} kg of onions, and ${w3} ${n3}/${d3} kg of cauliflower. Calculate the total weight of vegetables she bought.`
+                        },
+                        hint: {
+                            id: `Jumlahkan bilangan bulatnya (${w1} + ${w2} + ${w3} = ${sumWhole}). Lalu jumlahkan pecahannya (${n1}/${d1} + ${n2}/${d2} + ${n3}/${d3}) dengan penyebut 18.`,
+                            en: `Add whole numbers first (${w1} + ${w2} + ${w3} = ${sumWhole}). Then add fractions with common denominator 18.`
+                        },
+                        explanation: {
+                            id: `(${w1} + ${w2} + ${w3}) + (${n1 * 9}/18 + ${n2 * 2}/18 + ${n3 * 3}/18) = ${sumWhole} + ${sumNum}/18 = ${ans.text} kg.`,
+                            en: `(${w1} + ${w2} + ${w3}) + (${n1 * 9}/18 + ${n2 * 2}/18 + ${n3 * 3}/18) = ${sumWhole} + ${sumNum}/18 = ${ans.text} kg.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 4,
+                topic: { id: "Penjumlahan Waktu Pecahan", en: "Fraction Time Addition" },
+                unit: "jam / hr",
+                generator: (useOriginal = false) => {
+                    let n1 = 1, d1 = 2, n2 = 3, d2 = 4;
+                    if (!useOriginal) {
+                        d1 = 2; d2 = 4;
+                        n1 = 1; n2 = randInt(1, 3);
+                    }
+                    const totalNum = n1 * 2 + n2;
+                    const ans = simplifyFraction(totalNum, 4);
+
+                    return {
+                        question: {
+                            id: `Jaka menghabiskan ${n1}/${d1} jam belajar Bahasa Inggris dan ${n2}/${d2} jam belajar Matematika. Berapa jam dia belajar secara keseluruhan?`,
+                            en: `Jaka spends ${n1}/${d1} hour studying English and ${n2}/${d2} hour studying Maths. How many hours does he study in all?`
+                        },
+                        hint: {
+                            id: `Samakan penyebut menjadi 4: ${n1}/${d1} = ${n1 * 2}/4. Lalu jumlahkan ${n1 * 2}/4 + ${n2}/4.`,
+                            en: `Make denominator 4: ${n1}/${d1} = ${n1 * 2}/4. Then add ${n1 * 2}/4 + ${n2}/4.`
+                        },
+                        explanation: {
+                            id: `${n1}/${d1} + ${n2}/${d2} = ${n1 * 2}/4 + ${n2}/4 = ${totalNum}/4 = ${ans.text} jam.`,
+                            en: `${n1}/${d1} + ${n2}/${d2} = ${n1 * 2}/4 + ${n2}/4 = ${totalNum}/4 = ${ans.text} hours.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 5,
+                topic: { id: "Perkalian Pecahan", en: "Fraction Multiplication" },
+                unit: "liter",
+                generator: (useOriginal = false) => {
+                    let w1 = 3, n1 = 1, d1 = 2, days = 45;
+                    if (!useOriginal) {
+                        w1 = randInt(2, 5);
+                        days = randInt(20, 50);
+                    }
+                    const numImp = w1 * d1 + n1;
+                    const totalNum = numImp * days;
+                    const ans = simplifyFraction(totalNum, d1);
+
+                    return {
+                        question: {
+                            id: `Seorang penjual susu memasok ${w1} ${n1}/${d1} liter susu ke sebuah keluarga setiap hari. Berapa liter susu yang dikonsumsi keluarga tersebut dalam ${days} hari?`,
+                            en: `A milkman supplies ${w1} ${n1}/${d1} l of milk to a family each day. How much litres of milk does the family consume in ${days} days?`
+                        },
+                        hint: {
+                            id: `Ubah ${w1} ${n1}/${d1} menjadi pecahan biasa (${numImp}/${d1}), lalu kalikan dengan ${days}.`,
+                            en: `Convert ${w1} ${n1}/${d1} into improper fraction (${numImp}/${d1}), then multiply by ${days}.`
+                        },
+                        explanation: {
+                            id: `${w1} ${n1}/${d1} × ${days} = (${numImp}/${d1}) × ${days} = ${totalNum}/${d1} = ${ans.text} liter.`,
+                            en: `${w1} ${n1}/${d1} × ${days} = (${numImp}/${d1}) × ${days} = ${totalNum}/${d1} = ${ans.text} litres.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 6,
+                topic: { id: "Perkalian Panjang", en: "Multiplication with Length" },
+                unit: "m",
+                generator: (useOriginal = false) => {
+                    let w1 = 11, n1 = 3, d1 = 4, count = 31;
+                    if (!useOriginal) {
+                        w1 = randInt(8, 15);
+                        count = randInt(20, 40);
+                    }
+                    const numImp = w1 * d1 + n1;
+                    const totalNum = numImp * count;
+                    const ans = simplifyFraction(totalNum, d1);
+
+                    return {
+                        question: {
+                            id: `Jika ${w1} ${n1}/${d1} meter kain digunakan untuk membuat satu gaun, carilah panjang kain yang dibutuhkan untuk membuat ${count} gaun serupa.`,
+                            en: `If ${w1} ${n1}/${d1} metres of cloth is used to make one dress, find the length of cloth required to make ${count} such dresses.`
+                        },
+                        hint: {
+                            id: `Ubah ${w1} ${n1}/${d1} menjadi pecahan biasa: (${w1} × 4 + ${n1})/4 = ${numImp}/4. Kalikan ${numImp}/4 × ${count}.`,
+                            en: `Convert ${w1} ${n1}/${d1} to improper fraction: (${w1} × 4 + ${n1})/4 = ${numImp}/4. Multiply ${numImp}/4 × ${count}.`
+                        },
+                        explanation: {
+                            id: `${w1} ${n1}/${d1} × ${count} = (${numImp}/4) × ${count} = ${totalNum}/4 = ${ans.text} meter.`,
+                            en: `${w1} ${n1}/${d1} × ${count} = (${numImp}/4) × ${count} = ${totalNum}/4 = ${ans.text} metres.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 7,
+                topic: { id: "Perkalian Berat", en: "Multiplication with Weight" },
+                unit: "kg",
+                generator: (useOriginal = false) => {
+                    let w1 = 13, n1 = 4, d1 = 7, bags = 53;
+                    if (!useOriginal) {
+                        w1 = randInt(10, 18);
+                        bags = randInt(30, 60);
+                    }
+                    const numImp = w1 * d1 + n1;
+                    const totalNum = numImp * bags;
+                    const ans = simplifyFraction(totalNum, d1);
+
+                    return {
+                        question: {
+                            id: `Sebuah karung beras memiliki berat ${w1} ${n1}/${d1} kg. Berapa total berat dari ${bags} karung beras tersebut?`,
+                            en: `A bag of rice weighs ${w1} ${n1}/${d1} kg. What will be the total weight of ${bags} such bags?`
+                        },
+                        hint: {
+                            id: `Ubah ${w1} ${n1}/${d1} menjadi pecahan biasa: (${w1} × 7 + ${n1})/7 = ${numImp}/7. Kalikan ${numImp}/7 × ${bags}.`,
+                            en: `Convert ${w1} ${n1}/${d1} to improper fraction: (${w1} × 7 + ${n1})/7 = ${numImp}/7. Multiply ${numImp}/7 × ${bags}.`
+                        },
+                        explanation: {
+                            id: `${w1} ${n1}/${d1} × ${bags} = (${numImp}/7) × ${bags} = ${totalNum}/7 = ${ans.text} kg.`,
+                            en: `${w1} ${n1}/${d1} × ${bags} = (${numImp}/7) × ${bags} = ${totalNum}/7 = ${ans.text} kg.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 8,
+                topic: { id: "Pecahan dari Jumlah", en: "Fraction of a Quantity" },
+                unit: "siswa / students",
+                generator: (useOriginal = false) => {
+                    let totalStudents = 35, n1 = 3, d1 = 5;
+                    if (!useOriginal) {
+                        d1 = 5;
+                        const mult = randInt(5, 12);
+                        totalStudents = mult * d1;
+                        n1 = randInt(2, 4);
+                    }
+                    const footballFractionNum = d1 - n1;
+                    const result = (totalStudents / d1) * footballFractionNum;
+                    const ans = simplifyFraction(result, 1);
+
+                    return {
+                        question: {
+                            id: `Ada ${totalStudents} siswa di sebuah kelas. Jika ${n1}/${d1} dari siswa lebih menyukai basket dibanding sepak bola, dan sisanya menyukai sepak bola, berapa banyak siswa yang menyukai sepak bola?`,
+                            en: `There are ${totalStudents} students in a class. If ${n1}/${d1} of the students prefer basketball over football, and the rest like football, how many students like football?`
+                        },
+                        hint: {
+                            id: `Porsi yang menyukai sepak bola = 1 - ${n1}/${d1} = ${footballFractionNum}/${d1}. Hitung ${footballFractionNum}/${d1} dari ${totalStudents}.`,
+                            en: `Portion who like football = 1 - ${n1}/${d1} = ${footballFractionNum}/${d1}. Calculate ${footballFractionNum}/${d1} of ${totalStudents}.`
+                        },
+                        explanation: {
+                            id: `Siswa suka sepak bola = ${totalStudents} × (1 - ${n1}/${d1}) = ${totalStudents} × ${footballFractionNum}/${d1} = ${result} siswa.`,
+                            en: `Students who like football = ${totalStudents} × (1 - ${n1}/${d1}) = ${totalStudents} × ${footballFractionNum}/${d1} = ${result} students.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 9,
+                topic: { id: "Pembagian Pecahan", en: "Fraction Division" },
+                unit: "kg",
+                generator: (useOriginal = false) => {
+                    let boxes = 13, numImp = 97, denImp = 8;
+                    if (!useOriginal) {
+                        boxes = randInt(8, 15);
+                        numImp = randInt(70, 110);
+                    }
+                    const totalDen = denImp * boxes;
+                    const ans = simplifyFraction(numImp, totalDen);
+
+                    return {
+                        question: {
+                            id: `${boxes} kotak apel memiliki total berat 12 1/8 kg (${numImp}/${denImp} kg). Berapa berat setiap kotak apel?`,
+                            en: `${boxes} boxes of apples weigh 12 1/8 kg (${numImp}/${denImp} kg). How much does each box of apples weigh?`
+                        },
+                        hint: {
+                            id: `Bagilah total berat (${numImp}/${denImp} kg) dengan jumlah kotak (${boxes}): (${numImp}/${denImp}) ÷ ${boxes}.`,
+                            en: `Divide total weight (${numImp}/${denImp} kg) by number of boxes (${boxes}): (${numImp}/${denImp}) ÷ ${boxes}.`
+                        },
+                        explanation: {
+                            id: `(${numImp}/${denImp}) ÷ ${boxes} = ${numImp} / (${denImp} × ${boxes}) = ${numImp}/${totalDen}` + (ans.text !== `${numImp}/${totalDen}` ? ` = ${ans.text}` : ``) + ` kg.`,
+                            en: `(${numImp}/${denImp}) ÷ ${boxes} = ${numImp} / (${denImp} × ${boxes}) = ${numImp}/${totalDen}` + (ans.text !== `${numImp}/${totalDen}` ? ` = ${ans.text}` : ``) + ` kg.`
+                        },
+                        answer: ans
+                    };
+                }
+            },
+            {
+                id: 10,
+                topic: { id: "Pembagian Pecahan Campuran", en: "Mixed Fraction Division" },
+                unit: "kg",
+                generator: (useOriginal = false) => {
+                    let w1 = 698, n1 = 7, d1 = 11, carts = 5;
+                    if (!useOriginal) {
+                        w1 = randInt(400, 800);
+                        carts = randInt(4, 8);
+                    }
+                    const numImp = w1 * d1 + n1;
+                    const totalDen = d1 * carts;
+                    const ans = simplifyFraction(numImp, totalDen);
+
+                    return {
+                        question: {
+                            id: `Seorang petani menjual ${w1} ${n1}/${d1} kg beras kepada seorang pedagang. Pedagang tersebut memiliki ${carts} gerobak. Berapa kg beras yang dimuat pada setiap gerobak jika muatan tiap gerobak sama rata?`,
+                            en: `A farmer sells ${w1} ${n1}/${d1} kg of rice to a merchant. The merchant has ${carts} carts to transport the rice. How much rice can be loaded on each cart if each cart is loaded with an equal quantity of rice?`
+                        },
+                        hint: {
+                            id: `Ubah ${w1} ${n1}/${d1} menjadi pecahan biasa: (${w1} × 11 + ${n1})/11 = ${numImp}/11. Lalu bagilah dengan ${carts}.`,
+                            en: `Convert ${w1} ${n1}/${d1} to improper fraction: (${w1} × 11 + ${n1})/11 = ${numImp}/11. Then divide by ${carts}.`
+                        },
+                        explanation: {
+                            id: `(${numImp}/11) ÷ ${carts} = ${numImp} / 55 = ${ans.text} kg.`,
+                            en: `(${numImp}/11) ÷ ${carts} = ${numImp} / 55 = ${ans.text} kg.`
+                        },
+                        answer: ans
+                    };
+                }
+            }
+        ];
+
+        // Active Questions state array
+        let activeQuestions = [];
+        let currentLang = 'id'; // 'id' or 'en'
+        let currentMode = 'practice'; // 'practice' or 'quiz'
+        let currentIdx = 0;
+        let score = 0;
+        let soundEnabled = true;
+        let questionStatus = [];
+
+        // UI String Translations
+        const i18n = {
+            id: {
+                subtitle: "Latihan Soal Cerita Pecahan Interaktif",
+                welcomeBadge: "🌟 Let's Practise - Matematika Pecahan",
+                heroTitle: "Latihan Soal Matematika Pecahan",
+                heroDesc: "Selesaikan soal-soal pecahan di bawah ini. Kamu bisa mengganti angka atau mengacak urutan soal kapan saja!",
+                labelScore: "Skor",
+                labelCompleted: "Selesai",
+                btnNewNumbers: "Ganti Angka",
+                btnShuffle: "Acak Soal",
+                labelModePractice: "Latihan",
+                labelModeQuiz: "Kuis",
+                questionHeading: "Soal Nomor",
+                scratchpadBtn: "Papan Oret-Oretan",
+                scratchTitle: "Oret-Oretan Hitung",
+                clear: "Hapus",
+                labelYourAnswer: "Masukkan Jawabanmu:",
+                labelWhole: "Bulat",
+                labelSingleInputHelp: "Atau ketik langsung di sini:",
+                labelFormatHint: "Format: `17/35`, `12 8/9`, atau `14`",
+                labelHintBtn: "Petunjuk",
+                labelCheckBtn: "Periksa Jawaban",
+                labelHintTitle: "Petunjuk Cara Mengerjakan:",
+                labelPrev: "Sebelumnya",
+                labelNext: "Berikutnya",
+                labelFinalScore: "Skor Akhir",
+                labelAccuracy: "Akurasi",
+                labelRestartBtn: "Coba Lagi",
+                labelNewNumbersRestart: "Ganti Angka Baru",
+                correctMsg: "Hore! Jawabanmu Benar! 🎉",
+                incorrectMsg: "Sayang Sekali, Masih Belum Tepat 🤔",
+                tryAgainText: "Coba periksa lagi hitunganmu ya!",
+                solutionTitle: "Cara Mengerjakan:",
+                warningInputEmpty: "Silakan masukkan jawabanmu terlebih dahulu!"
+            },
+            en: {
+                subtitle: "Interactive Fraction Word Problems Practice",
+                welcomeBadge: "🌟 Let's Practise - Fraction Math",
+                heroTitle: "Fraction Math Word Problems",
+                heroDesc: "Solve the fraction math problems below. You can change numbers or shuffle the question order anytime!",
+                labelScore: "Score",
+                labelCompleted: "Completed",
+                btnNewNumbers: "New Numbers",
+                btnShuffle: "Shuffle Questions",
+                labelModePractice: "Practice",
+                labelModeQuiz: "Quiz",
+                questionHeading: "Question No.",
+                scratchpadBtn: "Scratchpad",
+                scratchTitle: "Scratchpad Canvas",
+                clear: "Clear",
+                labelYourAnswer: "Enter Your Answer:",
+                labelWhole: "Whole",
+                labelSingleInputHelp: "Or type answer directly here:",
+                labelFormatHint: "Format: `17/35`, `12 8/9`, or `14`",
+                labelHintBtn: "Hint",
+                labelCheckBtn: "Check Answer",
+                labelHintTitle: "Step-by-step Hint:",
+                labelPrev: "Previous",
+                labelNext: "Next",
+                labelFinalScore: "Final Score",
+                labelAccuracy: "Accuracy",
+                labelRestartBtn: "Try Again",
+                labelNewNumbersRestart: "Generate New Numbers",
+                correctMsg: "Great job! Your answer is correct! 🎉",
+                incorrectMsg: "Oops, that's not quite right yet 🤔",
+                tryAgainText: "Double-check your calculations and try again!",
+                solutionTitle: "Step-by-Step Solution:",
+                warningInputEmpty: "Please enter your answer first!"
+            }
+        };
+
+        // Initialize question set from templates
+        function buildQuestions(useOriginal = true) {
+            activeQuestions = questionTemplates.map(tmpl => {
+                const generated = tmpl.generator(useOriginal);
+                return {
+                    id: tmpl.id,
+                    topic: tmpl.topic,
+                    unit: tmpl.unit,
+                    question: generated.question,
+                    hint: generated.hint,
+                    explanation: generated.explanation,
+                    answer: generated.answer
+                };
+            });
+            questionStatus = new Array(activeQuestions.length).fill('unanswered');
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.3);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(164.81, now + 0.2);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                // Audio not supported
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = "fa-solid fa-volume-high text-indigo-600";
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-slate-400";
+            }
+        }
+
+        let scratchCanvas, scratchCtx, isDrawing = false;
+
+        function initScratchpad() {
+            scratchCanvas = document.getElementById('scratchCanvas');
+            if (!scratchCanvas) return;
+            scratchCtx = scratchCanvas.getContext('2d');
+            
+            const rect = scratchCanvas.getBoundingClientRect();
+            scratchCanvas.width = rect.width;
+            scratchCanvas.height = rect.height;
+
+            scratchCtx.strokeStyle = '#38BDF8';
+            scratchCtx.lineWidth = 3;
+            scratchCtx.lineCap = 'round';
+
+            const startDraw = (e) => {
+                isDrawing = true;
+                scratchCtx.beginPath();
+                const pos = getPos(e);
+                scratchCtx.moveTo(pos.x, pos.y);
+            };
+
+            const draw = (e) => {
+                if (!isDrawing) return;
+                const pos = getPos(e);
+                scratchCtx.lineTo(pos.x, pos.y);
+                scratchCtx.stroke();
+            };
+
+            const stopDraw = () => { isDrawing = false; };
+
+            const getPos = (e) => {
+                const r = scratchCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - r.left,
+                    y: clientY - r.top
+                };
+            };
+
+            scratchCanvas.addEventListener('mousedown', startDraw);
+            scratchCanvas.addEventListener('mousemove', draw);
+            scratchCanvas.addEventListener('mouseup', stopDraw);
+
+            scratchCanvas.addEventListener('touchstart', startDraw);
+            scratchCanvas.addEventListener('touchmove', draw);
+            scratchCanvas.addEventListener('touchend', stopDraw);
+        }
+
+        function toggleScratchpad() {
+            playSound('click');
+            const area = document.getElementById('scratchpadArea');
+            area.classList.toggle('hidden');
+            if (!area.classList.contains('hidden')) {
+                setTimeout(initScratchpad, 50);
+            }
+        }
+
+        function clearScratchpad() {
+            playSound('click');
+            if (scratchCtx && scratchCanvas) {
+                scratchCtx.clearRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+            }
+        }
+
+        function generateNewNumbers() {
+            playSound('click');
+            buildQuestions(false); // Generate new dynamic numbers
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('finishSummaryCard').classList.add('hidden');
+            updateScoreSummary();
+            renderQuestion();
+        }
+
+        function shuffleQuestions() {
+            playSound('click');
+            // Fisher-Yates Shuffle
+            for (let i = activeQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [activeQuestions[i], activeQuestions[j]] = [activeQuestions[j], activeQuestions[i]];
+                [questionStatus[i], questionStatus[j]] = [questionStatus[j], questionStatus[i]];
+            }
+            currentIdx = 0;
+            renderQuestion();
+        }
+
+        function renderDots() {
+            const container = document.getElementById('questionDotsContainer');
+            container.innerHTML = '';
+            
+            activeQuestions.forEach((q, i) => {
+                const dot = document.createElement('button');
+                dot.onclick = () => jumpToQuestion(i);
+                
+                let bg = "bg-slate-200 text-slate-600 hover:bg-slate-300";
+                if (questionStatus[i] === 'correct') {
+                    bg = "bg-emerald-500 text-white";
+                } else if (questionStatus[i] === 'incorrect') {
+                    bg = "bg-rose-500 text-white";
+                }
+
+                if (i === currentIdx) {
+                    dot.className = `w-7 h-7 md:w-8 md:h-8 rounded-xl font-bold text-xs flex items-center justify-center transition-all scale-110 ring-2 ring-indigo-500 ${bg}`;
+                } else {
+                    dot.className = `w-6 h-6 md:w-7 md:h-7 rounded-lg font-bold text-xs flex items-center justify-center transition-all ${bg}`;
+                }
+                
+                dot.innerText = i + 1;
+                container.appendChild(dot);
+            });
+        }
+
+        function updateUIStrings() {
+            const t = i18n[currentLang];
+            document.getElementById('appSubtitle').innerText = t.subtitle;
+            document.getElementById('welcomeBadge').innerText = t.welcomeBadge;
+            document.getElementById('heroTitle').innerText = t.heroTitle;
+            document.getElementById('heroDesc').innerText = t.heroDesc;
+            document.getElementById('labelScore').innerText = t.labelScore;
+            document.getElementById('labelCompleted').innerText = t.labelCompleted;
+            document.getElementById('btnNewNumbers').innerText = t.btnNewNumbers;
+            document.getElementById('btnShuffle').innerText = t.btnShuffle;
+            document.getElementById('labelModePractice').innerText = t.labelModePractice;
+            document.getElementById('labelModeQuiz').innerText = t.labelModeQuiz;
+            document.getElementById('questionHeading').innerText = `${t.questionHeading} ${currentIdx + 1}`;
+            document.getElementById('labelScratchpadBtn').innerText = t.scratchpadBtn;
+            document.getElementById('labelScratchTitle').innerText = t.scratchTitle;
+            document.getElementById('labelClear').innerText = t.clear;
+            document.getElementById('labelYourAnswer').innerText = t.labelYourAnswer;
+            document.getElementById('labelWhole').innerText = t.labelWhole;
+            document.getElementById('labelSingleInputHelp').innerText = t.labelSingleInputHelp;
+            document.getElementById('labelFormatHint').innerText = t.labelFormatHint;
+            document.getElementById('labelHintBtn').innerText = t.labelHintBtn;
+            document.getElementById('labelCheckBtn').innerText = t.labelCheckBtn;
+            document.getElementById('labelHintTitle').innerText = t.labelHintTitle;
+            document.getElementById('labelPrev').innerText = t.labelPrev;
+            document.getElementById('labelNext').innerText = t.labelNext;
+            document.getElementById('labelFinalScore').innerText = t.labelFinalScore;
+            document.getElementById('labelAccuracy').innerText = t.labelAccuracy;
+            document.getElementById('labelRestartBtn').innerText = t.labelRestartBtn;
+            document.getElementById('labelNewNumbersRestart').innerText = t.labelNewNumbersRestart;
+            document.getElementById('warningNoticeText').innerText = t.warningInputEmpty;
+
+            if (currentLang === 'id') {
+                document.getElementById('langIdBtn').className = "px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm flex items-center gap-1";
+                document.getElementById('langEnBtn').className = "px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1";
+            } else {
+                document.getElementById('langEnBtn').className = "px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm flex items-center gap-1";
+                document.getElementById('langIdBtn').className = "px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1";
+            }
+
+            renderQuestion();
+        }
+
+        function setLanguage(lang) {
+            playSound('click');
+            currentLang = lang;
+            updateUIStrings();
+        }
+
+        function setMode(mode) {
+            playSound('click');
+            currentMode = mode;
+            if (mode === 'practice') {
+                document.getElementById('modePracticeBtn').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm flex items-center gap-1";
+                document.getElementById('modeQuizBtn').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1";
+            } else {
+                document.getElementById('modeQuizBtn').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white text-indigo-600 shadow-sm flex items-center gap-1";
+                document.getElementById('modePracticeBtn').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1";
+            }
+        }
+
+        function renderQuestion() {
+            if (!activeQuestions || activeQuestions.length === 0) return;
+            const q = activeQuestions[currentIdx];
+            const t = i18n[currentLang];
+
+            document.getElementById('questionNumBadge').innerText = currentIdx + 1;
+            document.getElementById('questionHeading').innerText = `${t.questionHeading} ${currentIdx + 1}`;
+            document.getElementById('topicBadge').innerText = q.topic[currentLang];
+
+            // Render single clean question text in selected language (no secondary translation)
+            document.getElementById('mainQuestionText').innerText = q.question[currentLang];
+
+            document.getElementById('unitLabel').innerText = q.unit;
+            document.getElementById('hintContentText').innerText = q.hint[currentLang];
+
+            // Clear inputs & alerts
+            document.getElementById('inputWhole').value = '';
+            document.getElementById('inputNum').value = '';
+            document.getElementById('inputDen').value = '';
+            document.getElementById('inputSingle').value = '';
+            document.getElementById('warningNotice').classList.add('hidden');
+
+            document.getElementById('hintBox').classList.add('hidden');
+            document.getElementById('feedbackBanner').classList.add('hidden');
+
+            document.getElementById('prevBtn').disabled = (currentIdx === 0);
+            document.getElementById('questionIndicator').innerText = `${currentIdx + 1} / ${activeQuestions.length}`;
+
+            renderDots();
+        }
+
+        function toggleHint() {
+            playSound('click');
+            const hintBox = document.getElementById('hintBox');
+            hintBox.classList.toggle('hidden');
+        }
+
+        function checkAnswer() {
+            const q = activeQuestions[currentIdx];
+            const t = i18n[currentLang];
+            const warningNotice = document.getElementById('warningNotice');
+
+            const wholeVal = document.getElementById('inputWhole').value.trim();
+            const numVal = document.getElementById('inputNum').value.trim();
+            const denVal = document.getElementById('inputDen').value.trim();
+            const singleVal = document.getElementById('inputSingle').value.trim();
+
+            let constructedAnswer = "";
+
+            if (singleVal !== "") {
+                constructedAnswer = singleVal.replace(/\s+/g, ' ');
+            } else if (numVal !== "" && denVal !== "") {
+                if (wholeVal !== "" && parseInt(wholeVal) !== 0) {
+                    constructedAnswer = `${wholeVal} ${numVal}/${denVal}`;
+                } else {
+                    constructedAnswer = `${numVal}/${denVal}`;
+                }
+            } else if (wholeVal !== "") {
+                constructedAnswer = wholeVal;
+            }
+
+            if (!constructedAnswer) {
+                warningNotice.classList.remove('hidden');
+                return;
+            } else {
+                warningNotice.classList.add('hidden');
+            }
+
+            // Check answer correctness mathematically
+            let isCorrect = false;
+            const cleanedUser = constructedAnswer.trim().toLowerCase();
+            const expectedText = q.answer.text.toLowerCase();
+
+            if (cleanedUser === expectedText) {
+                isCorrect = true;
+            } else {
+                try {
+                    const parseVal = (str) => {
+                        if (str.includes(' ')) {
+                            const [w, f] = str.split(' ');
+                            const [n, d] = f.split('/');
+                            return parseFloat(w) + (parseFloat(n) / parseFloat(d));
+                        } else if (str.includes('/')) {
+                            const [n, d] = str.split('/');
+                            return parseFloat(n) / parseFloat(d);
+                        } else {
+                            return parseFloat(str);
+                        }
+                    };
+
+                    const targetVal = parseVal(expectedText);
+                    const userVal = parseVal(cleanedUser);
+
+                    if (!isNaN(targetVal) && !isNaN(userVal) && Math.abs(targetVal - userVal) < 0.001) {
+                        isCorrect = true;
+                    }
+                } catch (e) {
+                    // Ignore parse errors
+                }
+            }
+
+            // Show feedback
+            const banner = document.getElementById('feedbackBanner');
+            const iconBox = document.getElementById('feedbackIcon');
+            const titleEl = document.getElementById('feedbackTitle');
+            const textEl = document.getElementById('feedbackText');
+            const explanationBox = document.getElementById('explanationBox');
+
+            banner.classList.remove('hidden', 'bg-emerald-50', 'bg-rose-50', 'border-emerald-200', 'border-rose-200');
+
+            if (isCorrect) {
+                playSound('correct');
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+
+                questionStatus[currentIdx] = 'correct';
+                banner.classList.add('bg-emerald-50', 'border', 'border-emerald-200');
+                iconBox.className = "w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-xl md:text-2xl flex-shrink-0 bg-emerald-100 text-emerald-600";
+                iconBox.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                titleEl.innerText = t.correctMsg;
+                titleEl.className = "text-base md:text-lg font-bold font-fredoka text-emerald-900";
+                textEl.innerText = `${q.answer.text} ${q.unit}`;
+                textEl.className = "text-xs md:text-sm mt-0.5 leading-relaxed text-emerald-800 font-bold";
+
+                explanationBox.innerHTML = `<strong>${t.solutionTitle}</strong> ${q.explanation[currentLang]}`;
+                explanationBox.className = "mt-3 pt-3 border-t border-emerald-200 text-xs md:text-sm text-emerald-900 leading-relaxed";
+            } else {
+                playSound('wrong');
+                questionStatus[currentIdx] = 'incorrect';
+                banner.classList.add('bg-rose-50', 'border', 'border-rose-200');
+                iconBox.className = "w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-xl md:text-2xl flex-shrink-0 bg-rose-100 text-rose-600";
+                iconBox.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+                titleEl.innerText = t.incorrectMsg;
+                titleEl.className = "text-base md:text-lg font-bold font-fredoka text-rose-900";
+                textEl.innerText = t.tryAgainText;
+                textEl.className = "text-xs md:text-sm mt-0.5 leading-relaxed text-rose-700";
+
+                if (currentMode === 'practice') {
+                    explanationBox.innerHTML = `<strong>${t.solutionTitle}</strong> ${q.explanation[currentLang]}`;
+                    explanationBox.className = "mt-3 pt-3 border-t border-rose-200 text-xs md:text-sm text-rose-900 leading-relaxed";
+                } else {
+                    explanationBox.innerHTML = "";
+                }
+            }
+
+            updateScoreSummary();
+            renderDots();
+        }
+
+        function updateScoreSummary() {
+            let correctCount = 0;
+            let answeredCount = 0;
+
+            questionStatus.forEach(status => {
+                if (status === 'correct') {
+                    correctCount++;
+                    answeredCount++;
+                } else if (status === 'incorrect') {
+                    answeredCount++;
+                }
+            });
+
+            score = correctCount * 10;
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('progressVal').innerText = `${answeredCount}/${activeQuestions.length}`;
+
+            if (answeredCount === activeQuestions.length) {
+                setTimeout(() => {
+                    document.getElementById('finishSummaryCard').classList.remove('hidden');
+                    document.getElementById('finalScoreVal').innerText = score;
+                    document.getElementById('accuracyVal').innerText = `${Math.round((correctCount / activeQuestions.length) * 100)}%`;
+                    confetti({ particleCount: 120, spread: 90, origin: { y: 0.5 } });
+                }, 600);
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            playSound('click');
+            currentIdx = idx;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            if (currentIdx < activeQuestions.length - 1) {
+                currentIdx++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            playSound('click');
+            if (currentIdx > 0) {
+                currentIdx--;
+                renderQuestion();
+            }
+        }
+
+        function restartPractice() {
+            playSound('click');
+            questionStatus = new Array(activeQuestions.length).fill('unanswered');
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('finishSummaryCard').classList.add('hidden');
+            updateScoreSummary();
+            renderQuestion();
+        }
+
+        window.onload = function() {
+            buildQuestions(true); // Start with textbook default numbers
+            updateUIStrings();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Matematika Kelas 5 / Grade 5 Math Adventure</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins & Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght=300..700&family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f7ff;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .bubbly-button {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 0 #4f46e5;
+        }
+        .bubbly-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 0 #4f46e5;
+        }
+        .bubbly-orange {
+            box-shadow: 0 4px 0 0 #ea580c;
+        }
+        .bubbly-orange:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 0 #ea580c;
+        }
+        .bubbly-green {
+            box-shadow: 0 4px 0 0 #16a34a;
+        }
+        .bubbly-green:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 0 #16a34a;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full"></canvas>
+
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-md border-b-4 border-indigo-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-500 text-white p-2.5 rounded-2xl shadow-inner rotate-[-3deg]">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></svg>
+                </div>
+                <div>
+                    <h1 id="app-logo-title" class="text-xl md:text-2xl font-bold text-indigo-900 font-fredoka tracking-wide">MataMatika!</h1>
+                    <p id="app-logo-sub" class="text-xs text-indigo-500 font-semibold">Petualangan Belajar Matematika Kelas 5</p>
+                </div>
+            </div>
+
+            <a href="../../pages/bilangan.html">🏠 Menu Bilangan</a>
+        </div>
+
+            <!-- Right Controls: Lang Toggle & Score Tracker -->
+            <div class="flex items-center gap-4">
+                <!-- Language Selector Toggle -->
+                <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button onclick="setLanguage('id')" id="lang-btn-id" class="px-3 py-1 rounded-lg text-xs font-bold transition duration-200 bg-white text-indigo-600 shadow-sm">
+                        🇮🇩 ID
+                    </button>
+                    <button onclick="setLanguage('en')" id="lang-btn-en" class="px-3 py-1 rounded-lg text-xs font-bold transition duration-200 text-slate-500 hover:text-slate-800">
+                        🇬🇧 EN
+                    </button>
+                </div>
+
+                <!-- Score / Stars Tracker -->
+                <div class="flex items-center gap-3 bg-amber-50 border-2 border-amber-300 px-4 py-2 rounded-2xl">
+                    <div class="flex items-center gap-1">
+                        <svg class="w-6 h-6 text-amber-500 animate-bounce" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        <span id="star-count" class="font-bold text-amber-700 font-fredoka text-lg">15</span>
+                    </div>
+                    <div class="h-6 w-0.5 bg-amber-200"></div>
+                    <div id="badge-level" class="text-xs text-amber-800 font-bold hidden sm:block">Level: Detektif Angka</div>
+                </div>
+            </div>
+        </div>
+
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Navigation Menu -->
+        <div class="lg:col-span-1 flex flex-col gap-3">
+            <button onclick="switchTab('belajar')" id="btn-belajar" class="nav-btn flex items-center gap-3 p-4 rounded-2xl bg-indigo-600 text-white font-bold transition shadow-md border-b-4 border-indigo-800">
+                <span class="text-xl">📖</span>
+                <span id="nav-text-belajar" class="text-left font-fredoka tracking-wide">1. Materi Belajar</span>
+            </button>
+            <button onclick="switchTab('nilai-tempat')" id="btn-nilai-tempat" class="nav-btn flex items-center gap-3 p-4 rounded-2xl bg-white text-slate-700 font-bold transition hover:bg-slate-100 shadow border-b-4 border-slate-300">
+                <span class="text-xl">🔍</span>
+                <span id="nav-text-nilai-tempat" class="text-left font-fredoka tracking-wide">2. Explorer Nilai Tempat</span>
+            </button>
+            <button onclick="switchTab('toko')" id="btn-toko" class="nav-btn flex items-center gap-3 p-4 rounded-2xl bg-white text-slate-700 font-bold transition hover:bg-slate-100 shadow border-b-4 border-slate-300">
+                <span class="text-xl">🏪</span>
+                <span id="nav-text-toko" class="text-left font-fredoka tracking-wide">3. Toko Kelontong</span>
+            </button>
+            <button onclick="switchTab('kuis')" id="btn-kuis" class="nav-btn flex items-center gap-3 p-4 rounded-2xl bg-white text-slate-700 font-bold transition hover:bg-slate-100 shadow border-b-4 border-slate-300">
+                <span class="text-xl">🏆</span>
+                <span id="nav-text-kuis" class="text-left font-fredoka tracking-wide">4. Kuis Petualangan</span>
+            </button>
+
+            <!-- Fun Motivation Quote Widget -->
+            <div class="bg-gradient-to-br from-indigo-100 to-sky-100 p-5 rounded-3xl border-2 border-indigo-200 mt-4 text-center">
+                <p class="text-3xl">💡</p>
+                <h4 id="widget-quote-title" class="font-bold text-indigo-900 mt-2 font-fredoka">Tahukah Kamu?</h4>
+                <p id="widget-quote-desc" class="text-xs text-indigo-700 mt-1 leading-relaxed">Uang kertas Rp100.000 adalah lembaran uang dengan nominal tertinggi yang digunakan sehari-hari di Indonesia saat ini!</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="lg:col-span-3 bg-white p-6 md:p-8 rounded-3xl shadow-xl border-4 border-indigo-100 min-h-[500px] flex flex-col">
+
+            <!-- TAB 1: MATERI BELAJAR -->
+            <div id="tab-belajar" class="tab-content flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 border-b-2 border-slate-100 pb-4 mb-6">
+                        <span class="text-3xl">📖</span>
+                        <div>
+                            <h2 id="materi-title" class="text-2xl font-bold text-slate-800 font-fredoka">Materi Belajar Interaktif</h2>
+                            <p id="materi-subtitle" class="text-sm text-slate-500">Pelajari bilangan besar dan nilai uang dengan cara yang seru!</p>
+                        </div>
+                    </div>
+
+                    <!-- Materi Slide Navigator -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="materi-slides">
+                        <!-- Left Side: Interactive Explanations -->
+                        <div class="space-y-4">
+                            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">
+                                <h3 id="slide1-header" class="font-bold text-indigo-900 flex items-center gap-2 font-fredoka">
+                                    <span class="bg-indigo-200 text-indigo-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">1</span>
+                                    Membaca Bilangan Cacah
+                                </h3>
+                                <p id="slide1-desc" class="text-sm text-slate-600 mt-2">
+                                    Ucapkan angka dengan membagi ribuan menggunakan tanda titik.
+                                </p>
+                                <div class="bg-white p-3 rounded-xl border border-indigo-200 mt-3 flex items-center justify-between">
+                                    <div>
+                                        <span class="text-lg font-bold text-indigo-600 font-fredoka">Rp543.210</span>
+                                        <p id="slide1-reading-demo" class="text-xs text-slate-500">Lima ratus empat puluh tiga ribu dua ratus sepuluh rupiah.</p>
+                                    </div>
+                                    <button id="btn-listen-slide1" onclick="speakText(currentLang === 'id' ? 'Lima ratus empat puluh tiga ribu dua ratus sepuluh rupiah' : 'Five hundred forty-three thousand two hundred ten rupiahs')" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 p-2 rounded-xl transition">🔊 Dengarkan</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-sky-50 rounded-2xl p-4 border border-sky-100">
+                                <h3 id="slide2-header" class="font-bold text-sky-900 flex items-center gap-2 font-fredoka">
+                                    <span class="bg-sky-200 text-sky-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">2</span>
+                                    Dekomposisi Bilangan
+                                </h3>
+                                <p id="slide2-desc" class="text-sm text-slate-600 mt-2">
+                                    Menguraikan bilangan besar menjadi penjumlahan bagian-bagiannya.
+                                </p>
+                                <div class="bg-white p-3 rounded-xl border border-sky-200 mt-3 text-center">
+                                    <div class="font-bold text-sky-700 font-fredoka text-lg">75.400</div>
+                                    <div class="text-xs text-slate-500 mt-1 font-mono">70.000 + 5.000 + 400</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Interactivity for Money -->
+                        <div class="space-y-4">
+                            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+                                <h3 id="slide3-header" class="font-bold text-emerald-900 flex items-center gap-2 font-fredoka">
+                                    <span class="bg-emerald-200 text-emerald-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">3</span>
+                                    Mengenal Pecahan Uang Rp100.000
+                                </h3>
+                                <p id="slide3-desc" class="text-sm text-slate-600 mt-2">
+                                    Pahami nilai uang pecahan maksimal Rp100.000 dalam kehidupan sehari-hari.
+                                </p>
+                                <div class="grid grid-cols-2 gap-2 mt-3">
+                                    <div class="bg-white p-3 rounded-xl border border-emerald-200 text-center flex flex-col justify-between items-center h-28">
+                                        <div class="w-16 h-8 bg-red-100 border border-red-300 rounded text-[9px] font-bold text-red-700 flex items-center justify-center shadow-sm">Rp100.000</div>
+                                        <p id="slide3-sub-item1" class="text-[10px] text-slate-500 font-semibold mt-1">Uang kertas terbesar di Indonesia</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-emerald-200 text-center flex flex-col justify-between items-center h-28">
+                                        <div class="w-16 h-8 bg-blue-100 border border-blue-300 rounded text-[9px] font-bold text-blue-700 flex items-center justify-center shadow-sm">Rp50.000</div>
+                                        <p id="slide3-sub-item2" class="text-[10px] text-slate-500 font-semibold mt-1">Sama dengan dua lembar Rp25.000 (tidak ada)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100">
+                                <h3 id="slide4-header" class="font-bold text-amber-900 flex items-center gap-2 font-fredoka">
+                                    <span class="bg-amber-200 text-amber-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">4</span>
+                                    Membandingkan Nilai Uang
+                                </h3>
+                                <div class="bg-white p-3 rounded-xl border border-amber-200 mt-3 text-center">
+                                    <p id="slide4-desc" class="text-xs text-slate-500">Manakah yang lebih besar?</p>
+                                    <div class="flex items-center justify-center gap-3 mt-2">
+                                        <span class="font-bold text-slate-700">Rp45.000</span>
+                                        <span class="text-lg font-bold text-indigo-600">&gt;</span>
+                                        <span class="font-bold text-slate-700">Rp38.500</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <p id="materi-footer" class="text-xs text-slate-400">Tekan tombol menu sebelah kiri untuk beralih ke permainan.</p>
+                    <button onclick="switchTab('nilai-tempat')" id="btn-next-tab-1" class="bubbly-button bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-2xl text-sm font-fredoka flex items-center gap-2 w-full sm:w-auto justify-center">
+                        Lanjut ke Explorer Nilai Tempat &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: EXPLORER NILAI TEMPAT -->
+            <div id="tab-nilai-tempat" class="tab-content hidden flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 border-b-2 border-slate-100 pb-4 mb-6">
+                        <span class="text-3xl">🔍</span>
+                        <div>
+                            <h2 id="explorer-title" class="text-2xl font-bold text-slate-800 font-fredoka">Explorer Nilai Tempat</h2>
+                            <p id="explorer-subtitle" class="text-sm text-slate-500">Tulis angka semaumu (sampai 1.000.000) dan bedah isi rumah nilainya!</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Nilai Tempat -->
+                    <div class="bg-indigo-50 p-6 rounded-3xl border-2 border-indigo-100 flex flex-col md:flex-row gap-4 items-center">
+                        <div class="w-full md:w-2/3">
+                            <label id="explorer-input-label" class="block text-xs font-bold text-indigo-800 uppercase tracking-wider mb-2">Ketik Sebuah Bilangan:</label>
+                            <div class="relative">
+                                <input id="explorer-input" type="number" min="0" max="1000000" value="843925" class="w-full text-2xl font-bold font-fredoka tracking-wide text-indigo-900 border-3 border-indigo-200 focus:border-indigo-500 outline-none rounded-2xl px-4 py-3 shadow-inner">
+                                <button id="explorer-random-btn" onclick="randomizeExplorer()" class="absolute right-2 top-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-xs font-fredoka transition">Acak Angka 🎲</button>
+                            </div>
+                            <p id="explorer-input-tip" class="text-[11px] text-slate-500 mt-2">Batas maksimal penginputan adalah 1.000.000 (Satu Juta).</p>
+                        </div>
+                        <div class="w-full md:w-1/3 text-center">
+                            <button id="explorer-submit-btn" onclick="exploreNumber()" class="bubbly-button w-full bg-indigo-600 text-white font-bold py-4 px-6 rounded-2xl font-fredoka tracking-wide">
+                                🚀 Bedah Nilai Tempat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Hasil Tempat -->
+                    <div id="explorer-results" class="mt-8 space-y-6">
+                        <!-- Dibaca text -->
+                        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-2xl flex items-center justify-between gap-3">
+                            <div>
+                                <span id="explorer-read-label" class="text-xs uppercase font-bold text-amber-700 tracking-wider font-semibold">Membaca Bilangan:</span>
+                                <h4 id="explorer-read-text" class="text-lg font-bold text-amber-900 font-fredoka mt-1">Delapan Ratus Empat Puluh Tiga Ribu Sembilan Ratus Dua Puluh Lima</h4>
+                            </div>
+                            <button id="speaker-read-btn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 p-3 rounded-2xl transition">🔊</button>
+                        </div>
+
+                        <!-- Grid Rumah Nilai Tempat -->
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                            <!-- Ratus Ribuan -->
+                            <div class="bg-red-50 border-2 border-red-200 p-3 rounded-2xl text-center shadow-sm">
+                                <div id="label-ratus-ribu" class="text-[10px] uppercase font-bold text-red-500 tracking-wider">Ratus Ribuan</div>
+                                <div id="place-val-ratus-ribu" class="text-3xl font-bold text-red-700 font-fredoka my-1">8</div>
+                                <div class="text-[10px] text-red-400 font-mono">800.000</div>
+                            </div>
+                            <!-- Puluh Ribuan -->
+                            <div class="bg-orange-50 border-2 border-orange-200 p-3 rounded-2xl text-center shadow-sm">
+                                <div id="label-puluh-ribu" class="text-[10px] uppercase font-bold text-orange-500 tracking-wider">Puluh Ribuan</div>
+                                <div id="place-val-puluh-ribu" class="text-3xl font-bold text-orange-700 font-fredoka my-1">4</div>
+                                <div class="text-[10px] text-orange-400 font-mono">40.000</div>
+                            </div>
+                            <!-- Ribuan -->
+                            <div class="bg-amber-50 border-2 border-amber-200 p-3 rounded-2xl text-center shadow-sm">
+                                <div id="label-ribu" class="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Ribuan</div>
+                                <div id="place-val-ribu" class="text-3xl font-bold text-amber-700 font-fredoka my-1">3</div>
+                                <div class="text-[10px] text-amber-400 font-mono">3.000</div>
+                            </div>
+                            <!-- Ratusan -->
+                            <div class="bg-emerald-50 border-2 border-emerald-200 p-3 rounded-2xl text-center shadow-sm">
+                                <div id="label-ratus" class="text-[10px] uppercase font-bold text-emerald-500 tracking-wider">Ratusan</div>
+                                <div id="place-val-ratus" class="text-3xl font-bold text-emerald-700 font-fredoka my-1">9</div>
+                                <div class="text-[10px] text-emerald-400 font-mono">900</div>
+                            </div>
+                            <!-- Puluhan -->
+                            <div class="bg-sky-50 border-2 border-sky-200 p-3 rounded-2xl text-center shadow-sm">
+                                <div id="label-puluh" class="text-[10px] uppercase font-bold text-sky-500 tracking-wider">Puluhan</div>
+                                <div id="place-val-puluh" class="text-3xl font-bold text-sky-700 font-fredoka my-1">2</div>
+                                <div class="text-[10px] text-sky-400 font-mono">20</div>
+                            </div>
+                            <!-- Satuan -->
+                            <div class="bg-indigo-50 border-2 border-indigo-200 p-3 rounded-2xl text-center shadow-sm">
+                                <div id="label-satuan" class="text-[10px] uppercase font-bold text-indigo-500 tracking-wider">Satuan</div>
+                                <div id="place-val-satuan" class="text-3xl font-bold text-indigo-700 font-fredoka my-1">5</div>
+                                <div class="text-[10px] text-indigo-400 font-mono">5</div>
+                            </div>
+                        </div>
+
+                        <!-- Dekomposisi Equation -->
+                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                            <span id="explorer-decomp-label" class="text-xs uppercase font-bold text-slate-500 tracking-wider">Bentuk Dekomposisi:</span>
+                            <div id="decomposition-eq" class="text-sm md:text-base font-mono font-bold text-slate-700 mt-2 break-all">
+                                843.925 = 800.000 + 40.000 + 3.000 + 900 + 20 + 5
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <p id="explorer-footer" class="text-xs text-slate-400">Coba ubah angka di atas untuk melihat dekomposisinya.</p>
+                    <button onclick="switchTab('toko')" id="btn-next-tab-2" class="bubbly-button bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-2xl text-sm font-fredoka flex items-center gap-2 w-full sm:w-auto justify-center">
+                        Buka Toko Kelontong &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 3: TOKO KELONTONG GAME -->
+            <div id="tab-toko" class="tab-content hidden flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">🏪</span>
+                            <div>
+                                <h2 id="toko-title" class="text-2xl font-bold text-slate-800 font-fredoka">Toko Kelontong Pintar</h2>
+                                <p id="toko-subtitle" class="text-sm text-slate-500">Toko sekolah tempat simulasi belanja dan menghitung kembalian uang!</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 text-emerald-800 border-2 border-emerald-200 px-4 py-1.5 rounded-full font-bold text-sm">
+                            <span id="toko-wallet-label">Saku Kamu:</span> <span id="wallet-balance" class="font-mono">Rp100.000</span>
+                        </div>
+                    </div>
+
+                    <!-- Layout Toko -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Kolom Produk Toko -->
+                        <div class="md:col-span-2 space-y-4">
+                            <h3 id="toko-products-title" class="font-bold text-slate-700 font-fredoka flex items-center gap-2">
+                                🛍️ Barang yang Dijual
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="shop-items-container">
+                                <!-- Items will be dynamically rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- Keranjang Belanja & Pembayaran -->
+                        <div class="bg-slate-50 border-2 border-slate-200 p-5 rounded-3xl flex flex-col justify-between">
+                            <div>
+                                <h3 id="toko-cart-title" class="font-bold text-slate-700 font-fredoka flex items-center gap-2 mb-3">
+                                    🛒 Keranjang Saya
+                                </h3>
+                                <div id="cart-empty-state" class="text-center py-8 text-slate-400">
+                                    <span class="text-3xl">🫙</span>
+                                    <p id="toko-cart-empty-text" class="text-xs font-semibold mt-2">Keranjang masih kosong.</p>
+                                </div>
+                                <div id="cart-items" class="space-y-2 hidden">
+                                    <!-- Dynamic Cart items -->
+                                </div>
+
+                                <div class="border-t border-slate-200 my-4 pt-3 space-y-1">
+                                    <div class="flex justify-between text-xs text-slate-500 font-semibold">
+                                        <span id="toko-total-label">Total Belanjaan:</span>
+                                        <span id="cart-total" class="font-mono">Rp0</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-slate-500 font-semibold">
+                                        <span id="toko-pay-label">Uang Pembayaran:</span>
+                                        <span class="font-mono">Rp100.000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Input Kembalian Challenge -->
+                            <div class="mt-4 pt-3 border-t-2 border-dashed border-slate-200">
+                                <label id="toko-challenge-title" class="block text-xs font-bold text-indigo-900 mb-1">Misi Kembalianmu:</label>
+                                <p id="toko-challenge-desc" class="text-[10px] text-slate-500 mb-2 leading-relaxed">Hitung berapa kembalian yang harus kamu dapatkan setelah membayar total belanja di atas dengan uang <strong>Rp100.000</strong>.</p>
+                                <div class="relative mb-3">
+                                    <span class="absolute left-3 top-2.5 font-bold text-slate-400 text-sm">Rp</span>
+                                    <input id="change-input" type="number" placeholder="Berapa kembalianmu?" class="w-full bg-white border border-slate-300 focus:ring-2 focus:ring-indigo-400 outline-none font-mono font-bold rounded-xl pl-9 pr-3 py-2 text-sm">
+                                </div>
+                                <button id="toko-checkout-btn" onclick="checkCartChallenge()" class="bubbly-button bubbly-green w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs font-fredoka tracking-wider">
+                                    Bayar & Periksa Kembalian 💰
+                                </button>
+                                <button id="toko-clear-btn" onclick="clearCart()" class="w-full text-slate-400 hover:text-red-500 font-bold py-1.5 rounded-xl text-[10px] font-fredoka transition mt-1">
+                                    Kosongkan Keranjang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <p id="toko-footer" class="text-xs text-slate-400">Rencanakan belanjamu dengan tepat!</p>
+                    <button onclick="switchTab('kuis')" id="btn-next-tab-3" class="bubbly-button bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-2xl text-sm font-fredoka flex items-center gap-2 w-full sm:w-auto justify-center">
+                        Main Kuis Petualangan &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 4: KUIS PETUALANGAN -->
+            <div id="tab-kuis" class="tab-content hidden flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">🏆</span>
+                            <div>
+                                <h2 id="quiz-title" class="text-2xl font-bold text-slate-800 font-fredoka">Kuis Petualangan Matematika</h2>
+                                <p id="quiz-subtitle" class="text-sm text-slate-500">Uji kemampuan hebatmu membaca, dekomposisi, dan hitung uang!</p>
+                            </div>
+                        </div>
+
+                        <!-- Lives / Hearts -->
+                        <div class="flex gap-1" id="quiz-hearts">
+                            <!-- Hearts rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Quiz Start Screen -->
+                    <div id="quiz-start-screen" class="text-center py-12 space-y-6">
+                        <div class="text-6xl animate-bounce">🎒</div>
+                        <h3 id="quiz-start-title" class="text-xl font-bold font-fredoka text-indigo-950">Siap Menghadapi 5 Soal Tantangan Hebat?</h3>
+                        <p id="quiz-start-desc" class="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">Dapatkan 5 Bintang tambahan untuk setiap jawaban benar. Jaga nyawamu agar tidak kehabisan sebelum kuis selesai!</p>
+                        <button id="quiz-start-btn" onclick="startQuiz()" class="bubbly-button bg-indigo-600 text-white font-bold py-3.5 px-8 rounded-2xl text-base font-fredoka">
+                            Mulai Berpetualang! 🚀
+                        </button>
+                    </div>
+
+                    <!-- Quiz Play Screen -->
+                    <div id="quiz-play-screen" class="hidden space-y-6">
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 20%"></div>
+                        </div>
+
+                        <div class="flex justify-between text-xs text-slate-400 font-bold">
+                            <span id="quiz-question-number">Pertanyaan 1 dari 5</span>
+                            <span id="quiz-category" class="text-indigo-600 uppercase">Nilai Tempat</span>
+                        </div>
+
+                        <!-- Question Text -->
+                        <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-3xl text-center">
+                            <h4 id="quiz-question-text" class="text-lg md:text-xl font-bold text-slate-800 font-fredoka leading-relaxed">
+                                Manakah cara membaca bilangan 732.100 yang paling benar?
+                            </h4>
+                        </div>
+
+                        <!-- Multiple Choice Options -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quiz-options">
+                            <!-- Dynamic choices cards -->
+                        </div>
+                    </div>
+
+                    <!-- Quiz Finish Screen -->
+                    <div id="quiz-finish-screen" class="hidden text-center py-12 space-y-6">
+                        <div class="text-7xl">🎉</div>
+                        <h3 id="quiz-finish-title" class="text-2xl font-bold font-fredoka text-slate-800">Petualangan Selesai!</h3>
+                        <p class="text-sm text-slate-600 max-w-md mx-auto" id="quiz-result-summary">Kamu berhasil menjawab 4 dari 5 soal dengan benar dan mendapatkan bonus bintang!</p>
+                        
+                        <div class="flex justify-center gap-3">
+                            <button id="quiz-retry-btn" onclick="restartQuiz()" class="bubbly-button bubbly-orange bg-orange-500 text-white font-bold py-3 px-6 rounded-2xl text-sm font-fredoka">
+                                Coba Kuis Lagi 🔄
+                            </button>
+                            <button id="quiz-back-btn" onclick="switchTab('belajar')" class="bubbly-button bg-indigo-600 text-white font-bold py-3 px-6 rounded-2xl text-sm font-fredoka">
+                                Kembali ke Materi 📖
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer tab logic, hidden during play -->
+                <div id="quiz-footer" class="mt-8 border-t border-slate-100 pt-4 text-xs text-slate-400">
+                    Jawab pertanyaan dengan jujur dan konsentrasi tinggi!
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-6 mt-12 border-t-4 border-indigo-500">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p id="footer-top-text" class="font-fredoka text-lg tracking-wide text-indigo-400">Matematika SD Kelas 5 - Bermain sambil Pintar!</p>
+            <p id="footer-sub-text" class="text-xs text-slate-500">Didesain khusus untuk pembelajaran interaktif sesuai dengan Kurikulum Nasional.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- TRANSLATION RESOURCE DICTIONARY ---
+        let currentLang = 'id';
+
+        const TRANSLATIONS = {
+            id: {
+                appLogoTitle: "MataMatika!",
+                appLogoSub: "Petualangan Belajar Matematika Kelas 5",
+                badgeLevel: "Level: Detektif Angka",
+                navBelajar: "1. Materi Belajar",
+                navNilaiTempat: "2. Explorer Nilai Tempat",
+                navToko: "3. Toko Kelontong",
+                navKuis: "4. Kuis Petualangan",
+                
+                widgetQuoteTitle: "Tahukah Kamu?",
+                widgetQuoteDesc: "Uang kertas Rp100.000 adalah lembaran uang dengan nominal tertinggi yang digunakan sehari-hari di Indonesia saat ini!",
+
+                materiTitle: "Materi Belajar Interaktif",
+                materiSubtitle: "Pelajari bilangan besar dan nilai uang dengan cara yang seru!",
+                slide1Header: "1. Membaca Bilangan Cacah",
+                slide1Desc: "Ucapkan angka dengan membagi ribuan menggunakan tanda titik.",
+                slide1ReadingDemo: "Lima ratus empat puluh tiga ribu dua ratus sepuluh rupiah.",
+                slide2Header: "2. Dekomposisi Bilangan",
+                slide2Desc: "Menguraikan bilangan besar menjadi penjumlahan bagian-bagiannya.",
+                slide3Header: "3. Mengenal Pecahan Uang Rp100.000",
+                slide3Desc: "Pahami nilai uang pecahan maksimal Rp100.000 dalam kehidupan sehari-hari.",
+                slide3SubItem1: "Uang kertas terbesar di Indonesia",
+                slide3SubItem2: "Sama dengan dua lembar Rp50.000",
+                slide4Header: "4. Membandingkan Nilai Uang",
+                slide4Desc: "Manakah yang lebih besar?",
+                materiFooter: "Tekan tombol menu sebelah kiri untuk beralih ke permainan.",
+                btnNextTab1: "Lanjut ke Explorer Nilai Tempat →",
+
+                explorerTitle: "Explorer Nilai Tempat",
+                explorerSubtitle: "Tulis angka semaumu (sampai 1.000.000) dan bedah isi rumah nilainya!",
+                explorerInputLabel: "Ketik Sebuah Bilangan:",
+                explorerRandomBtn: "Acak Angka 🎲",
+                explorerInputTip: "Batas maksimal penginputan adalah 1.000.000 (Satu Juta).",
+                explorerSubmitBtn: "🚀 Bedah Nilai Tempat",
+                explorerReadLabel: "Membaca Bilangan:",
+                explorerDecompLabel: "Bentuk Dekomposisi:",
+                explorerFooter: "Coba ubah angka di atas untuk melihat dekomposisinya.",
+                btnNextTab2: "Buka Toko Kelontong →",
+
+                labelRatusRibu: "Ratus Ribuan",
+                labelPuluhRibu: "Puluh Ribuan",
+                labelRibu: "Ribuan",
+                labelRatus: "Ratusan",
+                labelPuluh: "Puluhan",
+                labelSatuan: "Satuan",
+
+                tokoTitle: "Toko Kelontong Pintar",
+                tokoSubtitle: "Toko sekolah tempat simulasi belanja dan menghitung kembalian uang!",
+                tokoWalletLabel: "Saku Kamu:",
+                tokoProductsTitle: "🛍️ Barang yang Dijual",
+                tokoCartTitle: "🛒 Keranjang Saya",
+                tokoCartEmptyText: "Keranjang masih kosong.",
+                tokoTotalLabel: "Total Belanjaan:",
+                tokoPayLabel: "Uang Pembayaran:",
+                tokoChallengeTitle: "Misi Kembalianmu:",
+                tokoChallengeDesc: "Hitung berapa kembalian yang harus kamu dapatkan setelah membayar total belanja di atas dengan uang Rp100.000.",
+                tokoCheckoutBtn: "Bayar & Periksa Kembalian 💰",
+                tokoClearBtn: "Kosongkan Keranjang",
+                tokoFooter: "Rencanakan belanjamu dengan tepat!",
+                btnNextTab3: "Main Kuis Petualangan →",
+                btnBuy: "Beli ➕",
+
+                quizTitle: "Kuis Petualangan Matematika",
+                quizSubtitle: "Uji kemampuan hebatmu membaca, dekomposisi, dan hitung uang!",
+                quizStartTitle: "Siap Menghadapi 5 Soal Tantangan Hebat?",
+                quizStartDesc: "Dapatkan 5 Bintang tambahan untuk setiap jawaban benar. Jaga nyawamu agar tidak kehabisan sebelum kuis selesai!",
+                quizStartBtn: "Mulai Berpetualang! 🚀",
+                quizQuestionNum: "Pertanyaan {current} dari 5",
+                quizFooter: "Jawab pertanyaan dengan jujur dan konsentrasi tinggi!",
+                quizFinishTitle: "Petualangan Selesai!",
+                quizRetryBtn: "Coba Kuis Lagi 🔄",
+                quizBackBtn: "Kembali ke Materi 📖",
+
+                footerTopText: "Matematika SD Kelas 5 - Bermain sambil Pintar!",
+                footerSubText: "Didesain khusus untuk pembelajaran interaktif sesuai dengan Kurikulum Nasional.",
+                btnListen: "🔊 Dengarkan"
+            },
+            en: {
+                appLogoTitle: "MathVenture!",
+                appLogoSub: "Grade 5 Math Learning Adventure",
+                badgeLevel: "Level: Number Detective",
+                navBelajar: "1. Learning Material",
+                navNilaiTempat: "2. Place Value Explorer",
+                navToko: "3. Smart Grocery",
+                navKuis: "4. Adventure Quiz",
+
+                widgetQuoteTitle: "Did You Know?",
+                widgetQuoteDesc: "The Rp100,000 banknote is currently the highest denomination banknote used daily in Indonesia!",
+
+                materiTitle: "Interactive Learning Material",
+                materiSubtitle: "Learn large numbers and money values in a fun way!",
+                slide1Header: "1. Reading Whole Numbers",
+                slide1Desc: "Say the numbers by dividing thousands using period separators.",
+                slide1ReadingDemo: "Five hundred forty-three thousand two hundred ten rupiahs.",
+                slide2Header: "2. Number Decomposition",
+                slide2Desc: "Decomposing a large number into the sum of its values.",
+                slide3Header: "3. Knowing the Rp100,000 Banknote",
+                slide3Desc: "Understand the largest Indonesian banknote value up to Rp100,000 in daily life.",
+                slide3SubItem1: "The largest banknote in Indonesia",
+                slide3SubItem2: "Equal to two Rp50,000 banknotes",
+                slide4Header: "4. Comparing Money Values",
+                slide4Desc: "Which one is greater?",
+                materiFooter: "Click the left menu buttons to switch to games.",
+                btnNextTab1: "Go to Place Value Explorer →",
+
+                explorerTitle: "Place Value Explorer",
+                explorerSubtitle: "Input any number (up to 1,000,000) and dissect its house values!",
+                explorerInputLabel: "Type a Number:",
+                explorerRandomBtn: "Randomize 🎲",
+                explorerInputTip: "Maximum input limit is 1,000,000 (One Million).",
+                explorerSubmitBtn: "🚀 Dissect Place Value",
+                explorerReadLabel: "Reading Number:",
+                explorerDecompLabel: "Decomposition Format:",
+                explorerFooter: "Change the number above to see its decomposition.",
+                btnNextTab2: "Open Smart Grocery →",
+
+                labelRatusRibu: "Hundred Thousands",
+                labelPuluhRibu: "Ten Thousands",
+                labelRibu: "Thousands",
+                labelRatus: "Hundreds",
+                labelPuluh: "Tens",
+                labelSatuan: "Ones",
+
+                tokoTitle: "Smart Grocery Store",
+                tokoSubtitle: "School store simulation to shop and calculate the exact change!",
+                tokoWalletLabel: "Your Wallet:",
+                tokoProductsTitle: "🛍️ Items For Sale",
+                tokoCartTitle: "🛒 My Cart",
+                tokoCartEmptyText: "Cart is currently empty.",
+                tokoTotalLabel: "Shopping Total:",
+                tokoPayLabel: "Payment Money:",
+                tokoChallengeTitle: "Your Change Mission:",
+                tokoChallengeDesc: "Calculate how much change you should receive after paying the total above with Rp100,000 cash.",
+                tokoCheckoutBtn: "Pay & Check Change 💰",
+                tokoClearBtn: "Empty Cart",
+                tokoFooter: "Plan your shopping wisely!",
+                btnNextTab3: "Play Adventure Quiz →",
+                btnBuy: "Buy ➕",
+
+                quizTitle: "Math Adventure Quiz",
+                quizSubtitle: "Test your skills in reading, decomposing numbers, and computing money!",
+                quizStartTitle: "Ready to Face 5 Great Challenges?",
+                quizStartDesc: "Earn 5 extra Stars for every correct answer. Protect your lives before they run out!",
+                quizStartBtn: "Start Quest! 🚀",
+                quizQuestionNum: "Question {current} of 5",
+                quizFooter: "Answer honestly with high concentration!",
+                quizFinishTitle: "Adventure Completed!",
+                quizRetryBtn: "Play Quiz Again 🔄",
+                quizBackBtn: "Back to Lessons 📖",
+
+                footerTopText: "Grade 5 Math - Learn & Play Merrily!",
+                footerSubText: "Tailored specially for interactive learning matching the National Curriculum Standards.",
+                btnListen: "🔊 Listen"
+            }
+        };
+
+        // --- DATA DEFINITION OF SHOP PRODUCTS (Bilingual) ---
+        const SHOP_PRODUCTS = [
+            { id: 1, name: { id: 'Buku Tulis Premium', en: 'Premium Notebook' }, price: 12500, icon: '📔' },
+            { id: 2, name: { id: 'Tas Ransel Ceria', en: 'Happy Backpack' }, price: 65000, icon: '🎒' },
+            { id: 3, name: { id: 'Kotak Pensil Robot', en: 'Robot Pencil Case' }, price: 18000, icon: '✏️' },
+            { id: 4, name: { id: 'Botol Minum Sehat', en: 'Healthy Flask' }, price: 24000, icon: '🥤' },
+            { id: 5, name: { id: 'Sepatu Olahraga Keren', en: 'Cool Sneakers' }, price: 95000, icon: '👟' },
+            { id: 6, name: { id: 'Kamus Bahasa Indonesia', en: 'Indonesian Dictionary' }, price: 42000, icon: '📘' }
+        ];
+
+        // --- GAME STATE ---
+        let currentStars = 15;
+        let cart = [];
+        let walletBalance = 100000;
+        let currentTab = 'belajar';
+
+        // --- QUIZ STATE ---
+        let currentQuestionIndex = 0;
+        let lives = 3;
+        let score = 0;
+        let quizQuestions = [];
+
+        // --- QUESTION BANK (Bilingual) ---
+        const CORE_QUESTIONS_BANK = [
+            {
+                category: { id: 'MEMBACA BILANGAN', en: 'READING NUMBERS' },
+                question: {
+                    id: 'Bagaimana cara membaca bilangan 608.015?',
+                    en: 'How do you read the number 608,015?'
+                },
+                choices: {
+                    id: [
+                        'Enam ratus delapan ribu lima belas',
+                        'Enam puluh delapan ribu lima belas',
+                        'Enam ratus delapan ribu seratus lima puluh',
+                        'Enam ratus delapan puluh ribu lima belas'
+                    ],
+                    en: [
+                        'Six hundred eight thousand fifteen',
+                        'Sixty-eight thousand fifteen',
+                        'Six hundred eight thousand one hundred fifty',
+                        'Six hundred eighty thousand fifteen'
+                    ]
+                },
+                answer: 0
+            },
+            {
+                category: { id: 'NILAI TEMPAT', en: 'PLACE VALUE' },
+                question: {
+                    id: 'Pada bilangan 843.925, angka manakah yang menduduki nilai tempat Puluh Ribuan?',
+                    en: 'In the number 843,925, which digit is in the Ten Thousands place?'
+                },
+                choices: {
+                    id: ['8', '4', '3', '9'],
+                    en: ['8', '4', '3', '9']
+                },
+                answer: 1
+            },
+            {
+                category: { id: 'DEKOMPOSISI', en: 'DECOMPOSITION' },
+                question: {
+                    id: 'Berapakah bentuk komposisi dari dekomposisi berikut: 500.000 + 3.000 + 400 + 90 + 2 ?',
+                    en: 'What is the standard form of this decomposition: 500,000 + 3,000 + 400 + 90 + 2 ?'
+                },
+                choices: {
+                    id: ['530.492', '503.492', '503.429', '53.492'],
+                    en: ['530,492', '503,492', '503,429', '53,492']
+                },
+                answer: 1
+            },
+            {
+                category: { id: 'OPERASI HITUNG', en: 'OPERATIONS' },
+                question: {
+                    id: 'Ibu memiliki uang Rp96.000, kemudian dibagikan rata kepada 4 anaknya. Berapakah uang yang diterima setiap anak?',
+                    en: 'Mother has Rp96,000, which is distributed equally among her 4 children. How much money does each child receive?'
+                },
+                choices: {
+                    id: ['Rp24.000', 'Rp26.000', 'Rp22.000', 'Rp18.000'],
+                    en: ['Rp24,000', 'Rp26,000', 'Rp22,000', 'Rp18,000']
+                },
+                answer: 0
+            },
+            {
+                category: { id: 'OPERASI UANG', en: 'MONEY STORY' },
+                question: {
+                    id: 'Dika membeli sebuah kamus seharga Rp42.000 dan kotak pensil Rp18.000. Jika ia membayar dengan selembar uang Rp100.000, berapakah kembaliannya?',
+                    en: 'Dika buys a dictionary for Rp42,000 and a pencil case for Rp18,000. If he pays with a Rp100,000 banknote, how much is his change?'
+                },
+                choices: {
+                    id: ['Rp30.000', 'Rp40.000', 'Rp50.000', 'Rp60.000'],
+                    en: ['Rp30,000', 'Rp40,000', 'Rp50,000', 'Rp60,000']
+                },
+                answer: 1
+            },
+            {
+                category: { id: 'MEMBANDINGKAN', en: 'COMPARING' },
+                question: {
+                    id: 'Manakah tanda perbandingan yang benar untuk mengisi: Rp54.500 [ ... ] Rp54.050?',
+                    en: 'Which comparison symbol is correct to fill: Rp54,500 [ ... ] Rp54,050?'
+                },
+                choices: {
+                    id: ['< (Kurang dari)', '> (Lebih dari)', '= (Sama dengan)', 'Semua salah'],
+                    en: ['< (Less than)', '> (Greater than)', '= (Equal to)', 'All wrong']
+                },
+                answer: 1
+            }
+        ];
+
+        // --- LANGUAGE SWITCHER LOGIC ---
+        function setLanguage(lang) {
+            currentLang = lang;
+            playSfx('click');
+
+            // Toggle active classes on language buttons
+            const btnId = document.getElementById('lang-btn-id');
+            const btnEn = document.getElementById('lang-btn-en');
+            if (lang === 'id') {
+                btnId.className = "px-3 py-1 rounded-lg text-xs font-bold transition duration-200 bg-white text-indigo-600 shadow-sm";
+                btnEn.className = "px-3 py-1 rounded-lg text-xs font-bold transition duration-200 text-slate-500 hover:text-slate-800";
+            } else {
+                btnEn.className = "px-3 py-1 rounded-lg text-xs font-bold transition duration-200 bg-white text-indigo-600 shadow-sm";
+                btnId.className = "px-3 py-1 rounded-lg text-xs font-bold transition duration-200 text-slate-500 hover:text-slate-800";
+            }
+
+            // Update DOM translation elements
+            const dict = TRANSLATIONS[lang];
+            
+            document.getElementById('app-logo-title').innerText = dict.appLogoTitle;
+            document.getElementById('app-logo-sub').innerText = dict.appLogoSub;
+            document.getElementById('badge-level').innerText = dict.badgeLevel;
+            
+            // Sidebar buttons
+            document.getElementById('nav-text-belajar').innerText = dict.navBelajar;
+            document.getElementById('nav-text-nilai-tempat').innerText = dict.navNilaiTempat;
+            document.getElementById('nav-text-toko').innerText = dict.navToko;
+            document.getElementById('nav-text-kuis').innerText = dict.navKuis;
+
+            // Quote Widget
+            document.getElementById('widget-quote-title').innerText = dict.widgetQuoteTitle;
+            document.getElementById('widget-quote-desc').innerText = dict.widgetQuoteDesc;
+
+            // Tab 1: Materi
+            document.getElementById('materi-title').innerText = dict.materiTitle;
+            document.getElementById('materi-subtitle').innerText = dict.materiSubtitle;
+            document.getElementById('slide1-header').innerHTML = `<span class="bg-indigo-200 text-indigo-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">1</span> ${dict.slide1Header}`;
+            document.getElementById('slide1-desc').innerText = dict.slide1Desc;
+            document.getElementById('slide1-reading-demo').innerText = dict.slide1ReadingDemo;
+            document.getElementById('btn-listen-slide1').innerText = dict.btnListen;
+            document.getElementById('slide2-header').innerHTML = `<span class="bg-sky-200 text-sky-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">2</span> ${dict.slide2Header}`;
+            document.getElementById('slide2-desc').innerText = dict.slide2Desc;
+            document.getElementById('slide3-header').innerHTML = `<span class="bg-emerald-200 text-emerald-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">3</span> ${dict.slide3Header}`;
+            document.getElementById('slide3-desc').innerText = dict.slide3Desc;
+            document.getElementById('slide3-sub-item1').innerText = dict.slide3SubItem1;
+            document.getElementById('slide3-sub-item2').innerText = dict.slide3SubItem2;
+            document.getElementById('slide4-header').innerHTML = `<span class="bg-amber-200 text-amber-800 w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">4</span> ${dict.slide4Header}`;
+            document.getElementById('slide4-desc').innerText = dict.slide4Desc;
+            document.getElementById('materi-footer').innerText = dict.materiFooter;
+            document.getElementById('btn-next-tab-1').innerText = dict.btnNextTab1;
+
+            // Tab 2: Explorer
+            document.getElementById('explorer-title').innerText = dict.explorerTitle;
+            document.getElementById('explorer-subtitle').innerText = dict.explorerSubtitle;
+            document.getElementById('explorer-input-label').innerText = dict.explorerInputLabel;
+            document.getElementById('explorer-random-btn').innerText = dict.explorerRandomBtn;
+            document.getElementById('explorer-input-tip').innerText = dict.explorerInputTip;
+            document.getElementById('explorer-submit-btn').innerText = dict.explorerSubmitBtn;
+            document.getElementById('explorer-read-label').innerText = dict.explorerReadLabel;
+            document.getElementById('explorer-decomp-label').innerText = dict.explorerDecompLabel;
+            document.getElementById('explorer-footer').innerText = dict.explorerFooter;
+            document.getElementById('btn-next-tab-2').innerText = dict.btnNextTab2;
+
+            document.getElementById('label-ratus-ribu').innerText = dict.labelRatusRibu;
+            document.getElementById('label-puluh-ribu').innerText = dict.labelPuluhRibu;
+            document.getElementById('label-ribu').innerText = dict.labelRibu;
+            document.getElementById('label-ratus').innerText = dict.labelRatus;
+            document.getElementById('label-puluh').innerText = dict.labelPuluh;
+            document.getElementById('label-satuan').innerText = dict.labelSatuan;
+
+            // Tab 3: Toko Kelontong
+            document.getElementById('toko-title').innerText = dict.tokoTitle;
+            document.getElementById('toko-subtitle').innerText = dict.tokoSubtitle;
+            document.getElementById('toko-wallet-label').innerText = dict.tokoWalletLabel;
+            document.getElementById('toko-products-title').innerText = dict.tokoProductsTitle;
+            document.getElementById('toko-cart-title').innerText = dict.tokoCartTitle;
+            document.getElementById('toko-cart-empty-text').innerText = dict.tokoCartEmptyText;
+            document.getElementById('toko-total-label').innerText = dict.tokoTotalLabel;
+            document.getElementById('toko-pay-label').innerText = dict.tokoPayLabel;
+            document.getElementById('toko-challenge-title').innerText = dict.tokoChallengeTitle;
+            document.getElementById('toko-challenge-desc').innerHTML = dict.tokoChallengeDesc;
+            document.getElementById('toko-checkout-btn').innerText = dict.tokoCheckoutBtn;
+            document.getElementById('toko-clear-btn').innerText = dict.tokoClearBtn;
+            document.getElementById('toko-footer').innerText = dict.tokoFooter;
+            document.getElementById('btn-next-tab-3').innerText = dict.btnNextTab3;
+
+            // Tab 4: Kuis
+            document.getElementById('quiz-title').innerText = dict.quizTitle;
+            document.getElementById('quiz-subtitle').innerText = dict.quizSubtitle;
+            document.getElementById('quiz-start-title').innerText = dict.quizStartTitle;
+            document.getElementById('quiz-start-desc').innerText = dict.quizStartDesc;
+            document.getElementById('quiz-start-btn').innerText = dict.quizStartBtn;
+            document.getElementById('quiz-footer').innerText = dict.quizFooter;
+            document.getElementById('quiz-finish-title').innerText = dict.quizFinishTitle;
+            document.getElementById('quiz-retry-btn').innerText = dict.quizRetryBtn;
+            document.getElementById('quiz-back-btn').innerText = dict.quizBackBtn;
+
+            // Footer
+            document.getElementById('footer-top-text').innerText = dict.footerTopText;
+            document.getElementById('footer-sub-text').innerText = dict.footerSubText;
+
+            // Refresh dynamic content layouts
+            exploreNumber();
+            if (currentTab === 'toko') {
+                renderShop();
+            } else if (currentTab === 'kuis' && document.getElementById('quiz-play-screen').className.indexOf('hidden') === -1) {
+                // If quiz is currently running, update the question elements
+                const q = quizQuestions[currentQuestionIndex];
+                document.getElementById('quiz-question-number').innerText = dict.quizQuestionNum.replace('{current}', currentQuestionIndex + 1);
+                document.getElementById('quiz-category').innerText = q.category[currentLang];
+                document.getElementById('quiz-question-text').innerText = q.question[currentLang];
+                
+                // Re-render choices in the active language without resetting action handlers
+                const optionsContainer = document.getElementById('quiz-options');
+                const choices = q.choices[currentLang];
+                Array.from(optionsContainer.children).forEach((btn, idx) => {
+                    const spanLabel = btn.querySelector('span');
+                    if (spanLabel) {
+                        spanLabel.innerText = choices[idx];
+                    }
+                });
+            }
+        }
+
+        // --- SOUND EFFECTS SYNTHESIZER ---
+        function playSfx(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16);
+                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.24);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.55);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.55);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.4);
+                    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.45);
+                } else if (type === 'click') {
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.12);
+                } else if (type === 'confetti') {
+                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.35);
+                }
+            } catch (e) {
+                console.log("Audio deferred or not supported");
+            }
+        }
+
+        // --- CONFETTI ANIMATION ON CANVAS ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let confettis = [];
+        let animationFrameId = null;
+
+        function resizeConfettiCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfettiCanvas);
+        resizeConfettiCanvas();
+
+        function createConfetti() {
+            confettis = [];
+            const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#ff7849'];
+            for (let i = 0; i < 100; i++) {
+                confettis.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedX: Math.random() * 4 - 2,
+                    speedY: Math.random() * 6 + 4,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 4 - 2
+                });
+            }
+        }
+
+        function drawConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+            confettis.forEach(c => {
+                c.y += c.speedY;
+                c.x += c.speedX;
+                c.rotation += c.rotationSpeed;
+                if (c.y < canvas.height) {
+                    active = true;
+                    ctx.save();
+                    ctx.translate(c.x, c.y);
+                    ctx.rotate(c.rotation * Math.PI / 180);
+                    ctx.fillStyle = c.color;
+                    ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size);
+                    ctx.restore();
+                }
+            });
+            if (active) {
+                animationFrameId = requestAnimationFrame(drawConfetti);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function triggerConfetti() {
+            createConfetti();
+            cancelAnimationFrame(animationFrameId);
+            playSfx('confetti');
+            drawConfetti();
+        }
+
+        // --- SPEECH SYNTHESIS ---
+        function speakText(text) {
+            playSfx('click');
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = currentLang === 'id' ? 'id-ID' : 'en-US';
+                window.speechSynthesis.speak(utterance);
+            } else {
+                const errMsg = currentLang === 'id' 
+                    ? "Sistem suara otomatis tidak didukung di peramban ini." 
+                    : "Automatic voice synthesis is not supported on this browser.";
+                alert(errMsg);
+            }
+        }
+
+        // --- NAVIGATION TABS ---
+        function switchTab(tabId) {
+            playSfx('click');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn flex items-center gap-3 p-4 rounded-2xl bg-white text-slate-700 font-bold transition hover:bg-slate-100 shadow border-b-4 border-slate-300";
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "nav-btn flex items-center gap-3 p-4 rounded-2xl bg-indigo-600 text-white font-bold transition shadow-md border-b-4 border-indigo-800";
+            }
+            currentTab = tabId;
+
+            if (tabId === 'nilai-tempat') {
+                exploreNumber();
+            } else if (tabId === 'toko') {
+                renderShop();
+            }
+        }
+
+        // --- EXPLORER NILAI TEMPAT LOGIC ---
+        function randomizeExplorer() {
+            const randomNum = Math.floor(Math.random() * 999999) + 1;
+            document.getElementById('explorer-input').value = randomNum;
+            playSfx('click');
+            exploreNumber();
+        }
+
+        function readNumberIndonesian(num) {
+            const units = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+            function convert(n) {
+                if (n < 12) return units[n];
+                if (n < 20) return units[n - 10] + " Belas";
+                if (n < 100) return units[Math.floor(n / 10)] + " Puluh " + units[n % 10];
+                if (n < 200) return "Seratus " + convert(n - 100);
+                if (n < 1000) return units[Math.floor(n / 100)] + " Ratus " + convert(n % 100);
+                if (n < 2000) return "Seribu " + convert(n - 1000);
+                if (n < 1000000) return convert(Math.floor(n / 1000)) + " Ribu " + convert(n % 1000);
+                if (n === 1000000) return "Satu Juta";
+                return "";
+            }
+            if (num === 0) return "Nol";
+            return convert(num).replace(/\s+/g, ' ').trim();
+        }
+
+        function readNumberEnglish(num) {
+            const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+            const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+            
+            function convert(n) {
+                if (n < 20) return ones[n];
+                if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + ones[n % 10] : "");
+                if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " and " + convert(n % 100) : "");
+                if (n < 1000000) return convert(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + convert(n % 1000) : "");
+                if (n === 1000000) return "One Million";
+                return "";
+            }
+            if (num === 0) return "Zero";
+            return convert(num).replace(/\s+/g, ' ').trim();
+        }
+
+        function exploreNumber() {
+            const inputVal = parseInt(document.getElementById('explorer-input').value) || 0;
+            const finalNum = Math.min(Math.max(0, inputVal), 1000000);
+            document.getElementById('explorer-input').value = finalNum;
+
+            const textDescription = currentLang === 'id' 
+                ? readNumberIndonesian(finalNum) 
+                : readNumberEnglish(finalNum);
+            
+            document.getElementById('explorer-read-text').innerText = textDescription;
+            document.getElementById('speaker-read-btn').onclick = () => speakText(textDescription);
+
+            let numStr = finalNum.toString().padStart(6, '0');
+            if (finalNum === 1000000) {
+                document.getElementById('explorer-read-text').innerText = currentLang === 'id' ? "Satu Juta" : "One Million";
+                document.getElementById('place-val-ratus-ribu').innerText = "1";
+                document.getElementById('place-val-puluh-ribu').innerText = "0";
+                document.getElementById('place-val-ribu').innerText = "0";
+                document.getElementById('place-val-ratus').innerText = "0";
+                document.getElementById('place-val-puluh').innerText = "0";
+                document.getElementById('place-val-satuan').innerText = "0";
+                document.getElementById('decomposition-eq').innerText = "1.000.000";
+                return;
+            }
+
+            const digits = numStr.split('').map(Number);
+            
+            const ratRib = digits[0];
+            const pulRib = digits[1];
+            const rib = digits[2];
+            const rat = digits[3];
+            const pul = digits[4];
+            const sat = digits[5];
+
+            document.getElementById('place-val-ratus-ribu').innerText = ratRib;
+            document.getElementById('place-val-puluh-ribu').innerText = pulRib;
+            document.getElementById('place-val-ribu').innerText = rib;
+            document.getElementById('place-val-ratus').innerText = rat;
+            document.getElementById('place-val-puluh').innerText = pul;
+            document.getElementById('place-val-satuan').innerText = sat;
+
+            const equationParts = [];
+            if (ratRib > 0) equationParts.push((ratRib * 100000).toLocaleString('id-ID'));
+            if (pulRib > 0) equationParts.push((pulRib * 10000).toLocaleString('id-ID'));
+            if (rib > 0) equationParts.push((rib * 1000).toLocaleString('id-ID'));
+            if (rat > 0) equationParts.push((rat * 100).toLocaleString('id-ID'));
+            if (pul > 0) equationParts.push((pul * 10).toLocaleString('id-ID'));
+            if (sat > 0) equationParts.push(sat);
+
+            const displayEquation = equationParts.length > 0 ? equationParts.join(' + ') : '0';
+            document.getElementById('decomposition-eq').innerText = `${finalNum.toLocaleString('id-ID')} = ${displayEquation}`;
+        }
+
+        // --- TOKO KELONTONG SIMULATOR LOGIC ---
+        function renderShop() {
+            const container = document.getElementById('shop-items-container');
+            container.innerHTML = '';
+
+            const buyBtnText = TRANSLATIONS[currentLang].btnBuy;
+
+            SHOP_PRODUCTS.forEach(p => {
+                const productName = p.name[currentLang];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "bg-white p-4 border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm hover:border-indigo-300 transition-all";
+                itemDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">${p.icon}</span>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm font-fredoka">${productName}</h4>
+                            <p class="text-xs text-emerald-600 font-bold font-mono">Rp${p.price.toLocaleString('id-ID')}</p>
+                        </div>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-xs font-fredoka transition">${buyBtnText}</button>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            updateCartUI();
+        }
+
+        function addToCart(productId) {
+            playSfx('click');
+            const product = SHOP_PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            const currentTotal = cart.reduce((sum, item) => sum + item.price, 0);
+            if (currentTotal + product.price > walletBalance) {
+                const overBudgetMsg = currentLang === 'id'
+                    ? "Aduh! Total belanja kamu melebihi batas saldo Rp100.000!"
+                    : "Oops! Your total shopping exceeds the Rp100,000 balance limit!";
+                alert(overBudgetMsg);
+                return;
+            }
+
+            cart.push(product);
+            updateCartUI();
+        }
+
+        function clearCart() {
+            playSfx('click');
+            cart = [];
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            const emptyState = document.getElementById('cart-empty-state');
+            const cartTotal = document.getElementById('cart-total');
+
+            if (cart.length === 0) {
+                cartItemsDiv.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                cartTotal.innerText = "Rp0";
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            cartItemsDiv.classList.remove('hidden');
+            cartItemsDiv.innerHTML = '';
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                const itemName = item.name[currentLang];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "flex justify-between items-center bg-white border border-slate-150 p-2 rounded-xl text-xs";
+                itemDiv.innerHTML = `
+                    <span class="font-semibold text-slate-700">${item.icon} ${itemName}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono text-emerald-600 font-bold">Rp${item.price.toLocaleString('id-ID')}</span>
+                        <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-600 font-bold text-sm px-1">✕</button>
+                    </div>
+                `;
+                cartItemsDiv.appendChild(itemDiv);
+            });
+
+            cartTotal.innerText = `Rp${total.toLocaleString('id-ID')}`;
+        }
+
+        function removeFromCart(index) {
+            playSfx('click');
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function checkCartChallenge() {
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            if (total === 0) {
+                const noItemsMsg = currentLang === 'id' 
+                    ? "Masukkan beberapa barang ke dalam keranjangmu terlebih dahulu!" 
+                    : "Put some items into your cart first!";
+                alert(noItemsMsg);
+                return;
+            }
+
+            const inputChange = parseInt(document.getElementById('change-input').value);
+            const expectedChange = walletBalance - total;
+
+            if (isNaN(inputChange)) {
+                const fillChangeMsg = currentLang === 'id' 
+                    ? "Isi terlebih dahulu kolom kembalian sebelum melakukan pembayaran!" 
+                    : "Fill in the change input before checking out!";
+                alert(fillChangeMsg);
+                return;
+            }
+
+            if (inputChange === expectedChange) {
+                triggerConfetti();
+                addStars(10);
+                const successMsg = currentLang === 'id'
+                    ? `YAY! KAMU HEBAT! 🎉\nHasil hitungan kamu benar sekali.\nTotal Belanja: Rp${total.toLocaleString('id-ID')}\nKembalian: Rp${expectedChange.toLocaleString('id-ID')}\nKamu memenangkan +10 Bintang! ⭐`
+                    : `YAY! YOU ARE AMAZING! 🎉\nYour calculation is absolutely correct.\nTotal Shopping: Rp${total.toLocaleString('id-ID')}\nChange: Rp${expectedChange.toLocaleString('id-ID')}\nYou earned +10 Stars! ⭐`;
+                alert(successMsg);
+                cart = [];
+                document.getElementById('change-input').value = '';
+                updateCartUI();
+            } else {
+                playSfx('wrong');
+                const failMsg = currentLang === 'id'
+                    ? `Yah, hitungan kamu kurang tepat. 😢\nTotal Belanja: Rp${total.toLocaleString('id-ID')}\nUang Pembayaran: Rp100.000\nKembalian harusnya Rp${expectedChange.toLocaleString('id-ID')}, sedangkan hitunganmu Rp${inputChange.toLocaleString('id-ID')}.\nCoba hitung lagi ya!`
+                    : `Oops, your calculation was incorrect. 😢\nTotal Shopping: Rp${total.toLocaleString('id-ID')}\nPayment: Rp100,000\nThe change should be Rp${expectedChange.toLocaleString('id-ID')}, but your calculation was Rp${inputChange.toLocaleString('id-ID')}.\nTry calculating again!`;
+                alert(failMsg);
+            }
+        }
+
+        function addStars(amount) {
+            currentStars += amount;
+            document.getElementById('star-count').innerText = currentStars;
+        }
+
+        // --- QUIZ PETUALANGAN MATH LOGIC ---
+        function startQuiz() {
+            playSfx('click');
+            document.getElementById('quiz-start-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.remove('hidden');
+            document.getElementById('quiz-finish-screen').classList.add('hidden');
+            
+            quizQuestions = [...CORE_QUESTIONS_BANK].sort(() => 0.5 - Math.random()).slice(0, 5);
+            currentQuestionIndex = 0;
+            lives = 3;
+            score = 0;
+
+            renderHearts();
+            loadQuestion();
+        }
+
+        function renderHearts() {
+            const container = document.getElementById('quiz-hearts');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('span');
+                heart.className = i < lives ? "text-red-500 text-xl" : "text-slate-300 text-xl";
+                heart.innerText = "❤️";
+                container.appendChild(heart);
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= 5 || lives <= 0) {
+                finishQuiz();
+                return;
+            }
+
+            const q = quizQuestions[currentQuestionIndex];
+            
+            const progressPercent = ((currentQuestionIndex + 1) / 5) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+            const dict = TRANSLATIONS[currentLang];
+            document.getElementById('quiz-question-number').innerText = dict.quizQuestionNum.replace('{current}', currentQuestionIndex + 1);
+            document.getElementById('quiz-category').innerText = q.category[currentLang];
+            document.getElementById('quiz-question-text').innerText = q.question[currentLang];
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            const choices = q.choices[currentLang];
+
+            choices.forEach((choice, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-slate-700 font-bold hover:bg-slate-100 hover:border-slate-300 text-left transition duration-150 flex items-center justify-between";
+                btn.onclick = () => submitAnswer(idx, btn);
+                btn.innerHTML = `
+                    <span>${choice}</span>
+                    <span class="text-slate-400 font-fredoka text-xs">${currentLang === 'id' ? 'Opsi' : 'Option'} ${String.fromCharCode(65 + idx)}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function submitAnswer(choiceIndex, element) {
+            const q = quizQuestions[currentQuestionIndex];
+            const options = document.getElementById('quiz-options').children;
+
+            for (let btn of options) {
+                btn.disabled = true;
+            }
+
+            if (choiceIndex === q.answer) {
+                element.className = "w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-400 text-emerald-800 font-bold text-left flex items-center justify-between";
+                playSfx('correct');
+                score++;
+                addStars(5);
+            } else {
+                element.className = "w-full p-4 rounded-2xl bg-red-100 border-2 border-red-400 text-red-800 font-bold text-left flex items-center justify-between";
+                options[q.answer].className = "w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-400 text-emerald-800 font-bold text-left flex items-center justify-between";
+                playSfx('wrong');
+                lives--;
+                renderHearts();
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1800);
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-finish-screen').classList.remove('hidden');
+
+            const summaryText = document.getElementById('quiz-result-summary');
+            if (lives <= 0) {
+                summaryText.innerHTML = currentLang === 'id'
+                    ? `Yah, kamu kehabisan nyawa di petualangan kali ini! 😢<br>Tapi tidak apa-apa, kamu berhasil mengumpulkan <strong>${score} jawaban benar</strong> dan belajar banyak hal! Ayo dicoba lagi!`
+                    : `Oh no, you ran out of lives on this quest! 😢<br>No worries, you successfully gathered <strong>${score} correct answers</strong> and learned a lot! Try again!`;
+            } else {
+                triggerConfetti();
+                const bonusStars = score * 5;
+                summaryText.innerHTML = currentLang === 'id'
+                    ? `HEBAT BANGET! 🎉 Kamu berhasil menyelesaikan kuis!<br>Kamu menjawab <strong>${score} dari 5 soal</strong> dengan benar!<br>Kamu mendapatkan tambahan bonus <strong>+${bonusStars} Bintang</strong>! ⭐`
+                    : `AWESOME! 🎉 You have finished the quiz!<br>You answered <strong>${score} of 5 questions</strong> correctly!<br>You earned a bonus of <strong>+${bonusStars} Stars</strong>! ⭐`;
+            }
+        }
+
+        function restartQuiz() {
+            playSfx('click');
+            startQuiz();
+        }
+
+        // --- INIT STATE ON START ---
+        window.onload = function() {
+            document.getElementById('star-count').innerText = currentStars;
+            // Force English or Indonesian initial state setting
+            setLanguage('id');
+        };
+    </script>
+</body>
+</html>
