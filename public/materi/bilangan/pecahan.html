@@ -69,9 +69,12 @@
                 </div>
             </div>
 
-            ----Back----
-
-            <a href="../../pages/bilangan.html">🏠 Menu Bilangan</a>
+            <!-- Tombol Kembali (Icon + Teks) -->
+<a href="/pages/bilangan.html" 
+   class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-sky-100 text-slate-700 hover:text-sky-600 font-semibold text-xs flex items-center gap-2 transition border border-slate-200">
+    <i class="fa-solid fa-house text-sm text-sky-600"></i>
+    <span class="hidden sm:inline" x-text="lang === 'id' ? 'Beranda' : 'Home'"></span>
+</a>
 
             <!-- Desktop Nav -->
             <nav class="hidden md:flex items-center space-x-1 font-semibold text-slate-600 text-sm">

@@ -17,10 +17,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
@@ -42,6 +38,10 @@
     <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-30 px-4 py-3 shadow-md">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
+                <!-- Tombol Kembali (Ikon Rumah) -->
+                <a href="/pages/bilangan.html" class="bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white transition p-2 rounded-lg font-bold text-lg flex items-center justify-center w-10 h-10 shadow-lg" title="Kembali ke Bilangan">
+                    <i class="fa-solid fa-house"></i>
+                </a>
                 <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold text-lg flex items-center justify-center w-10 h-10 shadow-lg">
                     <i class="fa-solid fa-calculator"></i>
                 </div>
@@ -52,12 +52,6 @@
             </div>
 
             <div class="flex items-center gap-2 sm:gap-4">
-                <!-- Violation Counter Badge -->
-                <div id="violationBadge" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-medium">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>Pelanggaran: <strong id="violationCount" class="text-amber-200">0</strong>/3</span>
-                </div>
-
                 <!-- Timer Badge -->
                 <div id="timerBadge" class="hidden items-center gap-2 bg-slate-900/80 text-emerald-400 border border-emerald-500/30 px-3.5 py-1.5 rounded-lg text-sm sm:text-base font-mono font-bold shadow-inner">
                     <i class="fa-regular fa-clock animate-pulse"></i>
@@ -97,21 +91,7 @@
                     </div>
                 </div>
 
-                <!-- Rules Box -->
-                <div class="bg-slate-900/80 border border-amber-500/30 rounded-xl p-4 space-y-2 text-xs text-amber-200/90">
-                    <div class="flex items-center gap-2 font-bold text-amber-400">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <span>Aturan Pengawasan Sistem Ujian:</span>
-                    </div>
-                    <ul class="list-disc list-inside space-y-1 text-slate-300">
-                        <li>Layar akan otomatis masuk ke mode <strong class="text-amber-300">Layar Penuh (Fullscreen)</strong>.</li>
-                        <li>Dilarang <strong class="text-amber-300">membuka tab lain, memperkecil browser, atau mengklik aplikasi lain</strong>.</li>
-                        <li>Sistem mencatat maksimal <strong class="text-amber-300">3 kali pelanggaran</strong> sebelum ujian otomatis di-submit.</li>
-                        <li>Klik kanan, copy, paste, dan shortcut keyboard seperti F12 dimatikan.</li>
-                    </ul>
-                </div>
-
-                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2 text-base">
+                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2 text-base mt-4">
                     <span>Mulai Kerjakan Ujian</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -241,7 +221,6 @@
             <div class="text-left bg-slate-900/50 border border-slate-700/60 rounded-xl p-4 text-xs text-slate-300 space-y-2">
                 <div class="flex justify-between"><span>Nama Siswa:</span> <strong id="resName" class="text-white"></strong></div>
                 <div class="flex justify-between"><span>Kelas / Absen:</span> <strong id="resClass" class="text-white"></strong></div>
-                <div class="flex justify-between"><span>Total Pelanggaran Tab:</span> <strong id="resViolations" class="text-amber-400"></strong></div>
                 <div class="flex justify-between"><span>Status Pengiriman Spreadsheet:</span> <strong id="resDriveStatus" class="text-emerald-400">Mengirim...</strong></div>
             </div>
 
@@ -267,14 +246,13 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; background-color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; border: 1px solid #e2e8f0;">
-            <div>
+    <div>
                 <div><strong>Nama Siswa:</strong> <span id="pdfName">-</span></div>
                 <div style="margin-top: 4px;"><strong>Kelas / Absen:</strong> <span id="pdfClass">-</span></div>
                 <div style="margin-top: 4px;"><strong>Waktu Selesai:</strong> <span id="pdfDate">-</span></div>
             </div>
             <div style="text-align: right;">
                 <div><strong>Skor Otomatis (1-20):</strong> <span id="pdfScore" style="color: #4f46e5; font-weight: bold;">0 / 100</span></div>
-                <div style="margin-top: 4px;"><strong>Pelanggaran Tab:</strong> <span id="pdfViolations" style="color: #d97706; font-weight: bold;">0 Kali</span></div>
             </div>
         </div>
 
@@ -284,26 +262,7 @@
         </div>
     </div>
 
-    <!-- MODAL 1: PERINGATAN / ANTI-CHEAT MODAL -->
-    <div id="warningModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-amber-500/50 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
-            <div class="inline-flex p-3 bg-amber-500/20 text-amber-400 rounded-full">
-                <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-white">Peringatan Ujian</h3>
-            <p id="warningModalMessage" class="text-slate-300 text-sm leading-relaxed">
-                Peringatan pelanggaran tata tertib ujian.
-            </p>
-            <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-amber-300 font-medium">
-                Total Pelanggaran: <span id="modalViolationCount" class="font-bold">0</span> / 3
-            </div>
-            <button type="button" onclick="dismissWarningModal()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition text-sm">
-                Mengerti &amp; Lanjutkan Ujian
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL 2: SUBMIT CONFIRMATION MODAL -->
+    <!-- SUBMIT CONFIRMATION MODAL -->
     <div id="submitModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
             <div class="inline-flex p-3 bg-emerald-500/20 text-emerald-400 rounded-full">
@@ -362,7 +321,7 @@
             { id: 19, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "1\\frac{1}{2} \\div \\frac{3}{4} = \\dots", type: "short", answer: "2" },
             { id: 20, section: "D. Pembagian Pecahan", text: "Hitunglah hasil pembagian pecahan berikut:", katex: "2\\frac{2}{5} \\div 1\\frac{1}{5} = \\dots", type: "short", answer: "2" },
 
-            // E. Esai (Tanpa KaTeX agar siswa menganalisis matematika sendiri)
+            // E. Esai
             { id: 21, section: "E. Esai", text: "Ibu mempunyai 2 1/2 kg tepung. Kemudian digunakan 3/4 kg untuk membuat kue. Berapa kilogram tepung yang masih tersisa? Tuliskan langkah pengerjaanmu.", katex: "", type: "essay" },
             { id: 22, section: "E. Esai", text: "Sebuah pita panjangnya 3 1/2 meter. Pita tersebut dipotong menjadi beberapa bagian, masing-masing sepanjang 1/2 meter. Berapa banyak potongan pita yang diperoleh? Jelaskan caramu.", katex: "", type: "essay" },
             { id: 23, section: "E. Esai", text: "Ayah membeli 2 1/4 kg buah. Sebanyak 2/3 bagian dari buah tersebut diberikan kepada tetangga. Berapa kilogram buah yang diberikan kepada tetangga? Tuliskan langkah pengerjaannya.", katex: "", type: "essay" }
@@ -375,90 +334,12 @@
             studentAbsen: '',
             currentQIndex: 0,
             answers: {},
-            violations: 0,
-            maxViolations: 3,
             timerInterval: null,
             timeRemainingSeconds: 60 * 60,
             examStarted: false,
             examSubmitted: false,
             googleScriptUrl: 'https://script.google.com/macros/s/AKfycbxkdrSTINeapno1JWLOq0MryhpAHH_JiLk6i1WEMhY8JJU4pqkJ3tQ9mD5acHWfTacO/exec'
         };
-
-        window.onload = function() {
-            setupAntiCheatListeners();
-        };
-
-        function setupAntiCheatListeners() {
-            // Tab switch detection (Reliable across browsers)
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && state.examStarted && !state.examSubmitted) {
-                    recordViolation("Terdeteksi berpindah tab atau meminimalkan browser!");
-                }
-            });
-
-            // Fullscreen exit detection
-            document.addEventListener('fullscreenchange', () => {
-                if (!document.fullscreenElement && state.examStarted && !state.examSubmitted) {
-                    recordViolation("Terdeteksi keluar dari mode layar penuh (Fullscreen)!");
-                }
-            });
-
-            // Context menu, Copy, Paste prevent
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.addEventListener('copy', e => e.preventDefault());
-            document.addEventListener('paste', e => e.preventDefault());
-
-            // DevTools / Shortcut Prevention
-            document.addEventListener('keydown', e => {
-                if (!state.examStarted) return;
-                if (
-                    e.key === 'F12' ||
-                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-                    (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S'))
-                ) {
-                    e.preventDefault();
-                    recordViolation("Penggunaan tombol pintas pengembang dilarang!");
-                }
-            });
-        }
-
-        function recordViolation(message) {
-            state.violations++;
-            document.getElementById('violationCount').innerText = state.violations;
-            document.getElementById('modalViolationCount').innerText = state.violations;
-            document.getElementById('warningModalMessage').innerText = message;
-            
-            const warningModal = document.getElementById('warningModal');
-            warningModal.classList.remove('hidden');
-
-            if (state.violations >= state.maxViolations) {
-                setTimeout(() => {
-                    alertModal("Batas maksimum pelanggaran (3x) dicapai! Ujian Anda akan otomatis dikirim.", () => {
-                        submitExam(true);
-                    });
-                }, 400);
-            }
-        }
-
-        function dismissWarningModal() {
-            document.getElementById('warningModal').classList.add('hidden');
-            requestFullScreen();
-        }
-
-        function requestFullScreen() {
-            const docEl = document.documentElement;
-            try {
-                if (docEl.requestFullscreen) {
-                    docEl.requestFullscreen().catch(() => {});
-                } else if (docEl.mozRequestFullScreen) {
-                    docEl.mozRequestFullScreen().catch(() => {});
-                } else if (docEl.webkitRequestFullscreen) {
-                    docEl.webkitRequestFullscreen().catch(() => {});
-                }
-            } catch(e) {
-                console.log("Fullscreen restriction:", e);
-            }
-        }
 
         function startExam(event) {
             event.preventDefault();
@@ -474,17 +355,12 @@
             // Switch Screen
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('examScreen').classList.remove('hidden');
-            
-            const vBadge = document.getElementById('violationBadge');
-            vBadge.classList.remove('hidden');
-            vBadge.classList.add('flex');
 
             const tBadge = document.getElementById('timerBadge');
             tBadge.classList.remove('hidden');
             tBadge.classList.add('flex');
 
             state.examStarted = true;
-            requestFullScreen();
             startTimer();
             buildQuestionGrid();
             renderQuestion(0);
@@ -710,22 +586,16 @@
 
             toggleSubmitModal(false);
 
-            if (document.exitFullscreen && document.fullscreenElement) {
-                document.exitFullscreen().catch(() => {});
-            }
-
             const score = calculateScore();
 
             // Render Results
             document.getElementById('examScreen').classList.add('hidden');
             document.getElementById('resultScreen').classList.remove('hidden');
-            document.getElementById('violationBadge').classList.add('hidden');
             document.getElementById('timerBadge').classList.add('hidden');
 
             document.getElementById('finalScoreDisplay').innerText = `${score} / 100`;
             document.getElementById('resName').innerText = state.studentName;
             document.getElementById('resClass').innerText = `${state.studentClass} (Absen: ${state.studentAbsen})`;
-            document.getElementById('resViolations').innerText = `${state.violations} Kali`;
 
             sendDataToGoogleDrive(score);
         }
@@ -738,7 +608,6 @@
             document.getElementById('pdfClass').innerText = `${state.studentClass} (Absen: ${state.studentAbsen})`;
             document.getElementById('pdfDate').innerText = dateStr;
             document.getElementById('pdfScore').innerText = `${score} / 100`;
-            document.getElementById('pdfViolations').innerText = `${state.violations} Kali`;
 
             const listContainer = document.getElementById('pdfAnswersList');
             listContainer.innerHTML = '';
@@ -753,7 +622,6 @@
                 item.style.marginBottom = '10px';
                 item.style.pageBreakInside = 'avoid';
 
-                // Render KaTeX math formula HTML for PDF
                 let mathHtml = '';
                 if (q.katex && q.katex.trim() !== '') {
                     try {
@@ -763,7 +631,6 @@
                     }
                 }
 
-                // Answer key and correctness status for learning review
                 let keyAndStatusHtml = '';
                 if (q.type === 'short') {
                     const valUser = parseFractionValue(ans);
@@ -834,7 +701,6 @@
                 studentClass: state.studentClass,
                 studentAbsen: state.studentAbsen,
                 score: score,
-                violations: state.violations,
                 answers: state.answers,
                 timestamp: new Date().toISOString()
             };
@@ -854,34 +720,6 @@
                 statusEl.innerText = "Gagal Mengirim ke Google Drive (Cek URL)";
                 statusEl.className = "text-red-400";
             });
-        }
-
-        function toggleConfigModal(show) {
-            const modal = document.getElementById('configModal');
-            if (show) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
-        }
-
-        function saveConfig() {
-            const url = document.getElementById('scriptUrlInput').value.trim();
-            state.googleScriptUrl = url;
-            localStorage.setItem('googleScriptUrl', url);
-            toggleConfigModal(false);
-            alertModal("Pengaturan URL Google Apps Script berhasil disimpan!");
-        }
-
-        function alertModal(msg, callback) {
-            document.getElementById('warningModalMessage').innerText = msg;
-            document.getElementById('modalViolationCount').innerText = state.violations;
-            document.getElementById('warningModal').classList.remove('hidden');
-            
-            const btn = document.querySelector('#warningModal button');
-            const originalOnClick = btn.onclick;
-            btn.onclick = () => {
-                document.getElementById('warningModal').classList.add('hidden');
-                btn.onclick = originalOnClick;
-                if (callback) callback();
-            };
         }
     </script>
 </body>

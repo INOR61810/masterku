@@ -58,7 +58,6 @@
             aspect-ratio: 1;
             transition: background-color 0.2s ease;
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -95,8 +94,10 @@
                 </div>
             </div>
 
-            <!-- Header Nav Controls -->
             <div class="flex items-center gap-2 md:gap-4">
+                <a href="/pages/bilangan.html" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition shadow-sm border border-slate-200" title="Kembali ke Bilangan">
+                    <i class="fa-solid fa-house"></i>
+                </a>
                 <button id="btn-mode-ppt" onclick="switchMainTab('ppt')" class="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all bg-sky-500 text-white shadow-md shadow-sky-200">
                     <i class="fa-solid fa-file-powerpoint"></i>
                     <span id="txt-nav-ppt" class="hidden sm:inline">Materi Slide (PPT)</span>
@@ -121,22 +122,19 @@
 
         <!-- SECTION 1: PRESENTATION (PPT SLIDES) -->
         <div id="ppt-container" class="w-full flex flex-col gap-4">
-            <!-- Slide Header Controls -->
             <div class="glass-card rounded-2xl p-4 shadow-md border border-white flex flex-wrap items-center justify-between gap-3">
-                <!-- Topic Selection Dropdown -->
                 <div class="flex items-center gap-2 w-full md:w-auto">
                     <span id="lbl-topic" class="text-xs font-bold uppercase tracking-wider text-slate-400">Topik:</span>
                     <select id="slide-selector" onchange="jumpToSlide(this.value)" class="bg-slate-100 border border-slate-200 text-slate-800 text-sm font-bold rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-sky-400 flex-grow md:w-80">
-                        <option value="0">1. Basics of Decimals (Konsep Dasar)</option>
-                        <option value="1">2. Comparing & Ordering (Membandingkan)</option>
-                        <option value="2">3. Addition & Subtraction (Penjumlahan & Pengurangan)</option>
-                        <option value="3">4. Multiplication of Decimals (Perkalian)</option>
-                        <option value="4">5. Division of Decimals (Pembagian)</option>
-                        <option value="5">6. Decimal Story Problems (Soal Cerita)</option>
+                        <option value="0">1. Konsep Dasar Desimal</option>
+                        <option value="1">2. Membandingkan Desimal</option>
+                        <option value="2">3. Penjumlahan & Pengurangan</option>
+                        <option value="3">4. Perkalian Desimal</option>
+                        <option value="4">5. Pembagian Desimal</option>
+                        <option value="5">6. Soal Cerita Desimal</option>
                     </select>
                 </div>
 
-                <!-- Progress Indicator -->
                 <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
                     <div class="flex items-center gap-1.5 text-sm font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl">
                         <i class="fa-regular fa-clone text-sky-500"></i>
@@ -150,10 +148,8 @@
 
             <!-- Slide Main Frame -->
             <div class="relative bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden min-h-[520px] flex flex-col justify-between p-6 sm:p-10 transition-all duration-500" id="slide-card">
-                <!-- Content injected dynamically via JS -->
                 <div id="slide-content" class="flex-grow"></div>
 
-                <!-- Interactive Slide Footer Navigation -->
                 <div class="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
                     <button id="btn-prev-slide" onclick="changeSlide(-1)" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center gap-2 transition disabled:opacity-40 disabled:cursor-not-allowed">
                         <i class="fa-solid fa-arrow-left"></i>
@@ -175,7 +171,6 @@
 
         <!-- SECTION 2: GAME ARENA -->
         <div id="game-container" class="w-full hidden flex-col gap-4">
-            <!-- Game Header Stats Bar -->
             <div class="glass-card rounded-2xl p-4 shadow-md border border-white flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <div id="game-badge-icon" class="w-12 h-12 rounded-2xl bg-amber-400 text-white flex items-center justify-center text-2xl shadow-md shadow-amber-200">
@@ -187,7 +182,6 @@
                     </div>
                 </div>
 
-                <!-- Stats Badges -->
                 <div class="flex items-center gap-3">
                     <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2">
                         <i class="fa-solid fa-star text-amber-500 text-lg"></i>
@@ -206,7 +200,6 @@
                 </div>
             </div>
 
-            <!-- Game Mode Selector Tabs -->
             <div class="flex overflow-x-auto gap-2 pb-1 no-scrollbar">
                 <button onclick="selectGameMode(0)" class="game-tab-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 shadow-sm border border-slate-200 hover:border-sky-300 transition">1. Dasar</button>
                 <button onclick="selectGameMode(1)" class="game-tab-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 shadow-sm border border-slate-200 hover:border-sky-300 transition">2. Bandingkan</button>
@@ -217,15 +210,11 @@
                 <button id="btn-grand-tab" onclick="selectGameMode(6)" class="game-tab-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm transition">🏆 Tantangan Utama</button>
             </div>
 
-            <!-- Interactive Game Stage Canvas/Panel -->
-            <div id="game-stage" class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-8 min-h-[460px] flex flex-col justify-center items-center text-center">
-                <!-- Game Content dynamically injected -->
-            </div>
+            <div id="game-stage" class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-8 min-h-[460px] flex flex-col justify-center items-center text-center"></div>
         </div>
 
     </main>
 
-    <!-- Global Footer -->
     <footer class="bg-white/60 border-t border-slate-200/60 py-3 text-center text-xs text-slate-500 font-semibold">
         <p id="txt-footer">Aplikasi Pembelajaran Desimal Interaktif &bull; Berdasarkan Kurikulum Matematika Dasar</p>
     </footer>
@@ -235,14 +224,12 @@
         const AudioFX = {
             ctx: null,
             enabled: true,
-
             init() {
                 if (!this.ctx) {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     if (AudioContext) this.ctx = new AudioContext();
                 }
             },
-
             playClick() {
                 if (!this.enabled) return;
                 this.init();
@@ -259,7 +246,6 @@
                 osc.start();
                 osc.stop(this.ctx.currentTime + 0.05);
             },
-
             playCorrect() {
                 if (!this.enabled) return;
                 this.init();
@@ -278,7 +264,6 @@
                 osc.start(now);
                 osc.stop(now + 0.35);
             },
-
             playWrong() {
                 if (!this.enabled) return;
                 this.init();
@@ -304,7 +289,7 @@
             btn.innerHTML = AudioFX.enabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark text-rose-500"></i>';
         }
 
-        let currentLang = 'id'; // 'id' or 'en'
+        let currentLang = 'id';
 
         const i18n = {
             id: {
@@ -373,11 +358,9 @@
             AudioFX.playClick();
             currentLang = currentLang === 'id' ? 'en' : 'id';
             
-            // Update Lang Button UI
             document.getElementById('lang-flag').innerText = currentLang === 'id' ? '🇮🇩' : '🇬🇧';
             document.getElementById('lang-code').innerText = currentLang.toUpperCase();
 
-            // Update UI static labels
             const t = i18n[currentLang];
             document.getElementById('txt-nav-ppt').innerText = t.navPpt;
             document.getElementById('txt-nav-game').innerText = t.navGame;
@@ -392,13 +375,11 @@
             document.getElementById('txt-footer').innerText = t.footer;
             document.getElementById('btn-grand-tab').innerText = t.grandTab;
 
-            // Update Dropdown Options
             const selector = document.getElementById('slide-selector');
             for(let i=0; i < t.topics.length; i++) {
                 if (selector.options[i]) selector.options[i].text = t.topics[i];
             }
 
-            // Re-render current slide or game
             renderCurrentSlide();
             generateGameQuestion();
         }
@@ -407,60 +388,119 @@
         let currentGameMode = 0;
         let gameScore = 0;
         let gameStreak = 0;
-        let shadedGridCount = 25;
 
-        function initGridInteractive() {
-            const gridContainer = document.getElementById('interactive-100-grid');
-            if (!gridContainer) return;
-            gridContainer.innerHTML = '';
-            
-            for (let i = 0; i < 100; i++) {
-                const cell = document.createElement('div');
-                cell.className = `grid-cell rounded-sm cursor-pointer transition-colors ${i < shadedGridCount ? 'bg-sky-500' : 'bg-slate-200 hover:bg-sky-200'}`;
-                cell.dataset.index = i;
-                cell.addEventListener('click', () => {
-                    AudioFX.playClick();
-                    const isShaded = cell.classList.contains('bg-sky-500');
-                    if (isShaded) {
-                        cell.classList.remove('bg-sky-500');
-                        cell.classList.add('bg-slate-200', 'hover:bg-sky-200');
-                        shadedGridCount--;
-                    } else {
-                        cell.classList.remove('bg-slate-200', 'hover:bg-sky-200');
-                        cell.classList.add('bg-sky-500');
-                        shadedGridCount++;
-                    }
-                    updateGridStats();
-                });
-                gridContainer.appendChild(cell);
+        // FUNGSI UNTUK TABEL NILAI TEMPAT INTERAKTIF
+        function updateTabelNilaiTempat() {
+            const inputElem = document.getElementById('input-angka');
+            if (!inputElem) return;
+
+            const rawInput = inputElem.value.trim();
+            const container = document.getElementById('container-nilai-tempat');
+            const labelCaraBaca = document.getElementById('cara-baca');
+            const labelAngkaAsli = document.getElementById('label-angka-asli');
+
+            if (!container || !labelCaraBaca || !labelAngkaAsli) return;
+
+            labelAngkaAsli.innerText = rawInput || "0";
+            container.innerHTML = "";
+
+            if (!rawInput) {
+                labelCaraBaca.innerText = "-";
+                return;
             }
-            updateGridStats();
-        }
-        window.initGridInteractive = initGridInteractive;
 
-        function resetGridVisual() {
-            AudioFX.playClick();
-            shadedGridCount = 0;
-            const cells = document.querySelectorAll('#interactive-100-grid .grid-cell');
-            cells.forEach(cell => {
-                cell.className = 'grid-cell rounded-sm cursor-pointer transition-colors bg-slate-200 hover:bg-sky-200';
-            });
-            updateGridStats();
-        }
-        window.resetGridVisual = resetGridVisual;
+            const normalizedInput = rawInput.replace(',', '.');
+            const parts = normalizedInput.split('.');
+            const integerPart = parts[0] || "";
+            const decimalPart = parts[1] !== undefined ? parts[1] : null;
 
-        function updateGridStats() {
-            const countElem = document.getElementById('grid-shaded-count');
-            const fracElem = document.getElementById('grid-fraction-val');
-            const decElem = document.getElementById('grid-decimal-val');
-            if (!countElem) return;
+            const intNames = ["Satuan", "Puluhan", "Ratusan", "Ribuan", "Puluh Ribuan"];
+            const intValues = ["1", "10", "100", "1.000", "10.000"];
+            const decNames = ["Persepuluhan", "Perseratusan", "Perseribuan"];
+            const decValues = ["1/10 (0,1)", "1/100 (0,01)", "1/1000 (0,001)"];
 
-            const decStr = (shadedGridCount / 100).toFixed(2);
-            countElem.innerText = `${shadedGridCount} / 100`;
-            fracElem.innerText = `${shadedGridCount}/100`;
-            decElem.innerText = currentLang === 'en' ? decStr : decStr.replace('.', ',');
+            let cards = [];
+
+            const intLen = integerPart.length;
+            for (let i = 0; i < intLen; i++) {
+                const char = integerPart[i];
+                const positionFromRight = intLen - 1 - i;
+                const name = intNames[positionFromRight] || `10^${positionFromRight}`;
+                const val = intValues[positionFromRight] || "";
+
+                cards.push(`
+                    <div class="bg-white border border-sky-200 rounded-2xl p-3 w-24 text-center shadow-sm">
+                        <div class="text-xs font-bold text-slate-700">${name}</div>
+                        <div class="text-[10px] text-slate-400 mb-2">${val}</div>
+                        <div class="text-2xl font-bold text-sky-500">${char}</div>
+                    </div>
+                `);
+            }
+
+            if (decimalPart !== null) {
+                cards.push(`
+                    <div class="bg-amber-100 border border-amber-300 rounded-2xl p-3 w-16 text-center flex items-center justify-center shadow-sm">
+                        <div class="text-3xl font-bold text-amber-600 font-serif">,</div>
+                    </div>
+                `);
+
+                for (let i = 0; i < decimalPart.length; i++) {
+                    const char = decimalPart[i];
+                    const name = decNames[i] || `1/${Math.pow(10, i + 1)}`;
+                    const val = decValues[i] || "";
+
+                    cards.push(`
+                        <div class="bg-white border border-purple-200 rounded-2xl p-3 w-28 text-center shadow-sm">
+                            <div class="text-xs font-bold text-purple-700">${name}</div>
+                            <div class="text-[10px] text-slate-400 mb-2">${val}</div>
+                            <div class="text-2xl font-bold text-purple-600">${char}</div>
+                        </div>
+                    `);
+                }
+            }
+
+            container.innerHTML = cards.join('');
+            labelCaraBaca.innerText = terbilangSimpel(integerPart, decimalPart);
         }
-        window.updateGridStats = updateGridStats;
+        window.updateTabelNilaiTempat = updateTabelNilaiTempat;
+
+        function terbilangSimpel(intPart, decPart) {
+            const kata = ["nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"];
+            
+            function readInt(n) {
+                let num = parseInt(n, 10);
+                if (isNaN(num) || num === 0) return "nol";
+                let res = "";
+                if (num >= 100) {
+                    let r = Math.floor(num / 100);
+                    res += (r === 1 ? "seratus" : kata[r] + " ratus") + " ";
+                    num %= 100;
+                }
+                if (num >= 20) {
+                    res += kata[Math.floor(num / 10)] + " puluh ";
+                    num %= 10;
+                } else if (num >= 10) {
+                    if (num === 10) res += "sepuluh ";
+                    else if (num === 11) res += "sebelas ";
+                    else res += kata[num % 10] + " belas ";
+                    num = 0;
+                }
+                if (num > 0) res += kata[num] + " ";
+                return res.trim();
+            }
+
+            let hasil = readInt(intPart);
+            
+            if (decPart !== null && decPart.length > 0) {
+                hasil += " koma";
+                for (let char of decPart) {
+                    if (!isNaN(parseInt(char))) {
+                        hasil += " " + kata[parseInt(char)];
+                    }
+                }
+            }
+            return hasil.charAt(0).toUpperCase() + hasil.slice(1);
+        }
 
         function updateComparisonWidget() {
             const val1Input = document.getElementById('cmp-val-1');
@@ -542,7 +582,7 @@
 
             const tabs = document.querySelectorAll('.game-tab-btn');
             tabs.forEach((tab, idx) => {
-                if (idx === 6) return; // Keep grand challenge gradient button
+                if (idx === 6) return;
                 if (idx === modeIndex) {
                     tab.className = "game-tab-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 text-white shadow-md shadow-sky-200 transition";
                 } else {
@@ -569,135 +609,44 @@
         }
 
         const slidesData = [
-            // TOPIC 1
+            // TOPIC 1 (DIGABUNGKAN & DIRAPIKAN)
             {
                 render: function(lang) {
-                    if (lang === 'en') {
-                        return `
-                        <div class="space-y-6">
-                            <div class="flex items-center gap-3">
-                                <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-extrabold uppercase">Topic 1</span>
-                                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">What are Decimal Numbers?</h2>
-                            </div>
-                            <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
-                                Decimals are another way to express <strong class="font-bold text-slate-800">fractions</strong>. A decimal point (<strong class="text-sky-600 font-extrabold">.</strong> or <strong class="text-sky-600 font-extrabold">,</strong>) separates the <strong class="font-bold text-slate-800">whole number part</strong> from the <strong class="font-bold text-slate-800">fractional part</strong> (values less than 1).
-                            </p>
-                            <div class="bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100 rounded-2xl p-4 sm:p-6 shadow-sm">
-                                <h3 class="text-sm font-bold text-sky-800 uppercase tracking-wider mb-3 text-center">Place Value Chart</h3>
-                                <div class="grid grid-cols-5 gap-2 text-center text-xs sm:text-sm">
-                                    <div class="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                                        <p class="font-extrabold text-slate-700">Hundreds</p>
-                                        <p class="text-[10px] text-slate-400">100</p>
-                                        <p class="text-xl font-bold text-sky-600 mt-2">1</p>
-                                    </div>
-                                    <div class="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                                        <p class="font-extrabold text-slate-700">Tens</p>
-                                        <p class="text-[10px] text-slate-400">10</p>
-                                        <p class="text-xl font-bold text-sky-600 mt-2">2</p>
-                                    </div>
-                                    <div class="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                                        <p class="font-extrabold text-slate-700">Ones</p>
-                                        <p class="text-[10px] text-slate-400">1</p>
-                                        <p class="text-xl font-bold text-sky-600 mt-2">3</p>
-                                    </div>
-                                    <div class="bg-amber-100 p-2.5 rounded-xl border border-amber-300 flex items-center justify-center">
-                                        <span class="text-3xl font-extrabold text-amber-600">.</span>
-                                    </div>
-                                    <div class="bg-white p-2.5 rounded-xl border border-indigo-200 shadow-sm">
-                                        <p class="font-extrabold text-indigo-700">Tenths</p>
-                                        <p class="text-[10px] text-slate-400">1/10 (0.1)</p>
-                                        <p class="text-xl font-bold text-indigo-600 mt-2">4</p>
-                                    </div>
-                                </div>
-                                <p class="text-center text-xs text-slate-500 mt-3">Example above reads: <strong>One hundred twenty-three point four</strong> (123.4)</p>
-                            </div>
-                            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-                                <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-hand-pointer text-sky-500"></i> Interactive Visual Grid (Hundredths Model)
-                                </h4>
-                                <p class="text-xs text-slate-500 mb-3">Click on any grid cell to shade and observe its decimal representation!</p>
-                                <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                                    <div class="w-48 h-48 bg-slate-100 p-1 rounded-xl border border-slate-300">
-                                        <div id="interactive-100-grid" class="grid-100 w-full h-full"></div>
-                                    </div>
-                                    <div class="flex-1 bg-slate-50 p-4 rounded-xl border border-slate-200 text-center sm:text-left">
-                                        <p class="text-xs font-semibold text-slate-500 uppercase">Shaded Cells Count:</p>
-                                        <p id="grid-shaded-count" class="text-3xl font-black text-sky-600">25 / 100</p>
-                                        <div class="mt-2 space-y-1 text-sm font-semibold text-slate-700">
-                                            <p>Fraction: <span id="grid-fraction-val" class="font-bold text-indigo-600">25/100</span></p>
-                                            <p>Decimal: <span id="grid-decimal-val" class="font-bold text-emerald-600">0.25</span></p>
-                                        </div>
-                                        <button onclick="resetGridVisual()" class="mt-3 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 rounded-lg text-xs font-bold text-slate-700 transition">
-                                            <i class="fa-solid fa-rotate"></i> Reset Grid
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
                     return `
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-extrabold uppercase">Topik 1</span>
-                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Apa Itu Bilangan Desimal?</h2>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">${lang === 'en' ? 'Basics of Decimals' : 'Konsep Dasar Bilangan Desimal'}</h2>
                         </div>
-                        <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
-                            Bilangan desimal adalah bentuk lain dari <strong class="font-bold text-slate-800">pecahan</strong>. Tanda koma (<strong class="text-sky-600 font-extrabold">,</strong>) atau titik desimal memisahkan bagian <strong class="font-bold text-slate-800">bilangan bulat</strong> dari bagian <strong class="font-bold text-slate-800">pecahan</strong> (nilai kurang dari 1).
-                        </p>
-                        <div class="bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100 rounded-2xl p-4 sm:p-6 shadow-sm">
-                            <h3 class="text-sm font-bold text-sky-800 uppercase tracking-wider mb-3 text-center">Tabel Nilai Tempat (Place Value)</h3>
-                            <div class="grid grid-cols-5 gap-2 text-center text-xs sm:text-sm">
-                                <div class="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                                    <p class="font-extrabold text-slate-700">Ratusan</p>
-                                    <p class="text-[10px] text-slate-400">100</p>
-                                    <p class="text-xl font-bold text-sky-600 mt-2">1</p>
-                                </div>
-                                <div class="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                                    <p class="font-extrabold text-slate-700">Puluhan</p>
-                                    <p class="text-[10px] text-slate-400">10</p>
-                                    <p class="text-xl font-bold text-sky-600 mt-2">2</p>
-                                </div>
-                                <div class="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                                    <p class="font-extrabold text-slate-700">Satuan</p>
-                                    <p class="text-[10px] text-slate-400">1</p>
-                                    <p class="text-xl font-bold text-sky-600 mt-2">3</p>
-                                </div>
-                                <div class="bg-amber-100 p-2.5 rounded-xl border border-amber-300 flex items-center justify-center">
-                                    <span class="text-3xl font-extrabold text-amber-600">,</span>
-                                </div>
-                                <div class="bg-white p-2.5 rounded-xl border border-indigo-200 shadow-sm">
-                                    <p class="font-extrabold text-indigo-700">Persepuluhan</p>
-                                    <p class="text-[10px] text-slate-400">1/10 (0,1)</p>
-                                    <p class="text-xl font-bold text-indigo-600 mt-2">4</p>
-                                </div>
+                        
+                        <!-- TABEL NILAI TEMPAT INTERAKTIF -->
+                        <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 max-w-4xl mx-auto shadow-sm">
+                            <h3 class="text-center font-bold text-slate-800 text-lg mb-4 tracking-wide">
+                                TABEL NILAI TEMPAT (PLACE VALUE) INTERAKTIF
+                            </h3>
+
+                            <!-- Input Angka -->
+                            <div class="flex justify-center items-center gap-3 mb-6">
+                                <label for="input-angka" class="text-sm font-semibold text-slate-600">Masukkan Angka:</label>
+                                <input type="text" id="input-angka" value="123,4" placeholder="Contoh: 123,4" 
+                                       oninput="updateTabelNilaiTempat()"
+                                       class="px-4 py-2 border border-slate-300 rounded-xl font-bold text-slate-700 text-center w-40 focus:outline-none focus:ring-2 focus:ring-sky-400 bg-white shadow-sm">
                             </div>
-                            <p class="text-center text-xs text-slate-500 mt-3">Contoh di atas dibaca: <strong>Seratus dua puluh tiga koma empat</strong> (123,4)</p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-                                <i class="fa-solid fa-hand-pointer text-sky-500"></i> Model Visual Interaktif (Pecahan Perseratusan)
-                            </h4>
-                            <p class="text-xs text-slate-500 mb-3">Klik sel grid untuk mewarnai dan melihat nilai desimalnya secara langsung!</p>
-                            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div class="w-48 h-48 bg-slate-100 p-1 rounded-xl border border-slate-300">
-                                    <div id="interactive-100-grid" class="grid-100 w-full h-full"></div>
-                                </div>
-                                <div class="flex-1 bg-slate-50 p-4 rounded-xl border border-slate-200 text-center sm:text-left">
-                                    <p class="text-xs font-semibold text-slate-500 uppercase">Jumlah Terarsir:</p>
-                                    <p id="grid-shaded-count" class="text-3xl font-black text-sky-600">25 / 100</p>
-                                    <div class="mt-2 space-y-1 text-sm font-semibold text-slate-700">
-                                        <p>Pecahan: <span id="grid-fraction-val" class="font-bold text-indigo-600">25/100</span></p>
-                                        <p>Desimal: <span id="grid-decimal-val" class="font-bold text-emerald-600">0,25</span></p>
-                                    </div>
-                                    <button onclick="resetGridVisual()" class="mt-3 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 rounded-lg text-xs font-bold text-slate-700 transition">
-                                        <i class="fa-solid fa-rotate"></i> Reset Grid
-                                    </button>
-                                </div>
-                            </div>
+
+                            <!-- Container Kotak-Kotak Nilai Tempat -->
+                            <div id="container-nilai-tempat" class="flex flex-wrap justify-center items-center gap-2 md:gap-3 mb-4"></div>
+
+                            <!-- Teks Cara Baca Dinamis -->
+                            <p class="text-center text-sm text-slate-500">
+                                Contoh di atas dibaca: <span id="cara-baca" class="font-bold text-slate-800">Seratus dua puluh tiga koma empat</span> 
+                                (<span id="label-angka-asli" class="text-slate-600">123,4</span>)
+                            </p>
                         </div>
                     </div>`;
                 },
-                initWidget: function() { initGridInteractive(); }
+                initWidget: function() {
+                    updateTabelNilaiTempat();
+                }
             },
 
             // TOPIC 2
@@ -1104,9 +1053,8 @@
             }
         }
 
-        // GAME 1: BASICS MATCHING (DYNAMIC RANDOM)
         function renderBasicsGame(stage) {
-            const numerator = Math.floor(Math.random() * 95) + 5; // 5 to 99
+            const numerator = Math.floor(Math.random() * 95) + 5;
             const numDecimal = (numerator / 100).toFixed(2);
             const numStr = currentLang === 'en' ? numDecimal : numDecimal.replace('.', ',');
             const correctFraction = `${numerator}/100`;
@@ -1140,7 +1088,6 @@
                 </div>`;
         }
 
-        // GAME 2: COMPARING (DYNAMIC RANDOM)
         function renderComparingGame(stage) {
             const valA = (Math.floor(Math.random() * 90 + 5) / 100);
             const valB = (Math.floor(Math.random() * 90 + 5) / 100);
@@ -1175,11 +1122,10 @@
                 </div>`;
         }
 
-        // GAME 3: ADDITION/SUBTRACTION (DYNAMIC RANDOM)
         function renderAddSubGame(stage) {
             const isAdd = Math.random() > 0.5;
-            const a = (Math.floor(Math.random() * 80 + 10) / 10); // e.g. 3.4
-            const b = (Math.floor(Math.random() * 50 + 5) / 10);  // e.g. 1.2
+            const a = (Math.floor(Math.random() * 80 + 10) / 10);
+            const b = (Math.floor(Math.random() * 50 + 5) / 10);
 
             const res = isAdd ? (a + b) : Math.max(a, b) - Math.min(a, b);
             const val1 = isAdd ? a : Math.max(a, b);
@@ -1209,10 +1155,9 @@
                 </div>`;
         }
 
-        // GAME 4: MULTIPLICATION (DYNAMIC RANDOM)
         function renderMulGame(stage) {
-            const a = (Math.floor(Math.random() * 8 + 1) / 10); // 0.1 to 0.8
-            const b = (Math.floor(Math.random() * 8 + 1) / 10); // 0.1 to 0.8
+            const a = (Math.floor(Math.random() * 8 + 1) / 10);
+            const b = (Math.floor(Math.random() * 8 + 1) / 10);
             const res = Math.round(a * b * 100) / 100;
 
             const strA = currentLang === 'en' ? a.toFixed(1) : a.toFixed(1).replace('.', ',');
@@ -1239,10 +1184,9 @@
                 </div>`;
         }
 
-        // GAME 5: DIVISION (DYNAMIC RANDOM)
         function renderDivGame(stage) {
-            const divisor = (Math.floor(Math.random() * 4 + 2) / 10); // 0.2, 0.3, 0.4, 0.5
-            const quotient = Math.floor(Math.random() * 8 + 2);      // 2 to 9
+            const divisor = (Math.floor(Math.random() * 4 + 2) / 10);
+            const quotient = Math.floor(Math.random() * 8 + 2);
             const dividend = Math.round(divisor * quotient * 100) / 100;
 
             const strDivisor = currentLang === 'en' ? divisor.toFixed(1) : divisor.toFixed(1).replace('.', ',');
@@ -1269,9 +1213,7 @@
                 </div>`;
         }
 
-        // GAME 6: DYNAMIC RANDOM STORY PROBLEMS
         function renderStoryGame(stage) {
-            // Dynamic random variable generators for story problems
             const namesID = ['Budi', 'Ani', 'Rian', 'Siti', 'Deni', 'Maya'];
             const namesEN = ['Alex', 'Emma', 'Liam', 'Sophia', 'Noah', 'Olivia'];
             const name = currentLang === 'en' ? namesEN[Math.floor(Math.random()*namesEN.length)] : namesID[Math.floor(Math.random()*namesID.length)];
@@ -1281,9 +1223,8 @@
             let correctAnsStr = "";
 
             if (templateType === 0) {
-                // Addition story problem
-                const val1 = (Math.floor(Math.random() * 30 + 10) / 10); // 1.0 - 4.0
-                const val2 = (Math.floor(Math.random() * 20 + 5) / 10);  // 0.5 - 2.5
+                const val1 = (Math.floor(Math.random() * 30 + 10) / 10);
+                const val2 = (Math.floor(Math.random() * 20 + 5) / 10);
                 const total = Math.round((val1 + val2) * 10) / 10;
 
                 const v1Str = currentLang === 'en' ? val1.toFixed(1) : val1.toFixed(1).replace('.', ',');
@@ -1294,9 +1235,8 @@
                     ? `${name} bought ${v1Str} kg of apples and ${v2Str} kg of oranges. What is the total weight of fruit bought in kg?`
                     : `${name} membeli ${v1Str} kg buah apel dan ${v2Str} kg buah jeruk. Berapa kg total berat buah yang dibeli ${name}?`;
             } else if (templateType === 1) {
-                // Division story problem
-                const parts = Math.floor(Math.random() * 3 + 2); // 2, 3, 4
-                const perPart = (Math.floor(Math.random() * 15 + 5) / 10); // 0.5 to 2.0
+                const parts = Math.floor(Math.random() * 3 + 2);
+                const perPart = (Math.floor(Math.random() * 15 + 5) / 10);
                 const totalLen = Math.round(parts * perPart * 10) / 10;
 
                 const lenStr = currentLang === 'en' ? totalLen.toFixed(1) : totalLen.toFixed(1).replace('.', ',');
@@ -1306,9 +1246,8 @@
                     ? `${name} has a ribbon ${lenStr} meters long. It is cut into ${parts} equal pieces. How long is each piece in meters?`
                     : `${name} memiliki pita sepanjang ${lenStr} meter. Pita tersebut dipotong menjadi ${parts} bagian sama panjang. Berapa meter panjang tiap potongan?`;
             } else {
-                // Multiplication story problem
-                const qty = Math.floor(Math.random() * 4 + 2); // 2 to 5 items
-                const price = (Math.floor(Math.random() * 8 + 2) / 2); // 1.0, 1.5, 2.0, 2.5...
+                const qty = Math.floor(Math.random() * 4 + 2);
+                const price = (Math.floor(Math.random() * 8 + 2) / 2);
                 const totalPrice = Math.round(qty * price * 10) / 10;
 
                 const priceStr = currentLang === 'en' ? price.toFixed(1) : price.toFixed(1).replace('.', ',');
@@ -1336,7 +1275,6 @@
                 </div>`;
         }
 
-        // GAME 7: GRAND CHALLENGE
         function renderGrandChallenge(stage) {
             stage.innerHTML = `
                 <div class="max-w-md w-full space-y-6 text-center">
@@ -1408,7 +1346,6 @@
             }
         }
 
-        // Initialize on load
         window.onload = function() {
             renderCurrentSlide();
         };
