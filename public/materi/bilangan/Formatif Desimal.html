@@ -306,7 +306,7 @@
         
         async function loadStudentDatabase() {
             try {
-                const response = await fetch('/Siswa.json', { cache: 'no-store' });
+                const response = await fetch('/materi/bilangan/Siswa.json', { cache: 'no-store' });
         
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
