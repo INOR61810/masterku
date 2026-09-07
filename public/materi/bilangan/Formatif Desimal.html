@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formatif Desimal - Matematika Kelas 5 SD</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+            .print-card { border: 1px solid #ddd !important; box-shadow: none !important; margin-bottom: 1rem !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- HEADER / NAVBAR INTERAKTIF -->
+    <header class="bg-gradient-to-r from-brand-800 via-brand-700 to-indigo-900 text-white shadow-md sticky top-0 z-40 no-print">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20">
+                    <i class="fa-solid me-1 fa-calculator text-yellow-300 text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg md:text-xl tracking-wide leading-none">Formatif Desimal</h1>
+                    <p class="text-xs text-brand-100 mt-1">Matematika Kelas 5 SD / MI</p>
+                </div>
+            </div>
+
+            <!-- DETAIL SISWA & TIMER DI HEADER -->
+            <div class="flex items-center space-x-3 md:space-x-6">
+                <!-- Info Siswa Aktif -->
+                <div id="headerStudentInfo" class="hidden md:flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15 text-xs font-medium">
+                    <i class="fa-solid fa-user-graduate text-yellow-300"></i>
+                    <span id="headerStudentName" class="font-semibold text-white">Siswa</span>
+                    <span id="headerStudentClass" class="bg-yellow-400 text-slate-900 px-1.5 py-0.5 rounded text-[10px] font-bold">5A</span>
+                </div>
+
+                <!-- Timer Unik -->
+                <div class="flex items-center space-x-2 bg-slate-900/40 px-3 py-1.5 rounded-lg border border-white/20">
+                    <i class="fa-regular fa-clock text-emerald-400 animate-pulse text-sm"></i>
+                    <span id="timerDisplay" class="font-mono font-bold text-sm tracking-wider text-emerald-300">00:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- HALAMAN DEPAN: IDENTITAS SISWA -->
+        <section id="identitySection" class="max-w-lg mx-auto my-6 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden no-print">
+            <div class="bg-gradient-to-r from-brand-600 to-indigo-600 p-6 text-white text-center">
+                <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/20">
+                    <i class="fa-solid fa-pen-ruler text-3xl text-yellow-300"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold">Selamat Datang!</h2>
+                <p class="text-brand-100 text-sm mt-1">Silahkan isi identitas diri sebelum memulai Formatif Desimal</p>
+            </div>
+
+            <form id="identityForm" onsubmit="startExam(event)" class="p-6 space-y-5">
+                <!-- Pilihan Kelas -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                        <i class="fa-solid fa-school text-brand-500 mr-1"></i> Pilih Kelas
+                    </label>
+                    <select id="inputClass" required onchange="filterStudentList()" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-semibold bg-slate-50 transition">
+                        <option value="" disabled selected>-- Pilih Kelas --</option>
+                        <option value="5A">Kelas 5A</option>
+                        <option value="5B">Kelas 5B</option>
+                        <option value="5C">Kelas 5C</option>
+                        <option value="5D">Kelas 5D</option>
+                    </select>
+                </div>
+
+                <!-- Input Nama Siswa dengan Autocomplete 3 Huruf -->
+                <div class="relative">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                            <i class="fa-solid fa-user text-brand-500 mr-1"></i> Nama Siswa
+                        </label>
+                        <span id="charCountNotice" class="text-[11px] font-medium text-slate-400">Ketik minimal 3 huruf</span>
+                    </div>
+
+                    <input type="text" id="inputName" autocomplete="off" required placeholder="Ketik nama kamu..." oninput="handleNameInput(this.value)" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-semibold transition placeholder:font-normal placeholder:text-slate-400">
+
+                    <!-- Dropdown Autocomplete Result -->
+                    <div id="autocompleteDropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 max-h-56 overflow-y-auto divide-y divide-slate-100">
+                    </div>
+                </div>
+
+                <!-- Alert Validasi -->
+                <div id="loginAlert" class="hidden p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-base flex-shrink-0"></i>
+                    <span id="loginAlertText">Mohon lengkapi kelas dan nama siswa terlebih dahulu.</span>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-2">
+                    <span>Mulai Pengerjaan</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- HALAMAN SOAL FORMATIF -->
+        <div id="examSection" class="hidden space-y-8 no-print">
+
+            <!-- BANNER PETUNJUK -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start space-x-3">
+                    <div class="p-3 bg-brand-50 text-brand-600 rounded-xl flex-shrink-0">
+                        <i class="fa-solid fa-clipboard-list text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-base">Petunjuk Asesmen Formatif</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Jawablah 15 soal berikut dengan cermat. Perhatikan tipe soal (Pilihan Ganda, Pilihan Ganda Kompleks, atau Benar-Salah).</p>
+                    </div>
+                </div>
+                <div class="bg-slate-100 px-4 py-2 rounded-xl text-center flex-shrink-0">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Total Soal</span>
+                    <span class="text-lg font-extrabold text-brand-700">15 Soal</span>
+                </div>
+            </div>
+
+            <!-- CONTAINER CONTAINER SOAL -->
+            <form id="quizForm" onsubmit="submitQuiz(event)" class="space-y-8">
+
+                <!-- BAGIAN 1: OPERASI DASAR -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-900 text-white px-6 py-4 flex items-center space-x-3">
+                        <span class="w-7 h-7 bg-brand-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">I</span>
+                        <h3 class="font-bold text-base tracking-wide">BAGIAN I: OPERASI DASAR (Soal 1 - 8)</h3>
+                    </div>
+                    <div class="p-6 divide-y divide-slate-100" id="part1Container">
+                        <!-- Render via JS -->
+                    </div>
+                </div>
+
+                <!-- BAGIAN 2: SOAL LITERASI NUMERASI DENGAN STIMULUS -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-900 text-white px-6 py-4 flex items-center space-x-3">
+                        <span class="w-7 h-7 bg-indigo-500 text-white rounded-lg flex items-center justify-center font-bold text-sm">II</span>
+                        <h3 class="font-bold text-base tracking-wide">BAGIAN II: LITERASI NUMERASI STIMULUS (Soal 9 - 15)</h3>
+                    </div>
+                    <div class="p-6 space-y-10" id="part2Container">
+                        <!-- Render via JS -->
+                    </div>
+                </div>
+
+                <!-- SUBMIT BUTTON BAR -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 sticky bottom-4 z-30">
+                    <div class="text-xs text-slate-500 flex items-center space-x-2">
+                        <i class="fa-solid fa-shield-halved text-brand-500 text-base"></i>
+                        <span>Pastikan seluruh jawaban telah terisi sebelum mengirim.</span>
+                    </div>
+                    <button type="submit" class="w-full md:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-0.5 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Submit & Periksa Hasil</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+
+    <!-- MODAL SCORE & EVALUASI -->
+    <div id="scoreModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto no-print">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-slate-100 transform transition-all my-8 max-h-[90vh] overflow-y-auto">
+            
+            <div class="text-center space-y-3">
+                <div id="modalScoreBadge" class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl font-black border-4 border-emerald-200 shadow-inner">
+                    100
+                </div>
+                <h3 class="text-2xl font-extrabold text-slate-800">Hasil Formatif Desimal</h3>
+                <p id="modalStudentTitle" class="text-slate-500 font-medium text-sm">Siswa: - (Kelas 5A)</p>
+            </div>
+
+            <!-- STATUS PENGIRIMAN SPREADSHEET -->
+            <div id="sheetStatusBox" class="mt-4 p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center flex items-center justify-center space-x-2">
+                <i id="sheetStatusIcon" class="fa-solid fa-spinner animate-spin text-brand-500"></i>
+                <span id="sheetStatusText">Mengirimkan nilai ke Google Spreadsheet...</span>
+            </div>
+
+            <!-- GRID STATISTIK -->
+            <div class="grid grid-cols-3 gap-3 my-6">
+                <div class="bg-slate-50 p-3 rounded-2xl text-center border border-slate-200">
+                    <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Skor Akhir</span>
+                    <span id="statScore" class="text-xl font-black text-brand-600">0 / 100</span>
+                </div>
+                <div class="bg-emerald-50 p-3 rounded-2xl text-center border border-emerald-100">
+                    <span class="text-[10px] font-extrabold uppercase text-emerald-600 block">Benar</span>
+                    <span id="statCorrect" class="text-xl font-black text-emerald-600">0 Soal</span>
+                </div>
+                <div class="bg-rose-50 p-3 rounded-2xl text-center border border-rose-100">
+                    <span class="text-[10px] font-extrabold uppercase text-rose-600 block">Waktu</span>
+                    <span id="statTime" class="text-xl font-black text-rose-600">00:00</span>
+                </div>
+            </div>
+
+            <!-- RINCIAN ANALISIS PER NOMOR -->
+            <div class="space-y-2 mb-6">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-2">Analisis Poin per Nomor Soal:</h4>
+                <div id="itemAnalysisGrid" class="grid grid-cols-5 sm:grid-cols-8 gap-2 text-center">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="space-y-3">
+                <!-- Tombol Cetak PDF Hasil Pengerjaan -->
+                <button onclick="downloadResultPDF()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-file-pdf text-lg"></i>
+                    <span>Download / Cetak Hasil Formatif (PDF)</span>
+                </button>
+
+                <button onclick="closeScoreModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-sm">
+                    Tutup & Lihat Pembahasan
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- AREA CETAK KHUSUS DOKUMEN PDF/PRINT -->
+    <div id="printableResultArea" class="hidden print-only p-8">
+        <div class="border-b-2 border-slate-900 pb-4 mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-2xl font-black uppercase tracking-wider">LEMBAR HASIL FORMATIF DESIMAL</h1>
+                <p class="text-sm font-semibold">Matematika Kelas 5 SD / MI</p>
+            </div>
+            <div class="text-right text-xs space-y-0.5">
+                <p><span class="font-bold">Tanggal:</span> <span id="printDate">-</span></p>
+                <p><span class="font-bold">Waktu Tempuh:</span> <span id="printTime">-</span></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-300 mb-6 text-sm">
+            <div>
+                <p class="text-xs text-slate-500 font-bold uppercase">Nama Siswa</p>
+                <p id="printStudentName" class="font-bold text-base text-slate-800">-</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 font-bold uppercase">Kelas</p>
+                <p id="printStudentClass" class="font-bold text-base text-slate-800">-</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 font-bold uppercase">Skor Total</p>
+                <p id="printScore" class="font-bold text-xl text-brand-700">0 / 100</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 font-bold uppercase">Jumlah Benar</p>
+                <p id="printCorrect" class="font-bold text-base text-emerald-700">0 dari 15 Soal</p>
+            </div>
+        </div>
+
+        <h2 class="font-bold text-base mb-3 border-b pb-1">Detail Pengerjaan Soal:</h2>
+        <div id="printQuestionsList" class="space-y-4 text-xs">
+            <!-- Rendered JS -->
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print mt-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <p>&copy; 2026 Asesmen Formatif Desimal Kelas 5 SD. Terintegrasi Google Spreadsheet.</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPT UTAMA -->
+    <script>
+        // CONFIG SPREADSHEET URL
+        const CONFIG = {
+            spreadsheetUrl: 'https://script.google.com/macros/s/AKfycby_KMmzLg8HgEywaAgkyu3yylQUv0IZXQVtixMwSuXRS1PPX9C_ci-xTHS3k0Vc1o0e/exec'
+        };
+
+        // DATABASE SISWA JSON DEFAULT
+                let studentDatabase = [];
+        
+        async function loadStudentDatabase() {
+            try {
+                const response = await fetch('/Siswa.json', { cache: 'no-store' });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+        
+                studentDatabase = await response.json();
+            } catch (error) {
+                console.error('Gagal memuat Siswa.json:', error);
+                studentDatabase = [];
+            }
+        }
+        
+        function handleNameInput(val) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            const notice = document.getElementById('charCountNotice');
+        
+            notice.innerText = `${val.length}/3 huruf`;
+        
+            if (val.length < 3) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+        
+            const keyword = val.toLowerCase();
+        
+            const matches = studentDatabase.filter(s =>
+                s.nama.toLowerCase().includes(keyword)
+            );
+        
+            dropdown.innerHTML = '';
+        
+            matches.forEach(siswa => {
+                const item = document.createElement('button');
+        
+                item.type = 'button';
+                item.className = 'block w-full text-left px-4 py-2 hover:bg-slate-100';
+                item.innerText = siswa.nama;
+        
+                item.onclick = () => selectStudent(siswa.nama);
+        
+                dropdown.appendChild(item);
+            });
+        
+            dropdown.classList.toggle('hidden', matches.length === 0);
+        }
+        
+        function selectStudent(nama) {
+            document.getElementById('inputName').value = nama;
+            document.getElementById('autocompleteDropdown').classList.add('hidden');
+        }
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadStudentDatabase();
+            renderQuestions();
+        });
+
+        // SOAL DATA
+        const questionsData = [
+            // BAGIAN I: OPERASI DASAR (PG)
+            { id: 1, type: "PG", q: "Hasil dari 2,45 + 1,38 adalah...", opts: ["3,73", "3,83", "3,93", "4,83"], key: "B", ansText: "3,83", exp: "Susun bersusun sejajar tanda koma: 2,45 + 1,38 = 3,83." },
+            { id: 2, type: "PG", q: "Hasil dari 4,6 + 3,85 adalah...", opts: ["7,45", "8,35", "8,45", "8,55"], key: "C", ansText: "8,45", exp: "Tambahkan angka 0 di belakang 4,6 menjadi 4,60. Lalu 4,60 + 3,85 = 8,45." },
+            { id: 3, type: "PG", q: "Hasil dari 7,84 - 3,26 adalah...", opts: ["4,48", "4,58", "4,68", "5,58"], key: "B", ansText: "4,58", exp: "Kurangkan secara bersusun dengan sejajarkan tanda koma: 7,84 - 3,26 = 4,58." },
+            { id: 4, type: "PG", q: "Hasil dari 12,5 - 6,75 adalah...", opts: ["5,25", "5,75", "6,25", "6,75"], key: "B", ansText: "5,75", exp: "Ubah 12,5 menjadi 12,50. Kurangkan: 12,50 - 6,75 = 5,75." },
+            { id: 5, type: "PG", q: "Hasil dari 1,5 × 0,4 adalah...", opts: ["0,06", "0,6", "6,0", "60,0"], key: "B", ansText: "0,6", exp: "Kalikan tanpa koma: 15 × 4 = 60. Ada 2 angka di belakang koma, jadi 0,60 = 0,6." },
+            { id: 6, type: "PG", q: "Hasil dari 2,25 × 1,2 adalah...", opts: ["2,50", "2,60", "2,70", "2,80"], key: "C", ansText: "2,70", exp: "Hitung 225 × 12 = 2700. Ada 3 angka di belakang koma, maka 2,700 = 2,70." },
+            { id: 7, type: "PG", q: "Hasil dari 4,8 : 0,6 adalah...", opts: ["0,8", "6", "8", "80"], key: "C", ansText: "8", exp: "Sama-sama dikali 10: 48 : 6 = 8." },
+            { id: 8, type: "PG", q: "Hasil dari 7,5 : 0,25 adalah...", opts: ["30", "25", "3", "0,3"], key: "A", ansText: "30", exp: "Sama-sama dikali 100: 750 : 25 = 30." },
+
+            // BAGIAN II: STIMULUS 1
+            {
+                id: 9,
+                stimulusId: 1,
+                type: "PGK",
+                q: "Soal 9 (Pilihan Ganda Kompleks): Pilihlah semua pernyataan yang benar di bawah ini!",
+                opts: [
+                    "Total panjang seluruh pita yang dibeli kelompok Sita adalah 4,25 meter.",
+                    "Pita merah lebih panjang 0,85 meter daripada pita kuning.",
+                    "Total biaya untuk membeli semua pita (merah dan kuning) adalah Rp17.000,00.",
+                    "Sisa uang kembalian yang diterima Sita adalah Rp500,00."
+                ],
+                keys: [0, 2, 3], // Index 0, 2, 3 benar
+                exp: "Total pita = 2,5 + 1,75 = 4,25 m. Biaya pita = (2,5 x 4rb) + (1,75 x 4rb) = 17rb. Total belanja = 17rb + 7,5rb = 24.500. Kembalian = 25rb - 24.500 = 500."
+            },
+            {
+                id: 10,
+                stimulusId: 1,
+                type: "BS",
+                q: "Soal 10 (Benar - Salah): Tentukan apakah pernyataan berikut BENAR atau SALAH berdasarkan cerita Stimulus 1!",
+                subQs: [
+                    { id: "10a", text: "Selisih panjang pita merah dan pita kuning adalah 0,75 meter.", key: "B" },
+                    { id: "10b", text: "Biaya yang dikeluarkan untuk membeli 3 lembar kertas asturo adalah Rp7.500,00.", key: "B" },
+                    { id: "10c", text: "Uang Sita tidak cukup untuk membayar seluruh barang belanjaan tersebut.", key: "S" }
+                ],
+                exp: "a. BENAR (2,5 - 1,75 = 0,75m). b. BENAR (3 x 2.500 = 7.500). c. SALAH (Uang Rp25.000 cukup, bersisa Rp500)."
+            },
+
+            // STIMULUS 2
+            {
+                id: 11,
+                stimulusId: 2,
+                type: "PGK",
+                q: "Soal 11 (Pilihan Ganda Kompleks): Pilihlah semua pernyataan yang benar di bawah ini!",
+                opts: [
+                    "Roni adalah pelari paling cepat di dalam tim karena mencatatkan waktu paling kecil.",
+                    "Selisih waktu lari antara Dion dan Ari adalah 0,7 detik.",
+                    "Total waktu yang ditempuh oleh Tim Kelas 5A adalah 56,00 detik.",
+                    "Tim Kelas 5A berhasil mendapatkan medali emas."
+                ],
+                keys: [0, 1, 2, 3], // Semua benar
+                exp: "Roni 13,45s (tercepat). Selisih Dion & Ari = 14,5 - 13,8 = 0,7s. Total waktu = 14,25 + 13,8 + 14,5 + 13,45 = 56,00s. Tim dapat emas karena waktu <= 56,00s."
+            },
+            {
+                id: 12,
+                stimulusId: 2,
+                type: "BS",
+                q: "Soal 12 (Benar - Salah): Tentukan apakah pernyataan berikut BENAR atau SALAH berdasarkan cerita Stimulus 2!",
+                subQs: [
+                    { id: "12a", text: "Pelari yang membutuhkan waktu paling lama adalah Dion.", key: "B" },
+                    { id: "12b", text: "Kombinasi waktu Edo dan Roni jika dijumlahkan adalah 27,70 detik.", key: "B" },
+                    { id: "12c", text: "Gabungan waktu Ari dan Dion lebih cepat daripada gabungan waktu Edo dan Roni.", key: "S" }
+                ],
+                exp: "a. BENAR (Dion 14,5s paling lama). b. BENAR (14,25 + 13,45 = 27,70s). c. SALAH (Ari+Dion = 28,30s lebih lambat dari Edo+Roni = 27,70s)."
+            },
+
+            // STIMULUS 3
+            { id: 13, stimulusId: 3, type: "PG", q: "Soal 13: Total berat seluruh buah hasil panen Pak Budi adalah...", opts: ["25,45 kg", "26,45 kg", "26,05 kg", "27,45 kg"], key: "B", ansText: "26,45 kg", exp: "Total panen = 12,50 + 8,75 + 5,20 = 26,45 kg." },
+            {
+                id: 14,
+                stimulusId: 3,
+                type: "PGK",
+                q: "Soal 14 (Pilihan Ganda Kompleks): Pilihlah semua pernyataan yang benar di bawah ini!",
+                opts: [
+                    "Selisih berat panen mangga dan jeruk adalah 3,75 kg.",
+                    "Panen jeruk lebih berat 3,55 kg daripada panen nanas.",
+                    "Jumlah berat mangga dan nanas jika digabungkan adalah 17,7 kg.",
+                    "Pak Budi membutuhkan minimal 6 keranjang untuk membawa seluruh hasil panennya."
+                ],
+                keys: [0, 1, 2, 3], // Semua benar
+                exp: "Mangga-Jeruk = 12,5 - 8,75 = 3,75kg. Jeruk-Nanas = 8,75 - 5,2 = 3,55kg. Mangga+Nanas = 17,7kg. Keranjang = 26,45 / 5 = 5 sisa 1,45kg, jadi butuh 6 keranjang."
+            },
+            {
+                id: 15,
+                stimulusId: 3,
+                type: "BS",
+                q: "Soal 15 (Benar - Salah): Tentukan apakah pernyataan berikut BENAR atau SALAH berdasarkan cerita Stimulus 3!",
+                subQs: [
+                    { id: "15a", text: "Buah yang menghasilkan panen paling sedikit adalah nanas.", key: "B" },
+                    { id: "15b", text: "Selisih berat antara buah terbanyak (mangga) dan buah tersedikit (nanas) adalah 7,03 kg.", key: "S" },
+                    { id: "15c", text: "Jika Pak Budi berhasil menjual 4,25 kg jeruk, sisa jeruk Pak Budi adalah 4,5 kg.", key: "B" }
+                ],
+                exp: "a. BENAR (Nanas 5,2kg tersedikit). b. SALAH (Selisih = 12,5 - 5,2 = 7,30kg bukan 7,03kg). c. BENAR (8,75 - 4,25 = 4,50kg)."
+            }
+        ];
+
+        // GLOBAL APP STATE
+        let activeStudent = null;
+        let timerInterval = null;
+        let totalSeconds = 0;
+        let lastResult = null;
+
+        // INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestions();
+        });
+
+        // FILTER AUTOCOMPLETE STUDENT LIST
+        function filterStudentList() {
+            const inputVal = document.getElementById('inputName').value;
+            if (inputVal.length >= 3) {
+                handleNameInput(inputVal);
+            }
+        }
+
+        // HANDLE AUTOCOMPLETE INPUT (3 HURUF)
+        function handleNameInput(val) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            const notice = document.getElementById('charCountNotice');
+            const selectedClass = document.getElementById('inputClass').value;
+
+            notice.innerText = `${val.length}/3 huruf`;
+
+            if (val.length < 3) {
+                dropdown.classList.add('hidden');
+                notice.classList.remove('text-brand-600', 'font-bold');
+                notice.classList.add('text-slate-400');
+                return;
+            }
+
+            notice.classList.add('text-brand-600', 'font-bold');
+            
+            // Filter by class and name (min 3 chars)
+            const matches = studentDatabase.filter(s => {
+                const matchName = s.nama.toLowerCase().includes(val.toLowerCase());
+                return matchName;
+            });
+
+            if (matches.length === 0) {
+                dropdown.innerHTML = `
+                    <div class="px-4 py-3 text-xs text-slate-400 text-center">
+                        Tidak ada siswa cocok untuk kelas ini. Nama baru akan dibuat otomatis.
+                    </div>
+                `;
+            } else {
+                dropdown.innerHTML = matches.map(s => {
+                    const regex = new RegExp(`(${val})`, 'gi');
+                    const highlightedName = s.nama.replace(regex, '<span class="bg-yellow-200 text-slate-900 font-extrabold">$1</span>');
+                    return `
+                        <div onclick="selectStudent('${s.nama}', '${s.kelas}')" class="px-4 py-2.5 hover:bg-brand-50 cursor-pointer flex justify-between items-center text-sm transition">
+                            <span class="font-semibold text-slate-700">${highlightedName}</span>
+                            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${s.kelas}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            dropdown.classList.remove('hidden');
+        }
+
+        function selectStudent(nama) {
+            document.getElementById('inputName').value = nama;
+            document.getElementById('autocompleteDropdown').classList.add('hidden');
+        }
+    
+
+        // START EXAM SESSIONS
+        function startExam(e) {
+            e.preventDefault();
+            const name = document.getElementById('inputName').value.trim();
+            const kelas = document.getElementById('inputClass').value;
+            const alertBox = document.getElementById('loginAlert');
+
+            if (!name || !kelas) {
+                alertBox.classList.remove('hidden');
+                return;
+            }
+            alertBox.classList.add('hidden');
+
+            activeStudent = { nama: name, kelas: kelas };
+
+            // Update Header Info
+            document.getElementById('headerStudentName').innerText = activeStudent.nama;
+            document.getElementById('headerStudentClass').innerText = activeStudent.kelas;
+            document.getElementById('headerStudentInfo').classList.remove('hidden');
+
+            // Switch Sections
+            document.getElementById('identitySection').classList.add('hidden');
+            document.getElementById('examSection').classList.remove('hidden');
+
+            // Start Timer
+            startTimer();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // TIMER HANDLER
+        function startTimer() {
+            totalSeconds = 0;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                totalSeconds++;
+                const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                const secs = String(totalSeconds % 60).padStart(2, '0');
+                document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        // RENDER QUESTIONS
+        function renderQuestions() {
+            const p1 = document.getElementById('part1Container');
+            const p2 = document.getElementById('part2Container');
+
+            p1.innerHTML = '';
+            p2.innerHTML = '';
+
+            // Bagian I: PG Soal 1 - 8
+            questionsData.filter(q => q.id <= 8).forEach(q => {
+                p1.appendChild(createQuestionCard(q));
+            });
+
+            // Bagian II: Stimulus 1 (9, 10), Stimulus 2 (11, 12), Stimulus 3 (13, 14, 15)
+            const stimuli = [
+                {
+                    id: 1,
+                    title: "STIMULUS 1: Membeli Bahan Kerajinan Tangan",
+                    text: `Dalam kegiatan seni tari dan prakarya, kelompok Sita yang terdiri dari Sita, Budi, dan Ayu bertugas membuat hiasan dinding dari pita dan kertas warna. Mereka membeli beberapa peralatan di Toko Alat Tulis 'Pintar':<br>
+                    • <b>2,5 meter</b> pita merah dengan harga <b>Rp4.000,00</b> per meter.<br>
+                    • <b>1,75 meter</b> pita kuning dengan harga <b>Rp4.000,00</b> per meter.<br>
+                    • <b>3 lembar</b> kertas asturo seharga <b>Rp2.500,00</b> per lembar.<br><br>
+                    Sita membawa uang <b>Rp25.000,00</b> untuk membayar seluruh belanjaan tersebut.`
+                },
+                {
+                    id: 2,
+                    title: "STIMULUS 2: Lomba Lari Estafet Kelas 5",
+                    text: `Pada kegiatan PORSENI sekolah, Tim Lari Estafet Kelas 5A yang terdiri dari Edo, Ari, Dion, dan Roni mengikuti lomba lari 4 × 100 meter. Berikut catatan waktu tempuh masing-masing pelari:<br>
+                    • <b>Edo (Pelari 1):</b> 14,25 detik<br>
+                    • <b>Ari (Pelari 2):</b> 13,8 detik<br>
+                    • <b>Dion (Pelari 3):</b> 14,5 detik<br>
+                    • <b>Roni (Pelari 4):</b> 13,45 detik<br><br>
+                    Syarat untuk mendapatkan medali emas adalah total waktu kombinasi seluruh pelari dalam tim <b>tidak boleh melebihi 56,00 detik</b>.`
+                },
+                {
+                    id: 3,
+                    title: "STIMULUS 3: Menimbang Hasil Panen Buah",
+                    text: `Pak Budi memiliki kebun buah kecil di belakang rumahnya. Hari ini Pak Budi memanen beberapa jenis buah untuk dijual ke pasar. Hasil panen yang didapatkan adalah sebagai berikut:<br>
+                    • <b>Mangga:</b> 12,5 kg<br>
+                    • <b>Jeruk:</b> 8,75 kg<br>
+                    • <b>Nanas:</b> 5,2 kg<br><br>
+                    Pak Budi memasukkan semua buah tersebut ke dalam beberapa keranjang. Setiap keranjang maksimal hanya dapat memuat <b>5 kg buah</b>.`
+                }
+            ];
+
+            stimuli.forEach(st => {
+                const stBox = document.createElement('div');
+                stBox.className = "space-y-6";
+                stBox.innerHTML = `
+                    <div class="bg-indigo-50 border-l-4 border-indigo-600 p-5 rounded-r-2xl space-y-2">
+                        <h4 class="font-bold text-indigo-900 text-sm tracking-wide uppercase flex items-center">
+                            <i class="fa-solid fa-book-open text-indigo-600 mr-2"></i> ${st.title}
+                        </h4>
+                        <div class="text-xs text-slate-700 leading-relaxed">${st.text}</div>
+                    </div>
+                    <div class="space-y-6 pl-2" id="stimulusQuestions_${st.id}"></div>
+                `;
+                p2.appendChild(stBox);
+
+                const qContainer = stBox.querySelector(`#stimulusQuestions_${st.id}`);
+                questionsData.filter(q => q.stimulusId === st.id).forEach(q => {
+                    qContainer.appendChild(createQuestionCard(q));
+                });
+            });
+        }
+
+        // HTML ELEMENT GENERATOR FOR QUESTION
+        function createQuestionCard(q) {
+            const wrapper = document.createElement('div');
+            wrapper.className = "py-4 space-y-3";
+            wrapper.id = `qCard_${q.id}`;
+
+            let contentHTML = `
+                <div class="flex items-start space-x-2">
+                    <span class="font-bold text-brand-600 text-sm">${q.id}.</span>
+                    <div class="font-semibold text-slate-800 text-sm leading-snug">${q.q}</div>
+                </div>
+            `;
+
+            if (q.type === "PG") {
+                const optLabels = ["A", "B", "C", "D"];
+                contentHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-2 pl-5">
+                        ${q.opts.map((opt, idx) => `
+                            <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="radio" name="q_${q.id}" value="${optLabels[idx]}" class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+                                <span class="text-xs font-bold text-slate-500">${optLabels[idx]}.</span>
+                                <span class="text-xs text-slate-700 font-medium">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (q.type === "PGK") {
+                contentHTML += `
+                    <div class="space-y-2 pt-2 pl-5">
+                        ${q.opts.map((opt, idx) => `
+                            <label class="flex items-start space-x-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="checkbox" name="q_${q.id}" value="${idx}" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 mt-0.5">
+                                <span class="text-xs text-slate-700 font-medium leading-normal">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (q.type === "BS") {
+                contentHTML += `
+                    <div class="overflow-x-auto pt-2 pl-5">
+                        <table class="w-full text-xs text-left border-collapse border border-slate-200 rounded-xl overflow-hidden">
+                            <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                                <tr>
+                                    <th class="p-3 border border-slate-200">Pernyataan</th>
+                                    <th class="p-3 border border-slate-200 text-center w-28">Benar</th>
+                                    <th class="p-3 border border-slate-200 text-center w-28">Salah</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                ${q.subQs.map(sq => `
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-3 border border-slate-200 text-slate-700 font-medium">${sq.text}</td>
+                                        <td class="p-3 border border-slate-200 text-center">
+                                            <input type="radio" name="sq_${sq.id}" value="B" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                                        </td>
+                                        <td class="p-3 border border-slate-200 text-center">
+                                            <input type="radio" name="sq_${sq.id}" value="S" class="w-4 h-4 text-rose-600 focus:ring-rose-500">
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            // EXPLANATION CONTAINER (HIDDEN UNTIL GRADED)
+            contentHTML += `
+                <div id="exp_${q.id}" class="hidden mt-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1">
+                    <span class="font-bold text-amber-800 flex items-center">
+                        <i class="fa-solid fa-lightbulb text-amber-500 mr-1.5"></i> Pembahasan:
+                    </span>
+                    <p class="text-amber-900 leading-relaxed">${q.exp}</p>
+                </div>
+            `;
+
+            wrapper.innerHTML = contentHTML;
+            return wrapper;
+        }
+
+        // SUBMIT AND EVALUATE QUIZ
+        function submitQuiz(e) {
+            e.preventDefault();
+            clearInterval(timerInterval);
+
+            let totalCorrectCount = 0;
+            const itemScores = {}; // Poin 1 (benar) atau 0 (salah) per soal
+
+            questionsData.forEach(q => {
+                let isCorrect = false;
+
+                if (q.type === "PG") {
+                    const sel = document.querySelector(`input[name="q_${q.id}"]:checked`);
+                    if (sel && sel.value === q.key) {
+                        isCorrect = true;
+                    }
+                } else if (q.type === "PGK") {
+                    const selBoxes = Array.from(document.querySelectorAll(`input[name="q_${q.id}"]:checked`)).map(cb => parseInt(cb.value));
+                    // Cek kelengkapan kunci
+                    if (selBoxes.length === q.keys.length && selBoxes.every(val => q.keys.includes(val))) {
+                        isCorrect = true;
+                    }
+                } else if (q.type === "BS") {
+                    let allSubCorrect = true;
+                    q.subQs.forEach(sq => {
+                        const sel = document.querySelector(`input[name="sq_${sq.id}"]:checked`);
+                        if (!sel || sel.value !== sq.key) {
+                            allSubCorrect = false;
+                        }
+                    });
+                    if (allSubCorrect) isCorrect = true;
+                }
+
+                if (isCorrect) {
+                    totalCorrectCount++;
+                    itemScores[q.id] = 1;
+                } else {
+                    itemScores[q.id] = 0;
+                }
+
+                // Tampilkan Pembahasan di Halaman Soal
+                document.getElementById(`exp_${q.id}`).classList.remove('hidden');
+            });
+
+            const finalScore = Math.round((totalCorrectCount / questionsData.length) * 100);
+            const timeTakenFormatted = document.getElementById('timerDisplay').innerText;
+
+            lastResult = {
+                nama: activeStudent.nama,
+                kelas: activeStudent.kelas,
+                waktuTempuh: timeTakenFormatted,
+                skor: finalScore,
+                jumlahBenar: totalCorrectCount,
+                jumlahSalah: questionsData.length - totalCorrectCount,
+                itemScores: itemScores
+            };
+
+            // DISPLAY MODAL SCORE
+            showScoreModal(lastResult);
+
+            // SEND AUTOMATICALLY TO SPREADSHEET
+            sendDataToSpreadsheet(lastResult);
+        }
+
+        // DISPLAY SCORE MODAL
+        function showScoreModal(res) {
+            document.getElementById('modalScoreBadge').innerText = res.skor;
+            document.getElementById('modalStudentTitle').innerText = `Siswa: ${res.nama} (${res.kelas})`;
+            document.getElementById('statScore').innerText = `${res.skor} / 100`;
+            document.getElementById('statCorrect').innerText = `${res.jumlahBenar} Soal`;
+            document.getElementById('statTime').innerText = res.waktuTempuh;
+
+            // Render Item Analysis Grid
+            const grid = document.getElementById('itemAnalysisGrid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 15; i++) {
+                const isWin = res.itemScores[i] === 1;
+                grid.innerHTML += `
+                    <div class="p-2 rounded-xl ${isWin ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} text-xs font-bold">
+                        S${i}: ${isWin ? '✓' : '✗'}
+                    </div>
+                `;
+            }
+
+            document.getElementById('scoreModal').classList.remove('hidden');
+        }
+
+        function closeScoreModal() {
+            document.getElementById('scoreModal').classList.add('hidden');
+        }
+
+        // SEND DATA TO SPREADSHEET (VIA APPS SCRIPT)
+        function sendDataToSpreadsheet(data) {
+            const statusBox = document.getElementById('sheetStatusBox');
+            const statusIcon = document.getElementById('sheetStatusIcon');
+            const statusText = document.getElementById('sheetStatusText');
+
+            statusBox.className = "mt-4 p-3 rounded-xl bg-amber-50 text-amber-800 text-xs text-center flex items-center justify-center space-x-2";
+            statusIcon.className = "fa-solid fa-spinner animate-spin text-amber-600";
+            statusText.innerText = "Mengirimkan nilai ke Spreadsheet Guru...";
+
+            fetch(CONFIG.spreadsheetUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                statusBox.className = "mt-4 p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center flex items-center justify-center space-x-2";
+                statusIcon.className = "fa-solid fa-circle-check text-emerald-600";
+                statusText.innerText = "Nilai & Analisis Poin Per Soal Berhasil Terkirim!";
+            })
+            .catch(err => {
+                statusBox.className = "mt-4 p-3 rounded-xl bg-rose-50 text-rose-800 text-xs text-center flex items-center justify-center space-x-2";
+                statusIcon.className = "fa-solid fa-circle-xmark text-rose-600";
+                statusText.innerText = "Gagal Mengirim ke Spreadsheet. (Periksa Koneksi)";
+            });
+        }
+
+        // CETAK / DOWNLOAD PDF HASIL FORMATIF
+        function downloadResultPDF() {
+            if (!lastResult) return;
+
+            document.getElementById('printStudentName').innerText = lastResult.nama;
+            document.getElementById('printStudentClass').innerText = lastResult.kelas;
+            document.getElementById('printScore').innerText = `${lastResult.skor} / 100`;
+            document.getElementById('printCorrect').innerText = `${lastResult.jumlahBenar} dari 15 Soal`;
+            document.getElementById('printTime').innerText = lastResult.waktuTempuh;
+            document.getElementById('printDate').innerText = new Date().toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+
+            const qList = document.getElementById('printQuestionsList');
+            qList.innerHTML = '';
+
+            questionsData.forEach(q => {
+                const isCorrect = lastResult.itemScores[q.id] === 1;
+                qList.innerHTML += `
+                    <div class="p-3 rounded-lg border ${isCorrect ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'} space-y-1">
+                        <div class="flex justify-between font-bold">
+                            <span>Soal ${q.id} (${q.type})</span>
+                            <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">${isCorrect ? 'BENAR (Poin 1)' : 'SALAH (Poin 0)'}</span>
+                        </div>
+                        <p class="text-slate-700">${q.q}</p>
+                        <p class="text-[11px] text-slate-500 font-semibold mt-1">Pembahasan: ${q.exp}</p>
+                    </div>
+                `;
+            });
+
+            window.print();
+        }
+    </script>
+</body>
+</html>
