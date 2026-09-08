@@ -302,22 +302,24 @@
         };
 
         // DATABASE SISWA JSON DEFAULT
-                let studentDatabase = [];
-        
-        async function loadStudentDatabase() {
-            try {
-                const response = await fetch('/materi/bilangan/Siswa.json', { cache: 'no-store' });
-        
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-        
-                studentDatabase = await response.json();
-            } catch (error) {
-                console.error('Gagal memuat Siswa.json:', error);
-                studentDatabase = [];
-            }
+               let studentDatabase = [];
+
+async function loadStudentDatabase() {
+    try {
+        // UBAH BARIS DI BAWAH INI: Ganti path lokal dengan URL Raw GitHub Anda
+        const response = await fetch('https://raw.githubusercontent.com/INOR61810/masterku/refs/heads/master/public/materi/bilangan/Siswa.json', { cache: 'no-store' });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
         }
+
+        studentDatabase = await response.json();
+        console.log("Database siswa berhasil dimuat dari GitHub!"); // Opsional: untuk cek di console log
+    } catch (error) {
+        console.error('Gagal memuat Siswa.json:', error);
+        studentDatabase = [];
+    }
+}
         
         function handleNameInput(val) {
             const dropdown = document.getElementById('autocompleteDropdown');
